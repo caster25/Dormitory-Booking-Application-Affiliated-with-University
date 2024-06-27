@@ -1,0 +1,146 @@
+import 'package:dorm_app/screen/login.dart';
+import 'package:flutter/material.dart';
+
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('สร้างบัญชี'),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: RegisterForm(),
+      ),
+    );
+  }
+}
+
+class RegisterForm extends StatefulWidget {
+  @override
+  _RegisterFormState createState() => _RegisterFormState();
+}
+
+class _RegisterFormState extends State<RegisterForm> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  void _register() {
+    if (_formKey.currentState!.validate()) {
+      // ถ้าฟอร์มถูกต้องทำการลงทะเบียน
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ลงทะเบียนเรียบร้อย')),
+      );
+
+      // ทำการล้างข้อมูลในฟอร์ม
+      _formKey.currentState!.reset();
+
+      // ล้างค่าใน TextEditingController
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+
+      // นำทางไปยังหน้าจอ Login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+      );
+    }
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'กรุณากรอกรหัสผ่าน';
+    }
+    return null;
+  }
+
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'กรุณายืนยันรหัสผ่าน';
+    }
+    if (value != _passwordController.text) {
+      return 'รหัสผ่านไม่ตรงกัน';
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('อีเมล', style: TextStyle(fontSize: 20)),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'กรุณากรอกอีเมล';
+                }
+                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                  return 'รูปแบบอีเมลไม่ถูกต้อง';
+                }
+                return null;
+              },
+              keyboardType: TextInputType.emailAddress,
+            ),
+            SizedBox(height: 15),
+            Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'กรุณากรอกชื่อ-นามสกุล';
+                }
+                return null;
+              },
+            ),
+            SizedBox(height: 15),
+            Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'กรุณากรอกเบอร์โทร';
+                }
+                if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                  return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
+                }
+                return null;
+              },
+              keyboardType: TextInputType.phone,
+            ),
+            SizedBox(height: 15),
+            Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              validator: _validatePassword,
+            ),
+            SizedBox(height: 15),
+            Text('ยืนยันรหัสผ่าน', style: TextStyle(fontSize: 20)),
+            TextFormField(
+              controller: _confirmPasswordController,
+              obscureText: true,
+              validator: _validateConfirmPassword,
+            ),
+            SizedBox(height: 15),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _register,
+                child: Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
