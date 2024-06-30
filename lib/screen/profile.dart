@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/user.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 
@@ -9,7 +10,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('หอพัก'), // "Dormitory" in Thai
-        backgroundColor: Colors.purple.shade300,
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -24,7 +25,9 @@ class ProfileScreen extends StatelessWidget {
                     leading: const Icon(Icons.person),
                     title: const Text('ข้อมูลส่วนตัว'), // "Personal Information" in Thai
                     onTap: () {
-                      // Add your onTap logic here
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const User(),
+                      ));
                     },
                   ),
                   ListTile(

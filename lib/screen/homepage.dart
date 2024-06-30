@@ -38,7 +38,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context) => Container(
-        color: Colors.blue.shade700,
+        color: const Color.fromARGB(255, 153,85,240),
         padding: EdgeInsets.only(
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
@@ -64,7 +64,7 @@ class NavigationDrawer extends StatelessWidget {
       );
 
   Widget buildMenuItems(BuildContext context) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),color: const Color.fromARGB(255, 241,229,255),
         child: Wrap(
           runSpacing: 16,
           children: [
@@ -172,7 +172,7 @@ class _HomepageState extends State<Homepage> {
               icon: const Icon(Icons.notifications),
             ),
           ],
-          backgroundColor: Colors.blue.shade700,
+          backgroundColor: Color.fromARGB(255, 153,85,240),
         ),
         backgroundColor: Colors.white,
         drawer: const NavigationDrawer(),
@@ -182,7 +182,7 @@ class _HomepageState extends State<Homepage> {
         ),
         bottomNavigationBar: Theme(
           data: Theme.of(context).copyWith(
-            iconTheme: const IconThemeData(color: Colors.orange),
+            iconTheme: const IconThemeData(color: Colors.white),
           ),
           child: CurvedNavigationBar(
             index: index,
@@ -193,8 +193,8 @@ class _HomepageState extends State<Homepage> {
               Icon(Icons.star_sharp, size: 30),
               Icon(Icons.person, size: 30),
             ],
-            color: Colors.white,
-            buttonBackgroundColor: Colors.blue.shade200,
+            color: const Color.fromARGB(255, 153,85,240),
+            buttonBackgroundColor: const Color.fromARGB(255, 153,85,240),
             backgroundColor: Colors.transparent,
             animationCurve: Curves.easeInOut,
             animationDuration: const Duration(milliseconds: 600),

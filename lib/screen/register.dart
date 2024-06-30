@@ -8,17 +8,19 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('สร้างบัญชี'),
+        title: const Text('สร้างบัญชี'),
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
-        child: RegisterForm(),
+        child: const RegisterForm(),
       ),
     );
   }
 }
 
 class RegisterForm extends StatefulWidget {
+  const RegisterForm({super.key});
+
   @override
   _RegisterFormState createState() => _RegisterFormState();
 }
@@ -27,12 +29,20 @@ class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  bool _acceptTerms = false;
 
   void _register() {
     if (_formKey.currentState!.validate()) {
+      if (!_acceptTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
+        );
+        return;
+      }
+
       // ถ้าฟอร์มถูกต้องทำการลงทะเบียน
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('ลงทะเบียนเรียบร้อย')),
+        const SnackBar(content: Text('ลงทะเบียนเรียบร้อย')),
       );
 
       // ทำการล้างข้อมูลในฟอร์ม
@@ -49,7 +59,7 @@ class _RegisterFormState extends State<RegisterForm> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
       );
     }
   }
@@ -57,6 +67,9 @@ class _RegisterFormState extends State<RegisterForm> {
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'กรุณากรอกรหัสผ่าน';
+    }
+    if (value.length < 8) {
+      return 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร';
     }
     return null;
   }
@@ -79,21 +92,18 @@ class _RegisterFormState extends State<RegisterForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('อีเมล', style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 15),
+            const Text('ชื่อผู้ใช้', style: TextStyle(fontSize: 20)),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'กรุณากรอกอีเมล';
-                }
-                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                  return 'รูปแบบอีเมลไม่ถูกต้อง';
+                  return 'กรุณากรอกชื่อผู้ใช้';
                 }
                 return null;
               },
-              keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: 15),
-            Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 15),
+            const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -102,8 +112,8 @@ class _RegisterFormState extends State<RegisterForm> {
                 return null;
               },
             ),
-            SizedBox(height: 15),
-            Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 15),
+            const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -116,26 +126,72 @@ class _RegisterFormState extends State<RegisterForm> {
               },
               keyboardType: TextInputType.phone,
             ),
-            SizedBox(height: 15),
-            Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 15),
+            const Text('อีเมล', style: TextStyle(fontSize: 20)),
+            TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'กรุณากรอกอีเมล';
+                }
+                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                  return 'รูปแบบอีเมลไม่ถูกต้อง';
+                }
+                return null;
+              },
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 15),
+            const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
             TextFormField(
               controller: _passwordController,
               obscureText: true,
               validator: _validatePassword,
             ),
-            SizedBox(height: 15),
-            Text('ยืนยันรหัสผ่าน', style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 15),
+            const Text('ยืนยันรหัสผ่าน', style: TextStyle(fontSize: 20)),
             TextFormField(
               controller: _confirmPasswordController,
               obscureText: true,
               validator: _validateConfirmPassword,
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
+            Row(
+              children: [
+                Checkbox(
+                  value: _acceptTerms,
+                  onChanged: (value) {
+                    setState(() {
+                      _acceptTerms = value!;
+                    });
+                  },
+                ),
+                const Text(
+                  'ฉันยอมรับเงื่อนไขและข้อตกลงการใช้บริการ',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _register,
-                child: Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+                child: const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
+                },
+                child: const Text(
+                  'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ',
+                  style: TextStyle(fontSize: 16, color: Colors.blue),
+                ),
               ),
             ),
           ],
