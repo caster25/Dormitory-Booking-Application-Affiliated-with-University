@@ -1,14 +1,12 @@
-// ignore: unused_import
-import 'package:dorm_app/main.dart';
+import 'package:dorm_app/screen/user.dart';
+import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/dorm.dart';
 import 'package:dorm_app/screen/favorites.dart';
 import 'package:dorm_app/screen/feeds.dart';
 import 'package:dorm_app/screen/home.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/profile.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key, this.title = "Home"});
@@ -38,7 +36,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context) => Container(
-        color: const Color.fromARGB(255, 153,85,240),
+        color: const Color.fromARGB(255, 153, 85, 240),
         padding: EdgeInsets.only(
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
@@ -48,15 +46,15 @@ class NavigationDrawer extends StatelessWidget {
             CircleAvatar(
               radius: 52,
               backgroundImage: NetworkImage(
-                  'https://via.placeholder.com/150'), // Update with an actual URL
+                  'https://via.placeholder.com/150'), // Update with actual URL
             ),
             SizedBox(height: 12),
             Text(
-              'User Name', // Replace 'data' with an actual user name or relevant text
+              'User Name', // Replace with actual user name
               style: TextStyle(fontSize: 28, color: Colors.white),
             ),
             Text(
-              'user@example.com', // Replace 'data' with an actual email or relevant text
+              'user@example.com', // Replace with actual email
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
           ],
@@ -64,118 +62,136 @@ class NavigationDrawer extends StatelessWidget {
       );
 
   Widget buildMenuItems(BuildContext context) => Container(
-        padding: const EdgeInsets.all(24),color: const Color.fromARGB(255, 241,229,255),
+        padding: const EdgeInsets.all(24),
+        color: const Color.fromARGB(255, 241, 229, 255),
         child: Wrap(
           runSpacing: 16,
           children: [
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('ข้อมูลส่วนตัว'),
-              onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
-                );
-              },
+            buildMenuItem(
+              context,
+              icon: Icons.person,
+              text: 'ข้อมูลส่วนตัว',
+              onTap: () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const User()),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('การตั้งค่า'),
-              onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const Homepage(title: 'การตั้งค่า'),
-                  ),
-                );
-              },
+            buildMenuItem(
+              context,
+              icon: Icons.settings,
+              text: 'การตั้งค่า',
+              onTap: () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const Homepage(title: 'การตั้งค่า')),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('ออกจาระบบ'),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('ยืนยันการออกจากระบบ'),
-                      content:
-                          const Text('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // ปิด dialog
-                          },
-                          child: const Text('ยกเลิก'),
+            buildMenuItem(
+              context,
+              icon: Icons.logout,
+              text: 'ออกจาระบบ',
+              onTap: () => showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('ยืนยันการออกจากระบบ'),
+                    content: const Text('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('ยกเลิก'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => const HomeScreen()),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const HomeScreen(), // หน้า HomeScreen ที่คุณต้องการ
-                              ),
-                            );
-                          },
-                          child: const Text('ยืนยัน'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
+                        child: const Text('ยืนยัน'),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
-
-            // Add more menu items here
           ],
         ),
       );
+
+  Widget buildMenuItem(BuildContext context,
+      {required IconData icon, required String text, required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(text),
+      onTap: onTap,
+    );
+  }
 }
 
 class _HomepageState extends State<Homepage> {
   int index = 0;
 
-  // List of screens corresponding to each tab
   final List<Widget> _screens = [
-    const FeedsScreen(), // Ensure you have HomeScreen widget in home.dart
-    const DormScreen(), // Ensure you have NotificationScreen widget in notification.dart
-    const FavoritesScreen(), // Ensure you have FavoritesScreen widget in favorites.dart
-    const ProfileScreen(), // Ensure you have ProfileScreen widget in profile.dart
+    const FeedsScreen(), // หน้าแรก
+    const DormScreen(), // การแจ้งเตือน
+    const FavoritesScreen(), // รายการที่ชอบ
+    const ProfileScreen(), // โปรไฟล์
   ];
 
-  // Titles for each tab
-  final List<String> titles = [
-    'หน้าแรก',
-    'การแจ้งเตือน',
-    'รายการที่ชอบ',
-    'โปรไฟล์'
-  ];
+  AppBar? getAppBar(int index) {
+    switch (index) {
+      case 0:
+        return AppBar(
+          title: const Text('หน้าแรก'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const NotificationScreen();
+              })),
+              icon: const Icon(Icons.notifications),
+            ),
+          ],
+          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        );
+      case 1:
+        return AppBar(
+          title: const Text('การแจ้งเตือน'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const NotificationScreen();
+              })),
+              icon: const Icon(Icons.notifications),
+            ),
+          ],
+          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        );
+      case 2:
+        return AppBar(
+          title: const Text('รายการที่ชอบ'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const NotificationScreen();
+              })),
+              icon: const Icon(Icons.notifications),
+            ),
+          ],
+          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        );
+      case 3:
+        return null; // No AppBar for the Profile tab
+      default:
+        return AppBar(
+          title: const Text('หน้าแรก'),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return WillPopScope(
-      onWillPop: () async {
-        // Return false to block the back button
-        return false;
-      },
+      onWillPop: () async => false,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(titles[index]),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const NotificationScreen();
-                }));
-              },
-              icon: const Icon(Icons.notifications),
-            ),
-          ],
-          backgroundColor: Color.fromARGB(255, 153,85,240),
-        ),
-        backgroundColor: Colors.white,
-        drawer: const NavigationDrawer(),
+        appBar: index != 3 ? getAppBar(index) : null, // Hide AppBar in Profile tab
+        backgroundColor: const Color.fromARGB(255, 186,176,248),
+        drawer: index != 3 ? const NavigationDrawer() : null, // Hide NavigationDrawer in Profile tab
         body: IndexedStack(
           index: index,
           children: _screens,
@@ -193,8 +209,8 @@ class _HomepageState extends State<Homepage> {
               Icon(Icons.star_sharp, size: 30),
               Icon(Icons.person, size: 30),
             ],
-            color: const Color.fromARGB(255, 153,85,240),
-            buttonBackgroundColor: const Color.fromARGB(255, 153,85,240),
+            color: const Color.fromARGB(255, 153, 85, 240),
+            buttonBackgroundColor: const Color.fromARGB(255, 153, 85, 240),
             backgroundColor: Colors.transparent,
             animationCurve: Curves.easeInOut,
             animationDuration: const Duration(milliseconds: 600),

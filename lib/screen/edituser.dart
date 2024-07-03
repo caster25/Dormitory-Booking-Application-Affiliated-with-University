@@ -1,4 +1,4 @@
-import 'package:dorm_app/main.dart';
+import 'package:dorm_app/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
 class EditUser extends StatelessWidget {
@@ -39,7 +39,7 @@ class EditUser extends StatelessWidget {
                       // บันทึกข้อมูลและกลับไปยังหน้า Homepage
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) =>  MyHomePage()), // กลับไปยังหน้า Homepage
+                        MaterialPageRoute(builder: (context) =>  Homepage()), // กลับไปยังหน้า Homepage
                         (route) => false, // ลบทุกเส้นทางในเครื่องหมายความเห็นเพื่อไม่ให้กลับมายังหน้าแก้ไขผู้ใช้
                       );
                     },
@@ -50,7 +50,7 @@ class EditUser extends StatelessWidget {
                       // ยกเลิกการแก้ไขและกลับไปยังหน้า Homepage
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) =>  MyHomePage()), // กลับไปยังหน้า Homepage
+                        MaterialPageRoute(builder: (context) =>  Homepage()), // กลับไปยังหน้า Homepage
                         (route) => false, // ลบทุกเส้นทางในเครื่องหมายความเห็นเพื่อไม่ให้กลับมายังหน้าแก้ไขผู้ใช้
                       );
                     },
