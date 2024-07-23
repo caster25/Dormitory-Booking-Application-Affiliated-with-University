@@ -46,7 +46,7 @@ class NavigationDrawer extends StatelessWidget {
             CircleAvatar(
               radius: 52,
               backgroundImage: NetworkImage(
-                  'https://via.placeholder.com/150'), // Update with actual URL
+                  'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'), // Update with actual URL
             ),
             SizedBox(height: 12),
             Text(
@@ -128,7 +128,7 @@ class _HomepageState extends State<Homepage> {
 
   final List<Widget> _screens = [
     const FeedsScreen(), // หน้าแรก
-    const DormScreen(), // การแจ้งเตือน
+    const DormScreen(), // หอพัก
     const FavoritesScreen(), // รายการที่ชอบ
     const ProfileScreen(), // โปรไฟล์
   ];
@@ -150,7 +150,7 @@ class _HomepageState extends State<Homepage> {
         );
       case 1:
         return AppBar(
-          title: const Text('การแจ้งเตือน'),
+          title: const Text('รายการหอพัก'),
           actions: [
             IconButton(
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {

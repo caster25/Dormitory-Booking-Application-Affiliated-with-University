@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -21,121 +17,152 @@ class FeedsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0), // ปิด appbar
-        child: Container(), // ปิด appbar
-      
-      ),
-      backgroundColor: const Color.fromARGB(255, 186,176,248),
-      body: Stack(
-        children: [
-          // Container with BoxDecoration
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 241,229,255),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(50),
-                  bottomRight: Radius.circular(50),
-                ),
-              ),
-              height:
-                  300, // Height to cover the AppBar and some additional space
-              child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.end, // จัดการวางแนวตั้งด้านล่าง
+      backgroundColor: Color.fromARGB(255, 186, 176, 248),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        hintText: 'Search...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        prefixIcon: const Icon(Icons.search),
-                      ),
+                  Container(
+                    margin: const EdgeInsets.only(top:0),
+                    width: double.infinity,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 241, 229, 255),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.all(45),
+                    child: Image.network(
+                      'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', // ใส่ URL รูปที่ต้องการ
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 16,
+                    left: 16,
+                    child: Row(
+                      children: List.generate(4, (index) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 186, 176, 248),
+                            shape: BoxShape.circle,
+                          ),
+                        );
+                      }),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-          Positioned(
-            top: 320, // ปรับตำแหน่งของข้อความ
-            left: 16,
-            right: 16,
-            child: Row(
-              children: [
-                const Icon(Icons.collections_bookmark_outlined,
-                    color: Colors.yellow), // เพิ่ม Icon ตรงนี้
-                const SizedBox(width: 8), // ระยะห่างระหว่าง Icon กับ Text
-                Text(
-                  'แนะนำ', // ข้อความที่ต้องการแสดง
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            hintText: 'ค้นหาหอพัก',
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(vertical: 10),
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.search),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildBox('Box 1'),
-                  const SizedBox(width: 16),
-                  _buildBox('Box 2'),
-                  const SizedBox(width: 16),
-                  _buildBox('Box 3'),
-                  const SizedBox(width: 16),
-                  _buildBox('Box 4'),
-                  const SizedBox(width: 16),
-                  _buildBox('Box 5'),
-                  const SizedBox(width: 16),
-                  _buildBox('Box 6'),
-                ],
               ),
-            ),
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+                child: Row(
+                  children: const [
+                    Icon(Icons.recommend, size: 24),
+                    SizedBox(width: 8),
+                    Text(
+                      'แนะนำ',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(3, (index) {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 16),
+                        width: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 170,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    'หอพัก....',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'ราคาเริ่มต้น 5,000 บาท/เดือน',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: Text('เพิ่มเติม'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBox(String text) {
-    return Container(
-      width: 180,
-      height: 380,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
     );

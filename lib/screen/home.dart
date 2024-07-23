@@ -1,5 +1,6 @@
 import 'package:dorm_app/screen/login.dart';
 import 'package:dorm_app/screen/register.dart';
+import 'package:dorm_app/screen/role.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -35,7 +36,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                      return RegisterScreen();
+                      return role_sceen();
                     }));
                   }, 
                   icon: Icon(Icons.login),

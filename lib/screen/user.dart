@@ -26,7 +26,7 @@ class User extends StatelessWidget {
               const CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage(
-                  'https://via.placeholder.com/150', // URL ของรูปโปรไฟล์
+                  'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', // URL ของรูปโปรไฟล์
                 ),
               ),
               const SizedBox(height: 20),
