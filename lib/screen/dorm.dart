@@ -19,7 +19,7 @@ class DormScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 186, 176, 248),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -27,7 +27,8 @@ class DormScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -62,7 +63,7 @@ class DormScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: Color.fromARGB(255, 241, 229, 255),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -71,9 +72,11 @@ class DormScreen extends StatelessWidget {
                           Container(
                             height: 180,
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(10)),
                               image: DecorationImage(
-                                image: NetworkImage('https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+                                image: NetworkImage(
+                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -95,7 +98,7 @@ class DormScreen extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   'คะแนน 2.5/5',
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(color: Colors.red),
                                 ),
                               ],
                             ),
@@ -114,18 +117,27 @@ class DormScreen extends StatelessWidget {
   }
 }
 
-
 class FilterButton extends StatelessWidget {
   final String text;
-  const FilterButton({required this.text});
+  final Color backgroundColor;
+  final Color textColor;
+  final Color borderColor;
+
+  const FilterButton({
+    required this.text,
+    this.backgroundColor = Colors.white,
+    this.textColor = Colors.purple,
+    this.borderColor = Colors.pink,
+  });
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.amber,
+        foregroundColor: textColor, backgroundColor: backgroundColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        side: BorderSide(color: borderColor),
       ),
       child: Text(text),
     );

@@ -17,7 +17,7 @@ class FeedsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 186, 176, 248),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(0),
@@ -27,7 +27,7 @@ class FeedsScreen extends StatelessWidget {
               Stack(
                 children: [
                   Container(
-                    margin: const EdgeInsets.only(top:0),
+                    margin: const EdgeInsets.only(top: 0),
                     width: double.infinity,
                     height: 300,
                     decoration: BoxDecoration(
@@ -109,7 +109,7 @@ class FeedsScreen extends StatelessWidget {
                         margin: const EdgeInsets.only(right: 16),
                         width: 200,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: const Color.fromARGB(255, 241, 229, 255),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(

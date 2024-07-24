@@ -1,10 +1,10 @@
+import 'package:dorm_app/screen/review.dart';
 import 'package:dorm_app/screen/user.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/dorm.dart';
-import 'package:dorm_app/screen/favorites.dart';
 import 'package:dorm_app/screen/feeds.dart';
-import 'package:dorm_app/screen/home.dart';
+import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/profile.dart';
 
@@ -46,7 +46,7 @@ class NavigationDrawer extends StatelessWidget {
             CircleAvatar(
               radius: 52,
               backgroundImage: NetworkImage(
-                  'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'), // Update with actual URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'), // Update with actual URL
             ),
             SizedBox(height: 12),
             Text(
@@ -63,7 +63,7 @@ class NavigationDrawer extends StatelessWidget {
 
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
-        color: const Color.fromARGB(255, 241, 229, 255),
+        color: Color.fromARGB(255, 252, 252, 252),
         child: Wrap(
           runSpacing: 16,
           children: [
@@ -72,7 +72,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.person,
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const User()),
+                MaterialPageRoute(builder: (context) => UserScreen()),
               ),
             ),
             buildMenuItem(
@@ -99,8 +99,9 @@ class NavigationDrawer extends StatelessWidget {
                         child: const Text('ยกเลิก'),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) => const HomeScreen()),
+                        onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => const IndexScreen()),
+                          (Route<dynamic> route) => false,
                         ),
                         child: const Text('ยืนยัน'),
                       ),
@@ -129,59 +130,9 @@ class _HomepageState extends State<Homepage> {
   final List<Widget> _screens = [
     const FeedsScreen(), // หน้าแรก
     const DormScreen(), // หอพัก
-    const FavoritesScreen(), // รายการที่ชอบ
+    const ReviewScreen(), // รีวิวหอพัก
     const ProfileScreen(), // โปรไฟล์
   ];
-
-  AppBar? getAppBar(int index) {
-    switch (index) {
-      case 0:
-        return AppBar(
-          title: const Text('หน้าแรก'),
-          actions: [
-            IconButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const NotificationScreen();
-              })),
-              icon: const Icon(Icons.notifications),
-            ),
-          ],
-          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        );
-      case 1:
-        return AppBar(
-          title: const Text('รายการหอพัก'),
-          actions: [
-            IconButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const NotificationScreen();
-              })),
-              icon: const Icon(Icons.notifications),
-            ),
-          ],
-          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        );
-      case 2:
-        return AppBar(
-          title: const Text('รายการที่ชอบ'),
-          actions: [
-            IconButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const NotificationScreen();
-              })),
-              icon: const Icon(Icons.notifications),
-            ),
-          ],
-          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        );
-      case 3:
-        return null; // No AppBar for the Profile tab
-      default:
-        return AppBar(
-          title: const Text('หน้าแรก'),
-        );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +141,7 @@ class _HomepageState extends State<Homepage> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: index != 3 ? getAppBar(index) : null, // Hide AppBar in Profile tab
-        backgroundColor: const Color.fromARGB(255, 186,176,248),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         drawer: index != 3 ? const NavigationDrawer() : null, // Hide NavigationDrawer in Profile tab
         body: IndexedStack(
           index: index,
@@ -225,4 +176,34 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
+
+  AppBar getAppBar(int index) {
+    switch (index) {
+      case 0:
+        return AppBar(
+          title: const Text('หน้าแรก'),
+        );
+      case 1:
+        return AppBar(
+          title: const Text('หอพัก'),
+        );
+      case 2:
+        return AppBar(
+          title: const Text('รีวิวหอพัก'),
+        );
+      default:
+        return AppBar(
+          title: const Text('ข้อมูลส่วนตัว'),
+        );
+    }
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: const Homepage(),
+    theme: ThemeData(
+      primaryColor: const Color.fromARGB(255, 241, 229, 255),
+    ),
+  ));
 }

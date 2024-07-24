@@ -3,8 +3,8 @@ import 'package:dorm_app/screen/register.dart';
 import 'package:dorm_app/screen/role.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class IndexScreen extends StatelessWidget {
+  const IndexScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

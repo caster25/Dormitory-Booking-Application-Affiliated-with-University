@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/home.dart';
+import 'package:dorm_app/screen/index.dart';
 import 'package:flutter/material.dart';
 
 
@@ -29,7 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: HomeScreen(),
+      body: IndexScreen(),
     );
   }
 }
