@@ -1,3 +1,5 @@
+import 'package:dorm_app/screen/bookdorm.dart';
+import 'package:dorm_app/screen/detaildorm.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -36,7 +38,7 @@ class FeedsScreen extends StatelessWidget {
                     ),
                     padding: EdgeInsets.all(45),
                     child: Image.network(
-                      'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', // ใส่ URL รูปที่ต้องการ
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s', // ใส่ URL รูปที่ต้องการ
                     ),
                   ),
                   Positioned(
@@ -74,12 +76,22 @@ class FeedsScreen extends StatelessWidget {
                         child: TextField(
                           decoration: InputDecoration(
                             hintText: 'ค้นหาหอพัก',
-                            border: InputBorder.none,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(15.0))
+                            ),
+                             enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey, width: 1.0,),
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                             ),
+                             focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue, width: 5.0),
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                             ),
                             contentPadding: EdgeInsets.symmetric(vertical: 10),
+                            suffixIcon: Icon(Icons.search)
                           ),
                         ),
                       ),
-                      Icon(Icons.search),
                     ],
                   ),
                 ),
@@ -123,7 +135,7 @@ class FeedsScreen extends StatelessWidget {
                                 ),
                                 image: DecorationImage(
                                   image: NetworkImage(
-                                      'https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
+                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -150,7 +162,11 @@ class FeedsScreen extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                                    return Bookdorm();
+                                  }));
+                                },
                                 child: Text('เพิ่มเติม'),
                               ),
                             ),

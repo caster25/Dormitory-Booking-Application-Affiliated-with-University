@@ -78,8 +78,10 @@ class ProfileScreen extends StatelessWidget {
                   text: 'การตั้งค่า',
                 ),
                 MenuItem(
+                  
                   icon: Icons.notifications_none,
                   text: 'แจ้งเตือน',
+                  
                 ),
               ],
             ),

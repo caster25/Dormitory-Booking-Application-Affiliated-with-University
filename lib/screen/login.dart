@@ -2,7 +2,6 @@ import 'package:dorm_app/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? Key});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }

@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/editpassword.dart';
 import 'package:dorm_app/screen/review.dart';
 import 'package:dorm_app/screen/user.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +81,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.settings,
               text: 'การตั้งค่า',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Homepage(title: 'การตั้งค่า')),
+                MaterialPageRoute(builder: (context) => const Editpassword()),
               ),
             ),
             buildMenuItem(
