@@ -6,7 +6,6 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/dorm.dart';
 import 'package:dorm_app/screen/feeds.dart';
 import 'package:dorm_app/screen/index.dart';
-import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/profile.dart';
 
 class Homepage extends StatefulWidget {
@@ -42,8 +41,8 @@ class NavigationDrawer extends StatelessWidget {
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
         ),
-        child: Column(
-          children: const [
+        child: const Column(
+          children: [
             CircleAvatar(
               radius: 52,
               backgroundImage: NetworkImage(
@@ -64,7 +63,7 @@ class NavigationDrawer extends StatelessWidget {
 
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
-        color: Color.fromARGB(255, 252, 252, 252),
+        color: const Color.fromARGB(255, 252, 252, 252),
         child: Wrap(
           runSpacing: 16,
           children: [
@@ -73,7 +72,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.person,
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => UserScreen()),
+                MaterialPageRoute(builder: (context) => const UserScreen()),
               ),
             ),
             buildMenuItem(

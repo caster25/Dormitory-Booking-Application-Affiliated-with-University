@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -7,7 +5,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: DormScreen(),
     );
   }
@@ -19,7 +17,7 @@ class DormScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -33,11 +31,11 @@ class DormScreen extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: TextField(
+                child: const TextField(
                   decoration: InputDecoration(
                     hintText: 'ค้นหาหอพัก',
                     border: InputBorder.none,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.search,
                       color: Colors.purple,
                     ),
@@ -45,9 +43,9 @@ class DormScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: const [
+                children: [
                   FilterButton(text: 'ตัวกรอง'),
                   FilterButton(text: 'ราคา'),
                   FilterButton(text: 'เรียงผล'),
@@ -63,7 +61,7 @@ class DormScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 241, 229, 255),
+                        color: const Color.fromARGB(255, 241, 229, 255),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -71,8 +69,8 @@ class DormScreen extends StatelessWidget {
                         children: [
                           Container(
                             height: 180,
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.vertical(
+                            decoration: const BoxDecoration(
+                              borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(10)),
                               image: DecorationImage(
                                 image: NetworkImage(
@@ -81,8 +79,8 @@ class DormScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -90,12 +88,12 @@ class DormScreen extends StatelessWidget {
                                   'บ้านแสนสุข (หอพักชาย)',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Text(
                                   'ราคา 15000 บาท',
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Text(
                                   'คะแนน 2.5/5',
                                   style: TextStyle(color: Colors.red),

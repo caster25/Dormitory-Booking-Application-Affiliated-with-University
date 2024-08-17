@@ -1,13 +1,10 @@
-import 'package:dorm_app/screen/user.dart';
-import 'package:dorm_app/screen/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: ProfileScreen(),
     );
   }
@@ -19,18 +16,18 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 250, 250, 250),
+      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.purple),
+        iconTheme: const IconThemeData(color: Colors.purple),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 CircleAvatar(
                   
@@ -51,19 +48,19 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Container(
               height: 180,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
+                image: const DecorationImage(
                   image: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Column(
+            const SizedBox(height: 16),
+            const Column(
               children: [
                 MenuItem(
                   icon: Icons.info_outline,
@@ -97,7 +94,7 @@ class MenuItem extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const MenuItem({required this.icon, required this.text});
+  const MenuItem({super.key, required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +103,10 @@ class MenuItem extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: Colors.grey),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Text(
             text,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         ],
       ),

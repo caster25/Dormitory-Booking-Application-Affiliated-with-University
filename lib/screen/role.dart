@@ -1,6 +1,7 @@
 import 'package:dorm_app/screen/register.dart';
 import 'package:flutter/material.dart';
 
+// ignore: camel_case_types
 class role_sceen extends StatelessWidget {
   const role_sceen({super.key});
 
@@ -8,7 +9,7 @@ class role_sceen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('เลือก...'),
+        title: const Text('เลือก...'),
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
@@ -21,11 +22,11 @@ class role_sceen extends StatelessWidget {
                   onPressed: () {
                   Navigator.push(context, 
                   MaterialPageRoute(builder: (context) {
-                    return RegisterScreen();
+                    return const RegisterScreen();
                   },));
                 },
-                 icon: Icon(Icons.login),
-                 label: Text('ผู้ใช้ทั่วไป', style: TextStyle(fontSize: 20),) 
+                 icon: const Icon(Icons.login),
+                 label: const Text('ผู้ใช้ทั่วไป', style: TextStyle(fontSize: 20),) 
               ),),
               SizedBox(
                 width: double.infinity,
@@ -33,11 +34,11 @@ class role_sceen extends StatelessWidget {
                   onPressed: () {
                   Navigator.push(context, 
                   MaterialPageRoute(builder: (context) {
-                    return RegisterScreen();
+                    return const RegisterScreen();
                   },));
                 },
-                 icon: Icon(Icons.login),
-                 label: Text('ผู้ให้บริการหอพัก', style: TextStyle(fontSize: 20),) 
+                 icon: const Icon(Icons.login),
+                 label: const Text('ผู้ให้บริการหอพัก', style: TextStyle(fontSize: 20),) 
               ),),
             ],
           ),

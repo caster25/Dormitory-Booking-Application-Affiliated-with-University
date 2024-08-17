@@ -8,20 +8,20 @@ class Editpassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('แก้ไขระหัสผ่าน'),
+        title: const Text('แก้ไขระหัสผ่าน'),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const Homepage()),
             (route) => false,
           ), 
-          icon: Icon(Icons.arrow_back)),
+          icon: const Icon(Icons.arrow_back)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'รหัสปัจจุบัน',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -39,7 +39,7 @@ class Editpassword extends StatelessWidget {
               ),
             ),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'รหัสใหม่',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -57,7 +57,7 @@ class Editpassword extends StatelessWidget {
               ),
             ),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'ยืนยันรหัสผ่าน',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -75,19 +75,19 @@ class Editpassword extends StatelessWidget {
               ),
               obscureText: true,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return Homepage();
+                  return const Homepage();
                 }));
               },
-              child: Text('เปลี่ยนรหัสผ่าน'),
               style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
                   )),
+              child: const Text('เปลี่ยนรหัสผ่าน'),
             )
           ],
         ),

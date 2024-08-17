@@ -37,8 +37,8 @@ class ReviewScreen extends StatelessWidget {
                             color: const Color.fromARGB(255, 241, 229, 255),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(16.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -49,10 +49,10 @@ class ReviewScreen extends StatelessWidget {
                                         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'
                                         ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    SizedBox(width: 8),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: const [
+                                      children: [
                                         Text(
                                           'User Name',
                                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -62,21 +62,21 @@ class ReviewScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8),
                                 Text('หอพักดี ประเมินมากกก...'),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
-                                      children: const [
+                                      children: [
                                         Icon(Icons.thumb_up, color: Colors.blue),
                                         SizedBox(width: 4),
                                         Text('30 คน'),
                                       ],
                                     ),
                                     Row(
-                                      children: const [
+                                      children: [
                                         Icon(Icons.comment, color: Colors.grey),
                                         SizedBox(width: 4),
                                         Text('ตอบกลับ (15)'),
@@ -91,7 +91,7 @@ class ReviewScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  Center(
+                  const Center(
                     child: Text('รีวิวหอพัก'),
                   ),
                 ],

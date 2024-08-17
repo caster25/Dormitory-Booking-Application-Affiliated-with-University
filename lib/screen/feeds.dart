@@ -1,5 +1,4 @@
 import 'package:dorm_app/screen/bookdorm.dart';
-import 'package:dorm_app/screen/detaildorm.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -19,7 +18,7 @@ class FeedsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(0),
@@ -36,7 +35,7 @@ class FeedsScreen extends StatelessWidget {
                       color: const Color.fromARGB(255, 241, 229, 255),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.all(45),
+                    padding: const EdgeInsets.all(45),
                     child: Image.network(
                       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s', // ใส่ URL รูปที่ต้องการ
                     ),
@@ -50,8 +49,8 @@ class FeedsScreen extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(horizontal: 4.0),
                           width: 10,
                           height: 10,
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 186, 176, 248),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 186, 176, 248),
                             shape: BoxShape.circle,
                           ),
                         );

@@ -9,10 +9,10 @@ class NotificationScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Notification'),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
+          children: <Widget>[
             Icon(
               Icons.notifications_none,
               size: 100,

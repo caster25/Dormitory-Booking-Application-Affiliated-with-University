@@ -2,7 +2,10 @@ import 'package:dorm_app/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -11,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('เช้าสู่ระบบ'),
+        title: const Text('เช้าสู่ระบบ'),
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
@@ -19,10 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('อีเมล', style: TextStyle(fontSize: 20)),
+              const Text('อีเมล', style: TextStyle(fontSize: 20)),
               TextFormField(),
-              SizedBox(height: 15),
-              Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 15),
+              const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
               TextFormField(
                 obscureText: true, //ซ่อนรหัส
               ),
@@ -31,9 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ElevatedButton(onPressed: () {
                   Navigator.push(context,
                   MaterialPageRoute(builder: (context) {
-                    return Homepage();
+                    return const Homepage();
                   }));
-                }, child: Text('เข้าสู่ระบบ')),
+                }, child: const Text('เข้าสู่ระบบ')),
               )
             ],
           ),),

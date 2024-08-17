@@ -8,7 +8,7 @@ class Bookdorm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('จองหอพักตอนนี้'),
+        title: const Text('จองหอพักตอนนี้'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -22,10 +22,10 @@ class Bookdorm extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return Detaildorm();
+                        return const Detaildorm();
                       }));
                     },
-                    label: Text(
+                    label:  const Text(
                       'จองหอพัก',
                       style: TextStyle(fontSize: 20),
                     )),

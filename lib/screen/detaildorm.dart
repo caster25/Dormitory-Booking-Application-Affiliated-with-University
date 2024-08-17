@@ -7,7 +7,7 @@ class Detaildorm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายละเอียดหอพัก'),
+        title: const Text('รายละเอียดหอพัก'),
         
       ),
     );

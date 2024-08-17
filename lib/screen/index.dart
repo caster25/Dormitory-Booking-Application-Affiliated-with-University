@@ -1,6 +1,5 @@
 
 import 'package:dorm_app/screen/login.dart';
-import 'package:dorm_app/screen/register.dart';
 import 'package:dorm_app/screen/role.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,7 @@ class IndexScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AccommoEase'),
+        title: const Text('AccommoEase'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -24,11 +23,11 @@ class IndexScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                      return LoginScreen();
+                      return const LoginScreen();
                     }));
                   }, 
-                  icon: Icon(Icons.login),
-                  label: Text('เช้าสู่ระบบ',style: TextStyle(fontSize: 20)
+                  icon: const Icon(Icons.login),
+                  label: const Text('เช้าสู่ระบบ',style: TextStyle(fontSize: 20)
                   ,),),
               ),
               SizedBox(
@@ -37,11 +36,11 @@ class IndexScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                      return role_sceen();
+                      return const role_sceen();
                     }));
                   }, 
-                  icon: Icon(Icons.login),
-                  label: Text('สร้างบัญชี',style: TextStyle(fontSize: 20)
+                  icon: const Icon(Icons.login),
+                  label: const Text('สร้างบัญชี',style: TextStyle(fontSize: 20)
                   ,),),
               )
             ],

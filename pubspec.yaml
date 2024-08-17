@@ -38,6 +38,7 @@ dependencies:
   curved_navigation_bar: ^1.0.6
   ionicons: ^0.2.2
   counter_button: ^1.0.1
+  form_field_validator: ^1.1.0
 
 dev_dependencies:
   flutter_test:
