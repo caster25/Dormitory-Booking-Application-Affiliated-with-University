@@ -36,8 +36,11 @@ class FeedsScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     padding: const EdgeInsets.all(45),
-                    child: Image.network(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s', // ใส่ URL รูปที่ต้องการ
+                    child: Image.asset(
+                      "assets/images/dorm/1 (1).jpg",
+                      width: 180,
+                      filterQuality:
+                          FilterQuality.high, // ใส่ URL รูปที่ต้องการ
                     ),
                   ),
                   Positioned(
@@ -74,21 +77,27 @@ class FeedsScreen extends StatelessWidget {
                       Expanded(
                         child: TextField(
                           decoration: InputDecoration(
-                            hintText: 'ค้นหาหอพัก',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(15.0))
-                            ),
-                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey, width: 1.0,),
-                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                             ),
-                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue, width: 5.0),
-                              borderRadius: BorderRadius.all(Radius.circular(15)),
-                             ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 10),
-                            suffixIcon: Icon(Icons.search)
-                          ),
+                              hintText: 'ค้นหาหอพัก',
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0))),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 1.0,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.blue, width: 5.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                              ),
+                              contentPadding:
+                                  EdgeInsets.symmetric(vertical: 10),
+                              suffixIcon: Icon(Icons.search)),
                         ),
                       ),
                     ],
@@ -104,7 +113,8 @@ class FeedsScreen extends StatelessWidget {
                     SizedBox(width: 8),
                     Text(
                       'แนะนำ',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -162,7 +172,8 @@ class FeedsScreen extends StatelessWidget {
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
                                     return Bookdorm();
                                   }));
                                 },

@@ -1,4 +1,3 @@
-
 import 'package:dorm_app/screen/login.dart';
 import 'package:dorm_app/screen/role.dart';
 import 'package:flutter/material.dart';
@@ -9,43 +8,61 @@ class IndexScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AccommoEase'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
+        appBar: AppBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              CircleAvatar(
+                radius: 80,
+                backgroundImage: AssetImage('assets/images/dorm/1 (1).jpg'),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "AccommoEase",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple),
+              ),
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
+                height: 50,
+                child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
+                        MaterialPageRoute(builder: (context) {
                       return const LoginScreen();
                     }));
-                  }, 
-                  icon: const Icon(Icons.login),
-                  label: const Text('เช้าสู่ระบบ',style: TextStyle(fontSize: 20)
-                  ,),),
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF9B59B6)),
+                  child: const Text("เข้าสู่ระบบ",
+                      style: TextStyle(fontSize: 20, color: Colors.white)),
+                ),
               ),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                      return const role_sceen();
-                    }));
-                  }, 
-                  icon: const Icon(Icons.login),
-                  label: const Text('สร้างบัญชี',style: TextStyle(fontSize: 20)
-                  ,),),
+                height: 50,
+                child: ElevatedButton(onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const role_sceen();
+                  }));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF9B59B6)
+                ), 
+                child: const Text(
+                  "สมัครบัญชีผู้ใช้งาน",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                )),
               )
             ],
           ),
-        ),),
-    );
+        ));
   }
 }
