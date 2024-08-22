@@ -22,6 +22,7 @@ class RegisterForm extends StatefulWidget {
   const RegisterForm({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterFormState createState() => _RegisterFormState();
 }
 
@@ -55,7 +56,7 @@ class _RegisterFormState extends State<RegisterForm> {
       // นำทางไปยังหน้าจอ Login
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -185,7 +186,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
                   );
                 },
                 child: const Text(

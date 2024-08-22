@@ -23,7 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('อีเมล', style: TextStyle(fontSize: 20)),
-              TextFormField(),
+              TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'กรุณากรอกอีเมล';
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'กรอกรูปแบบอีเมลที่ถูกต้อง';
+                  }
+                  return null;
+                },
+                keyboardType: TextInputType.emailAddress,
+              ),
               const SizedBox(height: 15),
               const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
               TextFormField(

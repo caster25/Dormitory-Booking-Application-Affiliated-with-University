@@ -8,13 +8,20 @@ class IndexScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: Padding(
+      appBar: AppBar(),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/dorm/back.png'), // Replace with your image path
+            fit: BoxFit.fill, // Ensures the image covers the entire container
+          ),
+        ),
+        child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 80,
                 backgroundImage: AssetImage('assets/images/dorm/1 (1).jpg'),
               ),
@@ -48,21 +55,25 @@ class IndexScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const role_sceen();
-                  }));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF9B59B6)
-                ), 
-                child: const Text(
-                  "สมัครบัญชีผู้ใช้งาน",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                )),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const role_sceen();
+                    }));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF9B59B6)),
+                  child: const Text(
+                    "สมัครบัญชีผู้ใช้งาน",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ),
               )
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
