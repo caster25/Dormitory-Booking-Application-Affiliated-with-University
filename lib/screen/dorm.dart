@@ -47,7 +47,7 @@ class DormScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   FilterButton(text: 'โปรโมชั่น'),
-                  FilterButton(text: 'ราคา'),
+                  FilterButton(text: 'ราคา/เดือน'),
                   FilterButton(text: 'ให้คะแนน'),
                 ],
               ),
