@@ -46,9 +46,9 @@ class DormScreen extends StatelessWidget {
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  FilterButton(text: 'ตัวกรอง'),
+                  FilterButton(text: 'โปรโมชั่น'),
                   FilterButton(text: 'ราคา'),
-                  FilterButton(text: 'เรียงผล'),
+                  FilterButton(text: 'ให้คะแนน'),
                 ],
               ),
               const SizedBox(height: 16),
