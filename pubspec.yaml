@@ -45,8 +45,8 @@ dependencies:
   sembast: ^3.7.3+2
 
 flutter_icons :
-android: true
-image_path: “assets\images\dorm\Accom.png”
+  android: true
+  image_path: "assets/images/logo/Accom.png"
 
 dev_dependencies:
   flutter_test:
