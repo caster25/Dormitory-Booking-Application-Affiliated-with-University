@@ -5,15 +5,15 @@ class Profile {
   String? passwrod;
   String? userfname;
   String? userlname;
-  String? numphone;
+  num? numphone;
 
   Profile({
-    this.iduser,
-    this.role,
-    this.email, 
-    this.passwrod,
-    this.userfname,
-    this.userlname,
-    this.numphone 
+    required this.iduser,
+    required this.role,
+    required this.email, 
+    required this.passwrod,
+    required this.userfname,
+    required this.userlname,
+    required this.numphone, required String password 
     });
 }

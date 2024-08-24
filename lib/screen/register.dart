@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:dorm_app/screen/login.dart';
 import 'package:dorm_app/screen/dorm/adddorm.dart';
 import 'package:flutter/material.dart';
