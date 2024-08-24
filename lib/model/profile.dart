@@ -1,19 +1,19 @@
 class Profile {
-  int? id_user;
+  int? iduser;
   int? role;
   String? email;
   String? passwrod;
-  String? user_fname;
-  String? user_lname;
-  String? num_phone;
+  String? userfname;
+  String? userlname;
+  num? numphone;
 
   Profile({
-    this.id_user,
-    this.role,
-    this.email, 
-    this.passwrod,
-    this.user_fname,
-    this.user_lname,
-    this.num_phone 
+    required this.iduser,
+    required this.role,
+    required this.email, 
+    required this.passwrod,
+    required this.userfname,
+    required this.userlname,
+    required this.numphone, required String password 
     });
 }

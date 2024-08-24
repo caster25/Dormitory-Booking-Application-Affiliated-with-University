@@ -1,4 +1,5 @@
 import 'package:dorm_app/screen/login.dart';
+import 'package:dorm_app/screen/dorm/adddorm.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -195,6 +196,12 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            Center(
+              child: TextButton(onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddDorm()));
+              }, child: const Text('test')),
+            )
           ],
         ),
       ),

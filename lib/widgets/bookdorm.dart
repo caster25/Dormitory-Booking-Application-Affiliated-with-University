@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/detaildorm.dart';
+import 'package:dorm_app/widgets/detaildorm.dart';
 import 'package:flutter/material.dart';
 
 class Bookdorm extends StatelessWidget {

@@ -8,11 +8,11 @@ class ReviewScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         body: Column(
           children: [
             Container(
-              color: Color.fromARGB(255, 241, 229, 255),
+              color: const Color.fromARGB(255, 241, 229, 255),
               child: const TabBar(
                 indicatorColor: Colors.purple,
                 labelColor: Colors.purple,

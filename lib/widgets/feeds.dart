@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/bookdorm.dart';
+import 'package:dorm_app/widgets/bookdorm.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -72,8 +72,8 @@ class FeedsScreen extends StatelessWidget {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Row(
-                    children: const [
+                  child: const Row(
+                    children: [
                       Expanded(
                         child: TextField(
                           decoration: InputDecoration(
@@ -105,10 +105,10 @@ class FeedsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
                 child: Row(
-                  children: const [
+                  children: [
                     Icon(Icons.recommend, size: 24),
                     SizedBox(width: 8),
                     Text(
@@ -138,7 +138,7 @@ class FeedsScreen extends StatelessWidget {
                           children: [
                             Container(
                               height: 170,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(20),
                                 ),
@@ -149,11 +149,11 @@ class FeedsScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
+                            const Padding(
+                              padding: EdgeInsets.all(8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
+                                children: [
                                   Text(
                                     'หอพัก....',
                                     style: TextStyle(
@@ -174,10 +174,10 @@ class FeedsScreen extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return Bookdorm();
+                                    return const Bookdorm();
                                   }));
                                 },
-                                child: Text('เพิ่มเติม'),
+                                child: const Text('เพิ่มเติม'),
                               ),
                             ),
                           ],

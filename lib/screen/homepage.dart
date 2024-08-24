@@ -1,11 +1,11 @@
-import 'package:dorm_app/screen/editpassword.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/review.dart';
 import 'package:dorm_app/screen/user.dart';
+import 'package:dorm_app/widgets/editpassword.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:dorm_app/screen/dorm.dart';
-import 'package:dorm_app/screen/feeds.dart';
+import 'package:dorm_app/widgets/dorm.dart';
+import 'package:dorm_app/widgets/feeds.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/profile.dart';
 
