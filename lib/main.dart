@@ -1,4 +1,5 @@
 import 'package:dorm_app/screen/index.dart';
+import 'package:dorm_app/screen/test/testfirebase.dart';
 import 'package:flutter/material.dart';
 
 
@@ -34,7 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: const IndexScreen(),
+      body: FirebaseTestScreen(),
+      // body: const IndexScreen(),
     );
   }
 }
@@ -47,3 +49,4 @@ class NevigationDrawer extends StatelessWidget {
     return const Placeholder();
   }
 }
+
