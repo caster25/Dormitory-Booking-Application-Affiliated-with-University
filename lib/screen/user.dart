@@ -38,18 +38,21 @@ class UserScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
             const ProfileInfoRow(
-              icon: Icons.email,
-              text: 'test@ku.th',
-            ),
-            const ProfileInfoRow(
-              icon: Icons.phone,
-              text: '087-000-0000',
+              icon: Icons.person,
+              text: 'test',
             ),
             const ProfileInfoRow(
               icon: Icons.line_style,
               text: 'test',
+            ),
+            const ProfileInfoRow(
+              icon: Icons.email,
+              text: 'dev test',
+            ),
+            const ProfileInfoRow(
+              icon: Icons.phone,
+              text: '087-000-0000',
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -85,15 +88,28 @@ class ProfileInfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, color: Colors.grey),
-          const SizedBox(width: 16),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 16),
+          Row(
+            children: [
+              Icon(icon, color: Colors.grey),
+              const SizedBox(width: 16),
+              Text(
+                text,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            onPressed: () {
+              // Handle edit action
+              // You can navigate to a detailed edit page or show a dialog for editing
+            },
           ),
         ],
       ),
     );
   }
 }
+

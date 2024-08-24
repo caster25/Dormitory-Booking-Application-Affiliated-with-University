@@ -67,15 +67,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text('เข้าสู่ระบบ'),
                   ),
-                ),
-                const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return const Homepage();
-                    }) );
-                  }, child: const Text('test')),
                 )
               ],
             ),

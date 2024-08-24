@@ -16,19 +16,41 @@ class EditUser extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text('ชื่อ', style: TextStyle(fontSize: 20)),
+              TextFormField(
+                decoration: const InputDecoration(labelText: "กรอกชื่อใหม่"),
+                autofocus: true,
+                validator: (String? str) {
+                  if (str == '') return "กรอกชื่อใหม่";
+                  return null;
+                },  
+              ),
+              const Text('นามสกุล', style: TextStyle(fontSize: 20)),
+              TextFormField(
+                decoration: const InputDecoration(labelText: "กรอกนามสกุลใหม่"),
+                autofocus: true,
+                validator: (String? str) {
+                  if (str == '') return "กรอกนามสกุลใหม่";
+                  return null;
+                }, 
+              ),
               const Text('อีเมล', style: TextStyle(fontSize: 20)),
               TextFormField(
-                initialValue: 'user@example.com', // ค่าที่เริ่มต้นของอีเมล
+                decoration: const InputDecoration(labelText: "กรอกอีเมลใหม่"),
+                autofocus: true,
+                validator: (String? str) {
+                  if (str == '') return "กรอกอีเมลใหม่";
+                  return null;
+                }, 
               ),
-              const SizedBox(height: 15),
-              const Text('เบอร์โทรศัพท์', style: TextStyle(fontSize: 20)),
+              const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
               TextFormField(
-                initialValue: '123-456-7890', // ค่าที่เริ่มต้นของเบอร์โทรศัพท์
-              ),
-              const SizedBox(height: 15),
-              const Text('ชื่อผู้ใช้', style: TextStyle(fontSize: 20)),
-              TextFormField(
-                initialValue: 'username123', // ค่าที่เริ่มต้นของชื่อผู้ใช้
+                decoration: const InputDecoration(labelText: "กรอกเบอร์โทรใหม่"),
+                autofocus: true,
+                validator: (String? str) {
+                  if (str == '') return "กรอกเบอร์โทรใหม่";
+                  return null;
+                }, 
               ),
               const SizedBox(height: 30),
               Row(

@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/homepage.dart';
 import 'package:dorm_app/screen/login.dart';
 import 'package:dorm_app/screen/role.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,16 @@ class IndexScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const Homepage();
+                    }) );
+                  }, child: const Text('test')),
+                )
             ],
           ),
         ),

@@ -196,12 +196,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Center(
-              child: TextButton(onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddDorm()));
-              }, child: const Text('test')),
-            )
           ],
         ),
       ),
