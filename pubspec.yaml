@@ -43,6 +43,8 @@ dependencies:
   path: ^1.9.0
   path_provider: ^2.1.4
   sembast: ^3.7.3+2
+  firebase_core: ^3.3.0
+  cloud_firestore: ^5.2.1
 
 flutter_icons :
   android: true
