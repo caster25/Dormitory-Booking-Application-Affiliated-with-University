@@ -46,7 +46,7 @@ class IndexScreen extends StatelessWidget {
                     }));
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF9B59B6)),
+                      backgroundColor: const Color(0xFF9B59B6)),
                   child: const Text("เข้าสู่ระบบ",
                       style: TextStyle(fontSize: 20, color: Colors.white)),
                 ),
@@ -63,7 +63,7 @@ class IndexScreen extends StatelessWidget {
                     }));
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF9B59B6)),
+                      backgroundColor: const Color(0xFF9B59B6)),
                   child: const Text(
                     "สมัครบัญชีผู้ใช้งาน",
                     style: TextStyle(fontSize: 20, color: Colors.white),

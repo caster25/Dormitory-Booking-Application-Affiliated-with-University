@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/edituser.dart';
+import 'package:dorm_app/widgets/edituser.dart';
 import 'package:dorm_app/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
@@ -78,7 +78,7 @@ class ProfileInfoRow extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const ProfileInfoRow({required this.icon, required this.text});
+  const ProfileInfoRow({super.key, required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +87,10 @@ class ProfileInfoRow extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: Colors.grey),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Text(
             text,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         ],
       ),

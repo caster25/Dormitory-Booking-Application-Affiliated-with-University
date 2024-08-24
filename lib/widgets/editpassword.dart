@@ -8,7 +8,7 @@ class Editpassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('แก้ไขระหัสผ่าน'),
+        title: const Text('แก้ไขรหัสผ่าน'),
         leading: IconButton(
           onPressed: () => Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const Homepage()),
@@ -83,7 +83,7 @@ class Editpassword extends StatelessWidget {
                 }));
               },
               style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
                   )),
