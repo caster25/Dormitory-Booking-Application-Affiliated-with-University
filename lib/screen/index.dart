@@ -4,7 +4,7 @@ import 'package:dorm_app/screen/role.dart';
 import 'package:flutter/material.dart';
 
 class IndexScreen extends StatelessWidget {
-  const IndexScreen({super.key, required Stack child});
+  const IndexScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
