@@ -10,6 +10,8 @@ class IndexScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,// กำหนดความสูงเต็มจอ
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/dorm/back.png'), // Replace with your image path
