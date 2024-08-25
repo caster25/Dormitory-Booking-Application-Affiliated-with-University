@@ -11,6 +11,8 @@ class IndexScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,// กำหนดความสูงเต็มจอ
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/dorm/back.png'), // Replace with your image path
