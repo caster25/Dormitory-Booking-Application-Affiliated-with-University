@@ -16,18 +16,16 @@ void main() async {
     storageBucket: 'accommoease-6ebe0.appspot.com',
   ));
 
-  runApp(MyApp());
+  runApp( const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Connect to API',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const IndexScreen(),
+    return const MaterialApp(
+      home: IndexScreen(),
     );
   }
 }

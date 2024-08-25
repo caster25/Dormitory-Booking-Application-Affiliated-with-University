@@ -61,7 +61,7 @@ class IndexScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const role_sceen();
+                      return const RoleScreen();
                     }));
                   },
                   style: ElevatedButton.styleFrom(
