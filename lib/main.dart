@@ -3,6 +3,7 @@ import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/owner/profile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:dorm_app/screen/owner/details.dart';
 
 void main() async {
   // Ensure that Flutter services are initialized before calling Firebase
@@ -18,7 +19,7 @@ void main() async {
     storageBucket: 'accommoease-6ebe0.appspot.com',
   ));
 
-  runApp( const MyApp());
+  runApp( details());
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Profileowner(),
+      home: MyApp(),
     );
   }
 }
