@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/owner/ownerhome.dart';
 import 'package:dorm_app/screen/register.dart';
 import 'package:flutter/material.dart';
 
@@ -8,9 +9,6 @@ class RoleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('เลือก...'),
-      ),
       body: Center(  // ใช้ Center เพื่อให้อยู่กลางหน้าจอ
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -45,7 +43,7 @@ class RoleScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(context, 
                         MaterialPageRoute(builder: (context) {
-                          return const RegisterScreen();
+                          return const Ownerhome();
                         },
                       ));
                     },

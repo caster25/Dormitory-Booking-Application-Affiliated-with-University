@@ -1,9 +1,7 @@
 
 import 'package:dorm_app/screen/index.dart';
-import 'package:dorm_app/screen/owner/profile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:dorm_app/screen/owner/details.dart';
 
 void main() async {
   // Ensure that Flutter services are initialized before calling Firebase
@@ -12,14 +10,14 @@ void main() async {
   // Initialize Firebase with FirebaseOptions
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-    apiKey: 'AIzaSyDA49g2xSyXOmG5SweyId42GnIRiUhNPEE',
-    appId: '1:1014382826581:android:8640792bf386f56a8170dc',
+    apiKey: 'AIzaSyDNmyeh6dFL65qhXP2bkOowgl_97O4glkY',
+    appId: '1:870658394151:android:db7be5de05075a91e5e602',
     messagingSenderId: 'G-T3QSM1C2CH',
-    projectId: 'accommoease-6ebe0',
-    storageBucket: 'accommoease-6ebe0.appspot.com',
+    projectId: 'accommoease',
+    storageBucket: 'accommoease.appspot.com',
   ));
 
-  runApp( details());
+  runApp( const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +26,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: MyApp(),
+
+      debugShowCheckedModeBanner: false,
+      home: IndexScreen(),
     );
   }
 }

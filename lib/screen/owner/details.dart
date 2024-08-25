@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-void main() {
-  runApp(details());
-}
+class Details extends StatelessWidget {
+  const Details({super.key});
 
-class details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('รายละเอียดหอพัก'),
+          title: const Text('รายละเอียดหอพัก'),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -42,8 +40,8 @@ class details extends StatelessWidget {
                     );
                   }).toList(),
                 ),
-                SizedBox(height: 16.0),
-                Text(
+                const SizedBox(height: 16.0),
+                const Text(
                   'ประเภทหอพัก: หอพักหญิง\n'
                   'ประเภทห้อง: ปรับอากาศ ห้องพักขนาด 28 ตารางเมตร\n'
                   'จำนวนคนพัก: 1-2 คนต่อห้อง\n'
@@ -55,8 +53,8 @@ class details extends StatelessWidget {
                   'ค่าประกันความเสียหาย: 200 บาท/คน/เดือน\n',
                   style: TextStyle(fontSize: 16.0),
                 ),
-                SizedBox(height: 16.0),
-                Text(
+                const SizedBox(height: 16.0),
+                const Text(
                   'อุปกรณ์ที่มีในห้องพัก:\n'
                   '1. เตียง 3.5 ฟุต 2 เตียง พร้อมฟูก\n'
                   '2. โต๊ะทำงาน 3 มุมขนาด 1.80 เมตร\n'
@@ -68,60 +66,60 @@ class details extends StatelessWidget {
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  'ตารางห้องพัก:',
+                  'ข้อมูลตาราง:',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Table(
                   border: TableBorder.all(color: Colors.black),
-                  columnWidths: {
+                  columnWidths: const {
                     0: FlexColumnWidth(1),
                     1: FlexColumnWidth(2),
                   },
-                  children: [
+                  children: const [
                     TableRow(children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('ชั้น', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('ห้องพักที่ว่าง', style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ]),
                     TableRow(children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('1'),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('301, 302, 303'),
                       ),
                     ]),
                     TableRow(children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('2'),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('201, 202, 203'),
                       ),
                     ]),
                     TableRow(children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('3'),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text('101, 102, 103'),
                       ),
                     ]),
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -129,13 +127,13 @@ class details extends StatelessWidget {
                       onPressed: () {
                         // Action when the "จองเลย" button is pressed
                       },
-                      child: Text('จองเลย'),
+                      child: const Text('จองเลย'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         // Action when the "แก้ไขข้อมูล" button is pressed
                       },
-                      child: Text('แก้ไขข้อมูล'),
+                      child: const Text('แก้ไขข้อมูล'),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
                     ),
                   ],
@@ -148,3 +146,4 @@ class details extends StatelessWidget {
     );
   }
 }
+
