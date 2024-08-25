@@ -84,6 +84,11 @@ flutter:
   assets:
     - assets/images/dorm/1 (1).jpg
     - assets/images/dorm/back.png
+    - assets/images/บ้านแสนสุข/master (1).jpg
+    # - assets\images\บ้านแสนสุข\2.jpg
+    # - assets\images\บ้านแสนสุข\3.jpg
+    # - assets\images\บ้านแสนสุข\4.jpg
+    # - assets\images\บ้านแสนสุข\5.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -9,7 +9,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class Profileowner extends StatelessWidget {
   const Profileowner({super.key});
 
@@ -48,26 +47,15 @@ class Profileowner extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             Container(
               height: 180,
-              child: PageView(
-                children: [
-                  slideImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                  slideImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                  slideImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                  slideImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                ],
-              // decoration: BoxDecoration(
-              //   borderRadius: BorderRadius.circular(10),
-              //   image: const DecorationImage(
-              //     image: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-              //     fit: BoxFit.cover,
-              //   ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: const DecorationImage(
+                  image: AssetImage('assets/images/บ้านแสนสุข/master (1).jpg'),
+                  fit: BoxFit.fill,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -95,19 +83,6 @@ class Profileowner extends StatelessWidget {
             ),
           ],
         ),
-      ),
-      
-    );
-  }
-  Widget slideImage(String imageUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        image: DecorationImage(
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
-  // slideImage(String s) {}
-  ),
       ),
     );
   }
