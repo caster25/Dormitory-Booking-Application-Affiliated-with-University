@@ -2,7 +2,6 @@
 import 'package:dorm_app/screen/index.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:dorm_app/screen/owner/details.dart';
 
 void main() async {
   // Ensure that Flutter services are initialized before calling Firebase
@@ -18,7 +17,7 @@ void main() async {
     storageBucket: 'accommoease.appspot.com',
   ));
 
-  runApp( details());
+  runApp( const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -29,9 +28,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
 
       debugShowCheckedModeBanner: false,
-      //home: IndexScreen(),
-
-      home: MyApp(),
+      home: IndexScreen(),
     );
   }
 }
