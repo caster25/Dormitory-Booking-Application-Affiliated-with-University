@@ -8,7 +8,7 @@ void main() async {
 
   // Initialize Firebase with FirebaseOptions
   await Firebase.initializeApp(
-      options: const FirebaseOptions(
+    options: const FirebaseOptions(
     apiKey: 'AIzaSyDA49g2xSyXOmG5SweyId42GnIRiUhNPEE',
     appId: '1:1014382826581:android:8640792bf386f56a8170dc',
     messagingSenderId: 'G-T3QSM1C2CH',
@@ -16,49 +16,18 @@ void main() async {
     storageBucket: 'accommoease-6ebe0.appspot.com',
   ));
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dorm',
+      title: 'Connect to API',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: const IndexScreen(),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: const IndexScreen(),
-      // body: const IndexScreen(),
-    );
-  }
-}
-
-class NevigationDrawer extends StatelessWidget {
-  const NevigationDrawer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
