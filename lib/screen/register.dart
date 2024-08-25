@@ -1,235 +1,245 @@
-import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
-import 'package:dorm_app/screen/login.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:dorm_app/screen/login.dart';
+import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('สร้างบัญชี'),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: const RegisterForm(),
-      ),
-    );
-  }
+  State<RegisterScreen> createState() => _RegisterFormState();
 }
 
-class RegisterForm extends StatefulWidget {
-  const RegisterForm({super.key});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _RegisterFormState createState() => _RegisterFormState();
-}
-
-class _RegisterFormState extends State<RegisterForm> {
+class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final userProfile profile = userProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _userfnameController = TextEditingController();
+  final TextEditingController _userlnameController = TextEditingController();
+  final TextEditingController _numphoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _acceptTerms = false;
 
-  void _register() {
-    if (_formKey.currentState!.validate()) {
-      if (!_acceptTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
-        );
-        return;
-      }
+  final auth = FirebaseAuth.instance;
+  final usersCollection = FirebaseFirestore.instance.collection('users');
 
-      // Perform Firebase registration or Firestore storage logic here...
-
-      _formKey.currentState!.reset();
-      _passwordController.clear();
-      _confirmPasswordController.clear();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+void _showErrorDialog(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // ไม่อนุญาตให้ผู้ใช้ปิด dialog โดยการคลิกนอก dialog
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('เกิดข้อผิดพลาด'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // ปิด dialog
+            },
+            child: const Text('ตกลง'),
+          ),
+        ],
       );
-    } else {
+    },
+  );
+}
+
+// ในฟังก์ชัน _register ของคุณ
+void _register() async {
+  if (_formKey.currentState!.validate()) {
+    if (!_acceptTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+        const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
       );
+      return;
     }
-  }
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'กรุณากรอกรหัสผ่าน';
-    }
-    if (value.length < 8) {
-      return 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร';
-    }
-    return null;
-  }
+    try {
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
 
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'กรุณายืนยันรหัสผ่าน';
+      var currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        await usersCollection.doc(currentUser.uid).set({
+          'userfname': _userfnameController.text,
+          'userlname': _userlnameController.text,
+          'numphone': _numphoneController.text,
+          'email': _emailController.text,
+        });
+
+        _formKey.currentState!.reset();
+        _passwordController.clear();
+        _confirmPasswordController.clear();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        _showErrorDialog(context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+      } else {
+        _showErrorDialog(context, 'Registration error: ${e.message}');
+      }
+    } catch (e) {
+      _showErrorDialog(context, 'Error: $e');
     }
-    if (value != _passwordController.text) {
-      return 'รหัสผ่านไม่ตรงกัน';
-    }
-    return null;
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Error'),
-            ),
-            body: Center(
-              child: Text('${snapshot.error}'),
-            ),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 15),
-                  const Text('ชื่อผู้ใช้', style: TextStyle(fontSize: 20)),
-                  TextFormField(
-                    onSaved: (value) {
-                      profile.userfname = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกชื่อผู้ใช้';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
-                  TextFormField(
-                    onSaved: (value) {
-                      profile.userlname = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกชื่อ-นามสกุล';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
-                  TextFormField(
-                    onSaved: (value) {
-                      profile.numphone = value as num?;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกเบอร์โทร';
-                      }
-                      if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                        return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 15),
-                  const Text('อีเมล', style: TextStyle(fontSize: 20)),
-                  TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    onSaved: (value) {
-                      profile.email = value;
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'กรุณากรอกอีเมล';
-                      }
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'รูปแบบอีเมลไม่ถูกต้อง';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 15),
-                  const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    onSaved: (value) {
-                      profile.password = value;
-                    },
-                    validator: _validatePassword,
-                  ),
-                  const SizedBox(height: 15),
-                  const Text('ยืนยันรหัสผ่าน', style: TextStyle(fontSize: 20)),
-                  TextFormField(
-                    controller: _confirmPasswordController,
-                    obscureText: true,
-                    validator: _validateConfirmPassword,
-                  ),
-                  const SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _acceptTerms,
-                        onChanged: (value) {
-                          setState(() {
-                            _acceptTerms = value!;
-                          });
-                        },
-                      ),
-                      const Text(
-                        'ฉันยอมรับเงื่อนไขและข้อตกลงการใช้บริการ',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _register,
-                      child: const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Text('สร้างบัญชีใหม่', style: TextStyle(fontSize: 40)),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
+                ),
+                const SizedBox(height: 15),
+                const Text('ชื่อผู้ใช้', style: TextStyle(fontSize: 20)),
+                TextFormField(
+                  controller: _userfnameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกชื่อผู้ใช้';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
+                TextFormField(
+                  controller: _userlnameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกชื่อ-นามสกุล';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
+                TextFormField(
+                  controller: _numphoneController,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกเบอร์โทร';
+                    }
+                    if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                      return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                const Text('อีเมล', style: TextStyle(fontSize: 20)),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกอีเมล';
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return 'รูปแบบอีเมลไม่ถูกต้อง';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกรหัสผ่าน';
+                    }
+                    if (value.length < 8) {
+                      return 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                const Text('ยืนยันรหัสผ่าน', style: TextStyle(fontSize: 20)),
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  validator: (value) {
+                    if (value != _passwordController.text) {
+                      return 'รหัสผ่านไม่ตรงกัน';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _acceptTerms,
+                      onChanged: (value) {
+                        setState(() {
+                          _acceptTerms = value!;
+                        });
                       },
-                      child: const Text(
-                        'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ',
-                        style: TextStyle(fontSize: 16, color: Colors.blue),
-                      ),
+                    ),
+                    const Text(
+                      'ฉันยอมรับเงื่อนไขและข้อตกลงการใช้บริการ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _register,
+                    child: const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    child: const Text(
+                      'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ',
+                      style: TextStyle(fontSize: 16, color: Colors.blue),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        } else {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-      },
+          ),
+        ),
+      ),
     );
   }
 }
