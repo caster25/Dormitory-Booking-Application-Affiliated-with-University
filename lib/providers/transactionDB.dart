@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:dorm_app/model/profile.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
-import 'package:dorm_app/model/profile.dart';
 
 class TransactionDB {
   String dbName;
@@ -18,7 +18,7 @@ class TransactionDB {
     return db;
   }
 
-  Future<int> insertData(Profile profile) async {
+  Future<int> insertData(userProfile profile) async {
     var db = await openDatabase();
     var store = intMapStoreFactory.store("profiles");
 
@@ -32,7 +32,7 @@ class TransactionDB {
     return keyID;
   }
 
-  Future<Map<String, Object?>> updateData(Profile profile, int id) async {
+  Future<Map<String, Object?>> updateData(userProfile profile, int id) async {
     var db = await openDatabase();
     var store = intMapStoreFactory.store("profiles");
 
@@ -46,21 +46,21 @@ class TransactionDB {
     return keyID!;
   }
 
-  Future<List<Profile>> loadAllData() async {
+  Future<List<userProfile>> loadAllData() async {
     var db = await openDatabase();
     var store = intMapStoreFactory.store("profiles");
     var snapshot = await store.find(db);
 
-    List<Profile> profileList = [];
+    List<userProfile> profileList = [];
 for (var record in snapshot) {
-  profileList.add(Profile(
+  profileList.add(userProfile(
     iduser: int.parse(record['iduser'].toString()),
     role: int.parse(record['role'].toString()),
     email: record['email'].toString(),
     password: record['password'].toString(),
     userfname: record['userfname'].toString(),
     userlname: record['userlname'].toString(),
-    numphone: num.parse(record['numphone'].toString()), passwrod: '', // If numphone is a number
+    numphone: num.parse(record['numphone'].toString()), // If numphone is a number
   ));
 }
 
@@ -69,7 +69,7 @@ for (var record in snapshot) {
     return profileList;
   }
 
-  Future<void> addProfile(Profile profile) async {
+  Future<void> addProfile(userProfile profile) async {
     await insertData(profile);
   }
 
@@ -77,3 +77,5 @@ for (var record in snapshot) {
     await loadAllData();
   }
 }
+
+

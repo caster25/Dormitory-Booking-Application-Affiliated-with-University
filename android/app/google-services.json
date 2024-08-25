@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "842050201088",
-    "project_id": "dormitory-booking",
-    "storage_bucket": "dormitory-booking.appspot.com"
+    "project_number": "1014382826581",
+    "project_id": "accommoease-6ebe0",
+    "storage_bucket": "accommoease-6ebe0.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:842050201088:android:a8e6d80a6b8e5da5f61ae5",
+        "mobilesdk_app_id": "1:1014382826581:android:8640792bf386f56a8170dc",
         "android_client_info": {
           "package_name": "com.example.dorm_app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBpeDK9vF2ShHEEDs6EXYwr7jzE99j3kIw"
+          "current_key": "AIzaSyDA49g2xSyXOmG5SweyId42GnIRiUhNPEE"
         }
       ],
       "services": {

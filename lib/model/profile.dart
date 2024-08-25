@@ -1,19 +1,19 @@
-class Profile {
+class userProfile {
   int? iduser;
   int? role;
   String? email;
-  String? passwrod;
+  String? password;
   String? userfname;
   String? userlname;
   num? numphone;
 
-  Profile({
-    required this.iduser,
-    required this.role,
-    required this.email, 
-    required this.passwrod,
-    required this.userfname,
-    required this.userlname,
-    required this.numphone, required String password 
+  userProfile({
+    this.iduser,
+    this.role,
+    this.email, 
+    this.password,
+    this.userfname,
+    this.userlname,
+    this.numphone,
     });
 }

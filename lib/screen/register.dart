@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
 import 'package:dorm_app/screen/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -30,18 +30,10 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
+  final userProfile profile = userProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _acceptTerms = false;
-  late Future<FirebaseApp> _firebaseInitialization;
-  // ignore: non_constant_identifier_names
-  final CollectionReference _UserCollection = FirebaseFirestore.instance.collection('user');
-
-  @override
-  void initState() {
-    super.initState();
-    _firebaseInitialization = Firebase.initializeApp();
-  }
 
   void _register() {
     if (_formKey.currentState!.validate()) {
@@ -52,9 +44,8 @@ class _RegisterFormState extends State<RegisterForm> {
         return;
       }
 
-      // Perform registration logic here...
+      // Perform Firebase registration or Firestore storage logic here...
 
-      // Clear form and navigate to login
       _formKey.currentState!.reset();
       _passwordController.clear();
       _confirmPasswordController.clear();
@@ -92,20 +83,20 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _firebaseInitialization,
+      future: Firebase.initializeApp(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Error'),
+            ),
+            body: Center(
+              child: Text('${snapshot.error}'),
+            ),
+          );
+        }
+
         if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Scaffold(
-              appBar: AppBar(
-                title: const Text('Error'),
-              ),
-              body: Center(
-                child: Text('${snapshot.error}'),
-              ),
-            );
-          }
-          // Firebase initialized successfully
           return SingleChildScrollView(
             child: Form(
               key: _formKey,
@@ -115,6 +106,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   const SizedBox(height: 15),
                   const Text('ชื่อผู้ใช้', style: TextStyle(fontSize: 20)),
                   TextFormField(
+                    onSaved: (value) {
+                      profile.userfname = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกชื่อผู้ใช้';
@@ -125,6 +119,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   const SizedBox(height: 15),
                   const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
                   TextFormField(
+                    onSaved: (value) {
+                      profile.userlname = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกชื่อ-นามสกุล';
@@ -135,6 +132,9 @@ class _RegisterFormState extends State<RegisterForm> {
                   const SizedBox(height: 15),
                   const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
                   TextFormField(
+                    onSaved: (value) {
+                      profile.numphone = value as num?;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกเบอร์โทร';
@@ -149,6 +149,10 @@ class _RegisterFormState extends State<RegisterForm> {
                   const SizedBox(height: 15),
                   const Text('อีเมล', style: TextStyle(fontSize: 20)),
                   TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    onSaved: (value) {
+                      profile.email = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'กรุณากรอกอีเมล';
@@ -158,13 +162,15 @@ class _RegisterFormState extends State<RegisterForm> {
                       }
                       return null;
                     },
-                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 15),
                   const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
+                    onSaved: (value) {
+                      profile.password = value;
+                    },
                     validator: _validatePassword,
                   ),
                   const SizedBox(height: 15),
@@ -202,19 +208,8 @@ class _RegisterFormState extends State<RegisterForm> {
                   const SizedBox(height: 10),
                   Center(
                     child: TextButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()){
-                          _formKey.currentState!.save();
-                          await _UserCollection.add({
-                            'email' :
-                            'password'
-                            'userfname'
-                            'userlname'
-                            'numphone'
-                          });
-                        }
+                      onPressed: () {
                         Navigator.push(
-                          // ignore: use_build_context_synchronously
                           context,
                           MaterialPageRoute(builder: (context) => const LoginScreen()),
                         );
@@ -231,9 +226,7 @@ class _RegisterFormState extends State<RegisterForm> {
           );
         } else {
           return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
+            body: Center(child: CircularProgressIndicator()),
           );
         }
       },
