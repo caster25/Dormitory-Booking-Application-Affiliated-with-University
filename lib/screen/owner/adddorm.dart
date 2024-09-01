@@ -107,6 +107,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('เพิ่มข้อมูลหอพัก'),
+        automaticallyImplyLeading: false, // Hide the back button
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

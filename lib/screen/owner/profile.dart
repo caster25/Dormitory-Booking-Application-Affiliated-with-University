@@ -1,4 +1,15 @@
 import 'package:flutter/material.dart';
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Profileowner(),
+    );
+  }
+}
 class Profileowner extends StatelessWidget {
   const Profileowner({super.key});
 
@@ -6,11 +17,6 @@ class Profileowner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 250, 250, 250),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.purple),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

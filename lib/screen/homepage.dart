@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
+import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/review.dart';
 import 'package:dorm_app/screen/user.dart';
 import 'package:dorm_app/widgets/editpassword.dart';
-import 'package:flutter/material.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/widgets/dorm.dart';
 import 'package:dorm_app/widgets/feeds.dart';
 import 'package:dorm_app/screen/profile.dart';
@@ -19,7 +20,9 @@ class Homepage extends StatefulWidget {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({super.key});
+  const NavigationDrawer({super.key, required this.user});
+
+  final User user; // Add user parameter
 
   @override
   Widget build(BuildContext context) {
@@ -42,21 +45,23 @@ class NavigationDrawer extends StatelessWidget {
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
         ),
-        child: const Column(
+        child: Column(
           children: [
             CircleAvatar(
               radius: 52,
-              backgroundImage: NetworkImage(
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'), // Update with actual URL
+              backgroundImage: user.photoURL != null
+                  ? NetworkImage(user.photoURL!)
+                  : const NetworkImage(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text(
-              'User Name', // Replace with actual user name
-              style: TextStyle(fontSize: 28, color: Colors.white),
+              user.displayName ?? 'User Name',
+              style: const TextStyle(fontSize: 28, color: Colors.white),
             ),
             Text(
-              'user@example.com', // Replace with actual email
-              style: TextStyle(fontSize: 16, color: Colors.white),
+              user.email ?? 'user@example.com',
+              style: const TextStyle(fontSize: 16, color: Colors.white),
             ),
           ],
         ),
@@ -87,7 +92,7 @@ class NavigationDrawer extends StatelessWidget {
             buildMenuItem(
               context,
               icon: Icons.logout,
-              text: 'ออกจาระบบ',
+              text: 'ออกจากระบบ',
               onTap: () => showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -100,12 +105,14 @@ class NavigationDrawer extends StatelessWidget {
                         child: const Text('ยกเลิก'),
                       ),
                       TextButton(
-                        onPressed: () =>
-                            Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const IndexScreen()),
-                          (Route<dynamic> route) => false,
-                        ),
+                        onPressed: () async {
+                          await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (context) => const IndexScreen()),
+                            (Route<dynamic> route) => false,
+                          );
+                        },
                         child: const Text('ยืนยัน'),
                       ),
                     ],
@@ -131,6 +138,7 @@ class NavigationDrawer extends StatelessWidget {
 
 class _HomepageState extends State<Homepage> {
   int index = 0;
+  late User _currentUser;
 
   final List<Widget> _screens = [
     const FeedsScreen(), // หน้าแรก
@@ -138,6 +146,21 @@ class _HomepageState extends State<Homepage> {
     const ReviewScreen(), // รีวิวหอพัก
     const ProfileScreen(), // โปรไฟล์
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentUser();
+  }
+
+  Future<void> _getCurrentUser() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        _currentUser = user;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +172,7 @@ class _HomepageState extends State<Homepage> {
             index != 3 ? getAppBar(index) : null, // Hide AppBar in Profile tab
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         drawer: index != 3
-            ? const NavigationDrawer()
+            ? NavigationDrawer(user: _currentUser)
             : null, // Hide NavigationDrawer in Profile tab
         body: IndexedStack(
           index: index,
@@ -213,13 +236,4 @@ class _HomepageState extends State<Homepage> {
         return const Text('ข้อมูลส่วนตัว');
     }
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: const Homepage(),
-    theme: ThemeData(
-      primaryColor: const Color.fromARGB(255, 241, 229, 255),
-    ),
-  ));
 }

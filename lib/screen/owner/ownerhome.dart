@@ -5,7 +5,6 @@ import 'package:dorm_app/screen/owner/adddorm.dart';
 import 'package:dorm_app/screen/owner/details.dart';
 import 'package:dorm_app/screen/owner/dormitoryListScreen.dart';
 import 'package:dorm_app/screen/owner/profile.dart';
-import 'package:dorm_app/widgets/editpassword.dart';
 import 'package:dorm_app/widgets/map.dart';
 import 'package:flutter/material.dart';
 

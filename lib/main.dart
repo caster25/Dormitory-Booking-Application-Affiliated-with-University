@@ -15,9 +15,8 @@ void main() async {
     messagingSenderId: 'G-T3QSM1C2CH',
     projectId: 'accommoease',
     storageBucket: 'accommoease.appspot.com',
-  )
+    )
   );
-
   runApp( const MyApp());
 }
 

@@ -1,5 +1,5 @@
-// ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/screen/owner/ownerhome.dart';
 import 'package:flutter/material.dart';
 
 class DormitoryListScreen extends StatelessWidget {
@@ -10,6 +10,13 @@ class DormitoryListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายการหอพัก'),
+        leading: IconButton(
+            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Ownerhome()),
+                  (route) => false,
+                ),
+            icon: const Icon(Icons.arrow_back)),
+        
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('dormitories').snapshots(),

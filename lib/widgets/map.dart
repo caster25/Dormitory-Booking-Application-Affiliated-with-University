@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/owner/ownerhome.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -61,6 +62,12 @@ class _MapScreenState extends State<MapScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Google Map with Current Location'),
+        leading: IconButton(
+            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Ownerhome()),
+                  (route) => false,
+                ),
+            icon: const Icon(Icons.arrow_back)),
       ),
       body: _locationFetched
           ? GoogleMap(

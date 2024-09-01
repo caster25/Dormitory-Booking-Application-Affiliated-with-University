@@ -122,7 +122,7 @@ class FilterButton extends StatelessWidget {
   final Color textColor;
   final Color borderColor;
 
-  const FilterButton({
+  const FilterButton({super.key, 
     required this.text,
     this.backgroundColor = Colors.white,
     this.textColor = Colors.purple,

@@ -75,17 +75,21 @@ void _register() async {
         _passwordController.clear();
         _confirmPasswordController.clear();
         Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
+        // ignore: use_build_context_synchronously
         _showErrorDialog(context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
       } else {
+        // ignore: use_build_context_synchronously
         _showErrorDialog(context, 'Registration error: ${e.message}');
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       _showErrorDialog(context, 'Error: $e');
     }
   } else {

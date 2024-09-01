@@ -1,4 +1,5 @@
-import 'package:dorm_app/widgets/detaildorm.dart';
+
+import 'package:dorm_app/screen/owner/details.dart';
 import 'package:flutter/material.dart';
 
 class Bookdorm extends StatelessWidget {
@@ -22,7 +23,7 @@ class Bookdorm extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return const Detaildorm();
+                        return const Details();
                       }));
                     },
                     label:  const Text(

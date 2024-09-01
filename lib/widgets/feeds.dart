@@ -1,17 +1,5 @@
 import 'package:dorm_app/screen/owner/details.dart';
-import 'package:dorm_app/widgets/bookdorm.dart';
 import 'package:flutter/material.dart';
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: FeedsScreen(),
-    );
-  }
-}
 
 class FeedsScreen extends StatelessWidget {
   const FeedsScreen({super.key});
@@ -81,7 +69,7 @@ class FeedsScreen extends StatelessWidget {
                               hintText: 'ค้นหาหอพัก',
                               border: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0))),
+                                      BorderRadius.all(Radius.circular(1.0))),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: Colors.grey,
