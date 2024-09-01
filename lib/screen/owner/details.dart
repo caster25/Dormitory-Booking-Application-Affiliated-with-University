@@ -17,6 +17,7 @@ class Details extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Carousel แสดงภาพ
                 CarouselSlider(
                   options: CarouselOptions(
                     height: 200.0,
@@ -33,14 +34,17 @@ class Details extends StatelessWidget {
                       builder: (BuildContext context) {
                         return Container(
                           width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 5.0),
+                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
                           child: Image.asset(item, fit: BoxFit.cover),
                         );
                       },
                     );
                   }).toList(),
                 ),
+                
                 const SizedBox(height: 16.0),
+                
+                // ข้อมูลรายละเอียดหอพัก
                 const Text(
                   'ประเภทหอพัก: หอพักหญิง\n'
                   'ประเภทห้อง: ปรับอากาศ ห้องพักขนาด 28 ตารางเมตร\n'
@@ -53,73 +57,84 @@ class Details extends StatelessWidget {
                   'ค่าประกันความเสียหาย: 200 บาท/คน/เดือน\n',
                   style: TextStyle(fontSize: 16.0),
                 ),
+                
                 const SizedBox(height: 16.0),
+
+                // อุปกรณ์ที่มีในห้องพัก
                 const Text(
-                  'อุปกรณ์ที่มีในห้องพัก:\n'
+                  'อุปกรณ์ที่มีในห้องพัก:',
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8.0),
+                const Text(
                   '1. เตียง 3.5 ฟุต 2 เตียง พร้อมฟูก\n'
                   '2. โต๊ะทำงาน 3 มุมขนาด 1.80 เมตร\n'
                   '3. ตู้หนังสือ\n'
                   '4. โทรทัศน์ 32 นิ้ว 1 เครื่อง\n'
-                  '5. เครื่องทำน้ำอุ่น เครื่องปรับอากาศ โต๊ะกินข้าว โซฟาแบบแบ่ง\n'
-                  'ห้องพร้อมบิลต์อินและห้องน้ำในตัว ห้องว่างมีจำนวนจำกัด\n',
+                  '5. เครื่องทำน้ำอุ่น เครื่องปรับอากาศ โต๊ะกินข้าว โซฟาแบบแบ่ง ห้องพร้อมบิลต์อินและห้องน้ำในตัว\n',
                   style: TextStyle(fontSize: 16.0),
                 ),
+
                 const SizedBox(height: 16.0),
+                
+                // ตารางข้อมูลหอพัก
                 const Text(
-                  'ข้อมูลตาราง:',
+                  'หมายเลขห้องพัก:',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
+                
                 const SizedBox(height: 8.0),
+                
+                // ตารางแสดงหมายเลขห้องพัก
                 Table(
                   border: TableBorder.all(color: Colors.black),
                   columnWidths: const {
-                    0: FlexColumnWidth(1),
+                    0: FlexColumnWidth(2),
                     1: FlexColumnWidth(2),
+                    2: FlexColumnWidth(6),
                   },
-                  children: const [
+                  children: [
                     TableRow(children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('ชั้น', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('ห้องพักที่ว่าง', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
+                      const Text('ประเภทผู้พัก', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('ประเภทห้อง', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text('หมายเลขห้องพัก', style: TextStyle(fontWeight: FontWeight.bold)),
                     ]),
                     TableRow(children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('1'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('301, 302, 303'),
-                      ),
+                      const Text('หอหญิง'),
+                      const Text('พัดลม'),
+                      const Text(''),
                     ]),
                     TableRow(children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('2'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('201, 202, 203'),
-                      ),
+                      const Text(''),
+                      const Text('ห้องปรับอากาศ'),
+                      const Text(''),
                     ]),
                     TableRow(children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('3'),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text('101, 102, 103'),
-                      ),
+                      const Text('หอชาย'),
+                      const Text('พัดลม'),
+                      const Text(''),
+                    ]),
+                    TableRow(children: [
+                      const Text(''),
+                      const Text('ห้องปรับอากาศ'),
+                      const Text(''),
+                    ]),
+                    TableRow(children: [
+                      const Text('รวม'),
+                      const Text('พัดลม'),
+                      const Text(''),
+                    ]),
+                    TableRow(children: [
+                      const Text(''),
+                      const Text('ห้องปรับอากาศ'),
+                      const Text(''),
                     ]),
                   ],
                 ),
+                
                 const SizedBox(height: 16.0),
+                
+                // ปุ่มการดำเนินการ
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -133,8 +148,8 @@ class Details extends StatelessWidget {
                       onPressed: () {
                         // Action when the "แก้ไขข้อมูล" button is pressed
                       },
-                      child: const Text('แก้ไขข้อมูล'),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+                      child: const Text('แก้ไขข้อมูล'),
                     ),
                   ],
                 ),
@@ -146,4 +161,3 @@ class Details extends StatelessWidget {
     );
   }
 }
-
