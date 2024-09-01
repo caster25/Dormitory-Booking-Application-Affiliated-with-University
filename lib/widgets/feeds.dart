@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/owner/details.dart';
 import 'package:dorm_app/widgets/bookdorm.dart';
 import 'package:flutter/material.dart';
 
@@ -174,7 +175,7 @@ class FeedsScreen extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return const Bookdorm();
+                                    return const Details();
                                   }));
                                 },
                                 child: const Text('เพิ่มเติม'),

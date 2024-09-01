@@ -85,6 +85,7 @@ Future<void> _loginFunction() async {
       );
 
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const Homepage()),
       );
@@ -134,10 +135,12 @@ Future<void> _resetPassword() async {
 
   try {
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('อีเมลรีเซ็ตรหัสผ่านถูกส่งไปแล้ว')),
     );
   } catch (e) {
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('เกิดข้อผิดพลาด: ${e.toString()}')),
     );

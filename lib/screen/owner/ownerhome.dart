@@ -3,9 +3,10 @@ import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/owner/adddorm.dart';
 import 'package:dorm_app/screen/owner/details.dart';
+import 'package:dorm_app/screen/owner/dormitoryListScreen.dart';
 import 'package:dorm_app/screen/owner/profile.dart';
-import 'package:dorm_app/screen/user.dart';
 import 'package:dorm_app/widgets/editpassword.dart';
+import 'package:dorm_app/widgets/map.dart';
 import 'package:flutter/material.dart';
 
 class Ownerhome extends StatefulWidget {
@@ -146,7 +147,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.person,
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const UserScreen()),
+                MaterialPageRoute(builder: (context) => const DormitoryListScreen()),
               ),
             ),
             buildMenuItem(
@@ -154,7 +155,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.settings,
               text: 'การตั้งค่า',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Editpassword()),
+                MaterialPageRoute(builder: (context) => const MapScreen()),
               ),
             ),
             buildMenuItem(
@@ -173,7 +174,8 @@ class NavigationDrawer extends StatelessWidget {
                         child: const Text('ยกเลิก'),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                        onPressed: () => 
+                        Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(builder: (context) => const IndexScreen()),
                           (Route<dynamic> route) => false,
                         ),
