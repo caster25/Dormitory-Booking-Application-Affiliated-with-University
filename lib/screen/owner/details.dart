@@ -115,7 +115,7 @@ class Details extends StatelessWidget {
                   TableRow(children: [
                     Text('หอชาย'),
                     Text('พัดลม'),
-                    Text(''),
+                    Text('104,105,106,107,108,109,110,111,112,201,202,203,204,207,208,209,210,211,212'),
                   ]),
                   TableRow(children: [
                     Text(''),
