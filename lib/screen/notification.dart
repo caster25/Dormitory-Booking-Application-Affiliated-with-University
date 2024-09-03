@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _NotificationScreenState createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  String _notificationMessage = 'No notifications';
+
+  @override
+  void initState() {
+    super.initState();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+        setState(() {
+          _notificationMessage = message.notification!.title ?? 'No title';
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,19 +35,20 @@ class NotificationScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Notification'),
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.notifications_none,
+            const Icon(
+              Icons.notifications,
               size: 100,
               color: Colors.grey,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
-              'No notifications',
-              style: TextStyle(fontSize: 20),
+              _notificationMessage,
+              style: const TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

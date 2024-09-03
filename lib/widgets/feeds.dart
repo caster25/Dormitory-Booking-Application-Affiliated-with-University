@@ -1,5 +1,6 @@
 import 'package:dorm_app/screen/owner/details.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FeedsScreen extends StatelessWidget {
   const FeedsScreen({super.key});
@@ -28,8 +29,7 @@ class FeedsScreen extends StatelessWidget {
                     child: Image.asset(
                       "assets/images/dorm/1 (1).jpg",
                       width: 180,
-                      filterQuality:
-                          FilterQuality.high, // ใส่ URL รูปที่ต้องการ
+                      filterQuality: FilterQuality.high,
                     ),
                   ),
                   Positioned(
@@ -113,66 +113,79 @@ class FeedsScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(3, (index) {
-                      return Container(
-                        margin: const EdgeInsets.only(right: 16),
-                        width: 200,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 241, 229, 255),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 170,
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('dormitories').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      final dorms = snapshot.data!.docs;
+
+                      return Row(
+                        children: List.generate(dorms.length, (index) {
+                          var dorm = dorms[index];
+
+                          return Container(
+                            margin: const EdgeInsets.only(right: 16),
+                            width: 200,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 241, 229, 255),
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'หอพัก....',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 170,
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(20),
+                                    ),
+                                    image: DecorationImage(
+                                      image: NetworkImage(dorm['imageUrl']),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  Text(
-                                    'ราคาเริ่มต้น 5,000 บาท/เดือน',
-                                    style: TextStyle(fontSize: 14),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        dorm['name'],
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'ราคาเริ่มต้น ${dorm['price']} บาท/เดือน',
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return const Details();
+                                      }));
+                                    },
+                                    child: const Text('เพิ่มเติม'),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return const Details();
-                                  }));
-                                },
-                                child: const Text('เพิ่มเติม'),
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        }),
                       );
-                    }),
+                    },
                   ),
                 ),
               ),

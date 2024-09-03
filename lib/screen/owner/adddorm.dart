@@ -85,6 +85,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
           'price': double.parse(_dormPriceController.text),
           'availableRooms': int.parse(_availableRoomsController.text),
           'imageUrl': _uploadedImageUrl,
+          'rating': 0
         });
 
         // ignore: use_build_context_synchronously
