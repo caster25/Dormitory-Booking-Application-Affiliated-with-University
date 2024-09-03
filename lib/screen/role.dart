@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/owner/ownerhome.dart';
+import 'package:dorm_app/screen/owner/registerowner.dart';
 import 'package:dorm_app/screen/register.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +43,7 @@ class RoleScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(context, 
                         MaterialPageRoute(builder: (context) {
-                          return const Ownerhome();
+                          return const RegisterownerScreen();
                         },
                       ));
                     },

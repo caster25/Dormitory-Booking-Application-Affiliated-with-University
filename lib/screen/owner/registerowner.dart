@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:dorm_app/screen/login.dart';
 import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class RegisterownerScreen extends StatefulWidget {
+  const RegisterownerScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterFormState();
+  State<RegisterownerScreen> createState() => _RegisterFormState();
 }
 
-class _RegisterFormState extends State<RegisterScreen> {
+class _RegisterFormState extends State<RegisterownerScreen> {
   final _formKey = GlobalKey<FormState>();
   final userProfile profile = userProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
@@ -71,7 +71,7 @@ void _register() async {
           'lastname': _lastnameController.text,
           'numphone': _numphoneController.text,
           'email': _emailController.text,
-          'role': 'user',
+          'role': 'owner',
         });
 
         _formKey.currentState!.reset();
