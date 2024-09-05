@@ -15,7 +15,8 @@ class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final userProfile profile = userProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _userfnameController = TextEditingController();
   final TextEditingController _userlnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
@@ -25,79 +26,97 @@ class _RegisterFormState extends State<RegisterScreen> {
   final auth = FirebaseAuth.instance;
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
-void _showErrorDialog(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // ไม่อนุญาตให้ผู้ใช้ปิด dialog โดยการคลิกนอก dialog
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('เกิดข้อผิดพลาด'),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // ปิด dialog
-            },
-            child: const Text('ตกลง'),
-          ),
-        ],
-      );
-    },
-  );
-}
-
-// ในฟังก์ชัน _register ของคุณ
-void _register() async {
-  if (_formKey.currentState!.validate()) {
-    if (!_acceptTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
-      );
-      return;
-    }
-
-    try {
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-
-      var currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        await usersCollection.doc(currentUser.uid).set({
-          'userfname': _userfnameController.text,
-          'userlname': _userlnameController.text,
-          'numphone': _numphoneController.text,
-          'email': _emailController.text,
-        });
-
-        _formKey.currentState!.reset();
-        _passwordController.clear();
-        _confirmPasswordController.clear();
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // ไม่อนุญาตให้ผู้ใช้ปิด dialog โดยการคลิกนอก dialog
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('เกิดข้อผิดพลาด'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด dialog
+              },
+              child: const Text('ตกลง'),
+            ),
+          ],
         );
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        // ignore: use_build_context_synchronously
-        _showErrorDialog(context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
-      } else {
-        // ignore: use_build_context_synchronously
-        _showErrorDialog(context, 'Registration error: ${e.message}');
-      }
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      _showErrorDialog(context, 'Error: $e');
-    }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+      },
     );
   }
-}
+
+// ในฟังก์ชัน _register ของคุณ
+  void _register() async {
+    if (_formKey.currentState!.validate()) {
+      if (!_acceptTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
+        );
+        return;
+      }
+
+      try {
+        UserCredential userCredential =
+            await auth.createUserWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+
+        var currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          await usersCollection.doc(currentUser.uid).set({
+            'userfname': _userfnameController.text,
+            'userlname': _userlnameController.text,
+            'numphone': _numphoneController.text,
+            'email': _emailController.text,
+          });
+
+          _formKey.currentState!.reset();
+          _passwordController.clear();
+          _confirmPasswordController.clear();
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+          // ignore: use_build_context_synchronously
+          _showErrorDialog(
+              context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+        } else {
+          // ignore: use_build_context_synchronously
+          _showErrorDialog(context, 'Registration error: ${e.message}');
+        }
+      } catch (e) {
+        // ignore: use_build_context_synchronously
+        _showErrorDialog(context, 'Error: $e');
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+      );
+    }
+  }
+
+  InputDecoration _buildInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(fontSize: 18),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Colors.blue, width: 2),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,9 +140,9 @@ void _register() async {
                   ),
                 ),
                 const SizedBox(height: 15),
-                const Text('ชื่อผู้ใช้', style: TextStyle(fontSize: 20)),
                 TextFormField(
                   controller: _userfnameController,
+                  decoration: _buildInputDecoration('ชื่อผู้ใช้'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกชื่อผู้ใช้';
@@ -132,9 +151,9 @@ void _register() async {
                   },
                 ),
                 const SizedBox(height: 15),
-                const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
                 TextFormField(
                   controller: _userlnameController,
+                  decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกชื่อ-นามสกุล';
@@ -143,10 +162,10 @@ void _register() async {
                   },
                 ),
                 const SizedBox(height: 15),
-                const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
                 TextFormField(
                   controller: _numphoneController,
                   keyboardType: TextInputType.phone,
+                  decoration: _buildInputDecoration('เบอร์โทร'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกเบอร์โทร';
@@ -158,10 +177,10 @@ void _register() async {
                   },
                 ),
                 const SizedBox(height: 15),
-                const Text('อีเมล', style: TextStyle(fontSize: 20)),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  decoration: _buildInputDecoration('อีเมล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกอีเมล';
@@ -173,10 +192,10 @@ void _register() async {
                   },
                 ),
                 const SizedBox(height: 15),
-                const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
+                  decoration: _buildInputDecoration('รหัสผ่าน'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกรหัสผ่าน';
@@ -188,10 +207,10 @@ void _register() async {
                   },
                 ),
                 const SizedBox(height: 15),
-                const Text('ยืนยันรหัสผ่าน', style: TextStyle(fontSize: 20)),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
+                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'รหัสผ่านไม่ตรงกัน';
@@ -221,7 +240,8 @@ void _register() async {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _register,
-                    child: const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+                    child:
+                        const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -230,7 +250,8 @@ void _register() async {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()),
                       );
                     },
                     child: const Text(

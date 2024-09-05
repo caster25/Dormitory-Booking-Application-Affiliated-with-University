@@ -9,47 +9,51 @@ class RoleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(  // ใช้ Center เพื่อให้อยู่กลางหน้าจอ
+      body: Center(
+        // ใช้ Center เพื่อให้อยู่กลางหน้าจอ
         child: Container(
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center, // จัดให้อยู่กลางแนวนอน
-              crossAxisAlignment: CrossAxisAlignment.center, // จัดให้อยู่กลางแนวตั้ง
+            child: Column(
+              // ใช้ Column แทน Row
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // จัดให้อยู่กลางแนวตั้ง
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // จัดให้อยู่กลางแนวนอน
               children: [
                 SizedBox(
-                  width: 150, // กำหนดความกว้างของปุ่ม
+                  width: 250, // เพิ่มความกว้างของปุ่ม
                   height: 100, // กำหนดความสูงของปุ่ม
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(context, 
-                        MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
                           return const RegisterScreen();
                         },
                       ));
                     },
-                    icon: const Icon(Icons.login),
+                    icon: const Icon(Icons.person),
                     label: const Text(
-                      'ผู้ใช้ทั่วไป', 
+                      'ผู้ใช้งานทั่วไป',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
-                const SizedBox(width: 20), // เว้นระยะห่างระหว่างปุ่ม
+                const SizedBox(height: 30), // เว้นระยะห่างระหว่างปุ่ม
                 SizedBox(
-                  width: 150, // กำหนดความกว้างของปุ่ม
+                  width: 250, // เพิ่มความกว้างของปุ่ม
                   height: 100, // กำหนดความสูงของปุ่ม
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(context, 
-                        MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
                           return const Ownerhome();
                         },
                       ));
                     },
-                    icon: const Icon(Icons.login),
+                    icon: const Icon(Icons.business),
                     label: const Text(
-                      'ผู้ให้บริการหอพัก', 
+                      'ผู้ให้บริการหอพัก',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -62,4 +66,3 @@ class RoleScreen extends StatelessWidget {
     );
   }
 }
-

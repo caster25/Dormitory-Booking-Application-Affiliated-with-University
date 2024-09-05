@@ -12,10 +12,11 @@ class IndexScreen extends StatelessWidget {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        height: double.infinity,// กำหนดความสูงเต็มจอ
+        height: double.infinity, // กำหนดความสูงเต็มจอ
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/dorm/back.png'), // Replace with your image path
+            image: AssetImage(
+                'assets/images/dorm/back.png'), // Replace with your image path
             fit: BoxFit.fill, // Ensures the image covers the entire container
           ),
         ),
@@ -74,23 +75,29 @@ class IndexScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return const Homepage();
-                    }) );
-                  }, child: const Text('testuser')),
-                ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const Homepage();
+                      }));
+                    },
+                    child: const Text('testuser')),
+              ),
               const SizedBox(height: 30),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return const Ownerhome();
-                    }) );
-                  }, child: const Text('testowner')),
-                )
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const Ownerhome();
+                      }));
+                    },
+                    child: const Text('testowner')),
+              )
             ],
           ),
         ),
