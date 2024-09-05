@@ -168,6 +168,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
             body: Padding(
               padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(

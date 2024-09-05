@@ -48,7 +48,6 @@ class _RegisterFormState extends State<RegisterScreen> {
     );
   }
 
-// ในฟังก์ชัน _register ของคุณ
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
@@ -121,6 +120,14 @@ class _RegisterFormState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -139,7 +146,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _userfnameController,
                   decoration: _buildInputDecoration('ชื่อผู้ใช้'),
@@ -150,7 +157,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _userlnameController,
                   decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
@@ -161,7 +168,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _numphoneController,
                   keyboardType: TextInputType.phone,
@@ -176,7 +183,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -191,7 +198,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
@@ -206,7 +213,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
@@ -218,7 +225,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 Row(
                   children: [
                     Checkbox(
@@ -235,7 +242,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -244,7 +251,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                         const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 25),
                 Center(
                   child: TextButton(
                     onPressed: () {

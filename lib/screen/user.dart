@@ -22,7 +22,8 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Future<void> _loadUserData() async {
-    currentUser = FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
+    currentUser =
+        FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
 
     if (currentUser != null) {
       // ดึงข้อมูลผู้ใช้จาก Firestore
@@ -56,7 +57,8 @@ class _UserScreenState extends State<UserScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: currentUser == null
-            ? const Center(child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
+            ? const Center(
+                child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
             : Column(
                 children: [
                   const CircleAvatar(
@@ -89,7 +91,8 @@ class _UserScreenState extends State<UserScreen> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const EditUser()),
+                        MaterialPageRoute(
+                            builder: (context) => const EditUser()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

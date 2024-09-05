@@ -106,10 +106,12 @@ class NavigationDrawer extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () async {
-                          await FirebaseAuth.instance.signOut(); // Sign out from Firebase
+                          await FirebaseAuth.instance
+                              .signOut(); // Sign out from Firebase
                           // ignore: use_build_context_synchronously
                           Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) => const IndexScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => const IndexScreen()),
                             (Route<dynamic> route) => false,
                           );
                         },

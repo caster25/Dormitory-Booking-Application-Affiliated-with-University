@@ -9,21 +9,25 @@ class RoleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Center(
-        // ใช้ Center เพื่อให้อยู่กลางหน้าจอ
         child: Container(
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
             child: Column(
-              // ใช้ Column แทน Row
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // จัดให้อยู่กลางแนวตั้ง
-              crossAxisAlignment:
-                  CrossAxisAlignment.center, // จัดให้อยู่กลางแนวนอน
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 250, // เพิ่มความกว้างของปุ่ม
-                  height: 100, // กำหนดความสูงของปุ่ม
+                  width: 250,
+                  height: 100,
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
@@ -39,10 +43,10 @@ class RoleScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30), // เว้นระยะห่างระหว่างปุ่ม
+                const SizedBox(height: 30), // Space between buttons
                 SizedBox(
-                  width: 250, // เพิ่มความกว้างของปุ่ม
-                  height: 100, // กำหนดความสูงของปุ่ม
+                  width: 250,
+                  height: 100,
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(
