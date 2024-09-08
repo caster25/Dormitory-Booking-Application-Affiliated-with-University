@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:dorm_app/screen/login.dart';
 
 class TermsAndConditionsScreen extends StatelessWidget {
-  const TermsAndConditionsScreen({Key? key}) : super(key: key);
+  const TermsAndConditionsScreen({super.key});
 
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible:
-          false, // Prevents closing the dialog by tapping outside
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('สำเร็จ'),
-          content: Row(
+          content: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 40),
-              const SizedBox(width: 10),
-              const Text('คุณได้ลงทะเบียนบัญชีสำเร็จ'),
+              Icon(Icons.check_circle, color: Colors.green, size: 40),
+              SizedBox(width: 10),
+              Text('คุณได้ลงทะเบียนบัญชีสำเร็จ'),
             ],
           ),
           actions: <Widget>[
@@ -27,9 +26,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                 Navigator.of(context).pop(); // Close the dialog
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const LoginScreen()), // Navigate to LoginScreen
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
             ),
@@ -57,9 +54,12 @@ class TermsAndConditionsScreen extends StatelessWidget {
                       child: Text(
                         'เงื่อนไขและข้อตกลงการใช้บริการ',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+                    SizedBox(height: 20),
                     SizedBox(height: 20),
                     Text(
                       '1. ข้อมูลหอพักที่ถูกต้อง',
@@ -144,10 +144,10 @@ class TermsAndConditionsScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Handle Cancel action
+                    Navigator.pop(context, false); // ส่งค่ายกเลิกกลับ
                   },
-                  child: Center(
-                    child: const Text(
+                  child: const Center(
+                    child: Text(
                       'ยกเลิก',
                       style: TextStyle(fontSize: 20),
                     ),
@@ -155,10 +155,10 @@ class TermsAndConditionsScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _showSuccessDialog(context); // Show success dialog
+                    Navigator.pop(context, true); // ส่งค่ายอมรับกลับ
                   },
-                  child: Center(
-                    child: const Text(
+                  child: const Center(
+                    child: Text(
                       'ยอมรับ',
                       style: TextStyle(fontSize: 20),
                     ),

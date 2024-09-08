@@ -53,20 +53,18 @@ class _RegisterFormState extends State<RegisterownerScreen> {
     );
   }
   void _register() async {
-    if (_formKey.currentState!.validate()) {
-      if (!_acceptTerms) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const TermsAndConditionsScreen(),
-          ),
-        );
-        return;
-      }
+  if (_formKey.currentState!.validate()) {
+    bool? acceptTerms = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TermsAndConditionsScreen(),
+      ),
+    );
 
+    // ตรวจสอบว่าผู้ใช้ยอมรับเงื่อนไขหรือไม่
+    if (acceptTerms == true) {
       try {
-        UserCredential userCredential =
-            await auth.createUserWithEmailAndPassword(
+        UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
@@ -79,33 +77,43 @@ class _RegisterFormState extends State<RegisterownerScreen> {
             'lastname': _lastnameController.text,
             'numphone': _numphoneController.text,
             'email': _emailController.text,
-            'dormitoryname': _dormitoryNameController,
+            'dormitoryname': _dormitoryNameController.text,
             'role': 'owner',
           });
           _formKey.currentState!.reset();
           _passwordController.clear();
           _confirmPasswordController.clear();
           Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'email-already-in-use') {
-          _showErrorDialog(
-              context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+          // ignore: use_build_context_synchronously
+          _showErrorDialog(context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
         } else {
+          // ignore: use_build_context_synchronously
           _showErrorDialog(context, 'Registration error: ${e.message}');
         }
       } catch (e) {
+        // ignore: use_build_context_synchronously
         _showErrorDialog(context, 'Error: $e');
       }
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+        const SnackBar(content: Text('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+    );
   }
+}
+
 
   InputDecoration _buildInputDecoration(String labelText) {
     return InputDecoration(
@@ -189,7 +197,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _numphoneController,
                   decoration: _buildInputDecoration('เบอร์โทร'),
                   keyboardType: TextInputType.phone,
-                  decoration: _buildInputDecoration('เบอร์โทร'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกเบอร์โทร';
@@ -205,7 +212,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _emailController,
                   decoration: _buildInputDecoration('อีเมล'),
                   keyboardType: TextInputType.emailAddress,
-                  decoration: _buildInputDecoration('อีเมล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกอีเมล';
@@ -243,7 +249,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _passwordController,
                   decoration: _buildInputDecoration('รหัสผ่าน'),
                   obscureText: true,
-                  decoration: _buildInputDecoration('รหัสผ่าน'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกรหัสผ่าน';
@@ -259,7 +264,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _confirmPasswordController,
                   decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   obscureText: true,
-                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'รหัสผ่านไม่ตรงกัน';
