@@ -9,7 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 // ฟังก์ชันสำหรับดึง role ของผู้ใช้จาก Firestore
 Future<String?> getUserRole(String userId) async {
-  DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  DocumentSnapshot doc =
+      await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
   if (doc.exists) {
     return doc['role'];
@@ -37,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
-
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -101,11 +101,23 @@ class _LoginScreenState extends State<LoginScreen> {
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => const Homepage()),
-        );
+
+        String? role = await getUserRole(userCredential.user!.uid);
+        if (role != null) {
+          if (role == 'owner') {
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const Ownerhome()));
+          } else if (role == 'user') {
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const Homepage()));
+          } else {
+            _showErrorDialog('Role ไม่ถูกต้อง');
+          }
+        } else {
+          _showErrorDialog('ไม่พบข้อมูล role');
+        }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'เกิดข้อผิดพลาด: ${e.message}';
         bool showRegisterButton = false;

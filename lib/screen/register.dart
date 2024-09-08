@@ -15,10 +15,10 @@ class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final userProfile profile = userProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _firstnameController = TextEditingController();
-  final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _userfnameController = TextEditingController();
+  final TextEditingController _userlnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   bool _acceptTerms = false;
@@ -63,16 +63,16 @@ class _RegisterFormState extends State<RegisterScreen> {
           email: _emailController.text,
           password: _passwordController.text,
         );
-      var currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser != null) {
-        await usersCollection.doc(currentUser.uid).set({
-          'username': _usernameController.text,
-          'firstname': _firstnameController.text,
-          'lastname': _lastnameController.text,
-          'numphone': _numphoneController.text,
-          'email': _emailController.text,
-          'role': 'user',
-        });
+
+        var currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          await usersCollection.doc(currentUser.uid).set({
+            'userfname': _userfnameController.text,
+            'userlname': _userlnameController.text,
+            'numphone': _numphoneController.text,
+            'email': _emailController.text,
+            'role' : 'user'
+          });
 
           _formKey.currentState!.reset();
           _passwordController.clear();
@@ -149,7 +149,8 @@ class _RegisterFormState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 25),
                 TextFormField(
-                  controller: _usernameController,
+                  controller: _userfnameController,
+                  decoration: _buildInputDecoration('ชื่อผู้ใช้'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกชื่อผู้ใช้';
@@ -157,21 +158,10 @@ class _RegisterFormState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
-                const Text('ชื่อ', style: TextStyle(fontSize: 20)),
+                const SizedBox(height: 25),
                 TextFormField(
-                  controller: _firstnameController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกชื่อ';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
-                const Text('นามสกุล', style: TextStyle(fontSize: 20)),
-                TextFormField(
-                  controller: _lastnameController,
+                  controller: _userlnameController,
+                  decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกนามสกุล';
