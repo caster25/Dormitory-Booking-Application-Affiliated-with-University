@@ -32,10 +32,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> _showErrorDialog(String message,
-      {bool showRegisterButton = false, bool showResetPasswordButton = false}) async {
+      {bool showRegisterButton = false,
+      bool showResetPasswordButton = false}) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // Prevent dismissing the dialog by tapping outside
+      barrierDismissible: false,
+
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -71,7 +73,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.of(context).pop();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const RegisterScreen()),
                   );
                 },
               ),
@@ -93,32 +96,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loginFunction() async {
     if (formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
-
-        // ดึง role ของผู้ใช้จาก Firestore
-        String? role = await getUserRole(userCredential.user!.uid);
-
-        if (role != null) {
-          // เช็ค role ว่าผู้ใช้มีสิทธิ์เข้าถึงหน้าไหน
-          if (role == 'owner') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Ownerhome()), // สร้าง AdminHomepage ให้เรียบร้อย
-            );
-          } else if (role == 'user') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const Homepage()), // หน้า Homepage สำหรับ user
-            );
-          } else {
-            _showErrorDialog('Role ไม่ถูกต้อง');
-          }
-        } else {
-          _showErrorDialog('ไม่พบข้อมูล role');
-        }
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (context) => const Homepage()),
+        );
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'เกิดข้อผิดพลาด: ${e.message}';
         bool showRegisterButton = false;
@@ -140,13 +127,16 @@ class _LoginScreenState extends State<LoginScreen> {
             errorMessage = 'ข้อมูลรับรองไม่ถูกต้องหรือหมดอายุ';
             break;
           case 'too-many-requests':
-            errorMessage = 'เราบล็อกคำขอจากอุปกรณ์นี้เนื่องจากกิจกรรมที่ไม่ปกติ กรุณาลองอีกครั้งในภายหลัง';
+            errorMessage =
+                'เราบล็อกคำขอจากอุปกรณ์นี้เนื่องจากกิจกรรมที่ไม่ปกติ กรุณาลองอีกครั้งในภายหลัง';
             break;
           default:
             errorMessage = e.message ?? 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
         }
 
-        _showErrorDialog(errorMessage, showRegisterButton: showRegisterButton, showResetPasswordButton: showResetPasswordButton);
+        _showErrorDialog(errorMessage,
+            showRegisterButton: showRegisterButton,
+            showResetPasswordButton: showResetPasswordButton);
       } catch (e) {
         _showErrorDialog('เกิดข้อผิดพลาด: ${e.toString()}');
       }
@@ -191,6 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
             body: Padding(
               padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(
@@ -204,7 +202,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Center(
                           child: Column(
                             children: [
-                              Text('เข้าสู่ระบบ', style: TextStyle(fontSize: 20)),
+                              Text('เข้าสู่ระบบ',
+                                  style: TextStyle(fontSize: 20)),
                             ],
                           ),
                         ),
@@ -214,6 +213,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: 'กรอกอีเมลของคุณ',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'กรุณากรอกอีเมล';
@@ -229,6 +237,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'กรอกรหัสผ่านของคุณ',
+                          filled: true,
+                          fillColor: Colors.grey[200],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'กรุณากรอกรหัสผ่าน';
@@ -243,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: _loginFunction,
                           child: const Text('เข้าสู่ระบบ'),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),

@@ -17,40 +17,99 @@ class EditUser extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('ชื่อ', style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: const InputDecoration(labelText: "กรอกชื่อใหม่"),
-                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: "กรอกชื่อใหม่",
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
                 validator: (String? str) {
                   if (str == '') return "กรอกชื่อใหม่";
                   return null;
-                },  
+                },
               ),
+              const SizedBox(height: 20),
               const Text('นามสกุล', style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: const InputDecoration(labelText: "กรอกนามสกุลใหม่"),
-                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: "กรอกนามสกุลใหม่",
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
                 validator: (String? str) {
                   if (str == '') return "กรอกนามสกุลใหม่";
                   return null;
-                }, 
+                },
               ),
+              const SizedBox(height: 20),
               const Text('อีเมล', style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: const InputDecoration(labelText: "กรอกอีเมลใหม่"),
-                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: "กรอกอีเมลใหม่",
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
                 validator: (String? str) {
                   if (str == '') return "กรอกอีเมลใหม่";
                   return null;
-                }, 
+                },
               ),
+              const SizedBox(height: 20),
               const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: const InputDecoration(labelText: "กรอกเบอร์โทรใหม่"),
-                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: "กรอกเบอร์โทรใหม่",
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.blue),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
                 validator: (String? str) {
                   if (str == '') return "กรอกเบอร์โทรใหม่";
                   return null;
-                }, 
+                },
               ),
               const SizedBox(height: 30),
               Row(
@@ -58,28 +117,42 @@ class EditUser extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // บันทึกข้อมูลและกลับไปยังหน้า Homepage
+                      // Save data and return to Homepage
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) =>  const Homepage()), // กลับไปยังหน้า Homepage
-                        (route) => false, // ลบทุกเส้นทางในเครื่องหมายความเห็นเพื่อไม่ให้กลับมายังหน้าแก้ไขผู้ใช้
+                        MaterialPageRoute(
+                            builder: (context) => const Homepage()),
+                        (route) => false,
                       );
                     },
-                    child: const Text('บันทึก', style: TextStyle(fontSize: 20)),
+                    child: const Text('บันทึก', style: TextStyle(fontSize: 18)),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 30.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // ยกเลิกการแก้ไขและกลับไปยังหน้า Homepage
+                      // Cancel and return to Homepage
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) =>  const Homepage()), // กลับไปยังหน้า Homepage
-                        (route) => false, // ลบทุกเส้นทางในเครื่องหมายความเห็นเพื่อไม่ให้กลับมายังหน้าแก้ไขผู้ใช้
+                        MaterialPageRoute(
+                            builder: (context) => const Homepage()),
+                        (route) =>
+                            false, // ลบทุกเส้นทางในเครื่องหมายความเห็นเพื่อไม่ให้กลับมายังหน้าแก้ไขผู้ใช้
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 30.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
                     ),
-                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 20)),
+                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),
