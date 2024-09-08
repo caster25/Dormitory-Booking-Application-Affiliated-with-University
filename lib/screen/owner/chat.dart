@@ -277,7 +277,7 @@ class _ChatScreenState extends State<ChatScreen> {
             if (isMe) ...[
               ListTile(
                 leading: Icon(Icons.edit),
-                title: Text('Edit'),
+                title: Text('แก้ไข'),
                 onTap: () {
                   Navigator.pop(context);
                   _editMessage(messageSnapshot);
@@ -285,7 +285,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.delete),
-                title: Text('Delete'),
+                title: Text('ลบ'),
                 onTap: () {
                   Navigator.pop(context);
                   _deleteMessage(messageSnapshot);
