@@ -2,6 +2,7 @@ import 'package:dorm_app/screen/homepage.dart';
 import 'package:dorm_app/screen/login.dart';
 import 'package:dorm_app/screen/owner/ownerhome.dart';
 import 'package:dorm_app/screen/role.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class IndexScreen extends StatelessWidget {
@@ -78,13 +79,37 @@ class IndexScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const Homepage();
-                      }));
-                    },
-                    child: const Text('testuser')),
+                  onPressed: () async {
+                    // Predefined credentials for test user
+                    String testEmail = 'usertest@gmail.com';
+                    String testPassword = 'user1234';
+
+                    try {
+                      // Sign in the user with Firebase Authentication
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .signInWithEmailAndPassword(
+                        email: testEmail,
+                        password: testPassword,
+                      );
+
+                      // On successful login, navigate to Homepage
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Homepage()),
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      // Handle authentication errors
+                      String errorMessage = 'Login failed: ${e.message}';
+                      // Display error message (you can use a dialog or Snackbar)
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(errorMessage)),
+                      );
+                    }
+                  },
+                  child: const Text('testuser'),
+                ),
               ),
               const SizedBox(height: 30),
               SizedBox(
