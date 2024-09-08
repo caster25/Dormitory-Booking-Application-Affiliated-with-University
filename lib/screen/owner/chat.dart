@@ -21,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String? _deletedMessageSender; // To store the sender of the deleted message
   DocumentSnapshot? _deletedMessageSnapshot; // To store the deleted message snapshot
 
-  String currentUser = 'พี่หมูหวาน'; // Change this to 'owner' or 'tenant' based on the logged-in user
+  String currentUser = 'ป๊ะเตี๋ยว'; // Change this to 'owner' or 'tenant' based on the logged-in user
 
   /// Function to send a message (text or image)
   void _sendMessage({String? imageUrl}) async {
