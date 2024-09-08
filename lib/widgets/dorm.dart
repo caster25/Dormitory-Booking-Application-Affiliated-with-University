@@ -1,22 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/screen/owner/details.dart';
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: DormScreen(),
-    );
-  }
-}
-
-class DormScreen extends StatelessWidget {
+class DormScreen extends StatefulWidget {
   const DormScreen({super.key});
 
   @override
+  State<DormScreen> createState() => _DormScreenState();
+}
+
+class _DormScreenState extends State<DormScreen> {
+  bool isPriceAscending = true;
+  bool isRatingAscending = true;
+  String sortBy = 'price'; // Default sort by price
+  String searchQuery = '';
+  TextEditingController searchController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-     // ignore: unused_local_variable
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SingleChildScrollView(
@@ -26,14 +27,14 @@ class DormScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const TextField(
-                  decoration: InputDecoration(
+                child: TextField(
+                  controller: searchController,
+                  decoration: const InputDecoration(
                     hintText: 'ค้นหาหอพัก',
                     border: InputBorder.none,
                     prefixIcon: Icon(
@@ -41,70 +42,122 @@ class DormScreen extends StatelessWidget {
                       color: Colors.purple,
                     ),
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      searchQuery = value; // Update search query
+                    });
+                  },
                 ),
               ),
               const SizedBox(height: 16),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  FilterButton(text: 'โปรโมชั่น'),
-                  FilterButton(text: 'ราคา/เดือน'),
-                  FilterButton(text: 'ให้คะแนน'),
+                  FilterButton(
+                    text: 'ราคา/เดือน',
+                    onPressed: () {
+                      setState(() {
+                        sortBy = 'price';
+                        isPriceAscending = !isPriceAscending;
+                      });
+                    },
+                    isSelected: sortBy == 'price',
+                  ),
+                  FilterButton(
+                    text: 'ให้คะแนน',
+                    onPressed: () {
+                      setState(() {
+                        sortBy = 'rating';
+                        isRatingAscending = !isRatingAscending;
+                      });
+                    },
+                    isSelected: sortBy == 'rating',
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 241, 229, 255),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 180,
-                            decoration: const BoxDecoration(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(10)),
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('dormitories')
+                    .orderBy(sortBy, descending: sortBy == 'price' ? !isPriceAscending : !isRatingAscending)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  final dorms = snapshot.data!.docs;
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: dorms.length,
+                    itemBuilder: (context, index) {
+                      var dorm = dorms[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 241, 229, 255),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'บ้านแสนสุข (หอพักชาย)',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'ราคา 15000 บาท',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'คะแนน 2.5/5',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          child: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Container(
+      height: 180,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(10)),
+        image: DecorationImage(
+          image: NetworkImage(dorm['imageUrl']),
+          fit: BoxFit.cover,
+        ),
+      ),
+    ),
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            dorm['name'],
+            style: const TextStyle(
+                fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'ราคา ${dorm['price']} บาท',
+            style: const TextStyle(
+                fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'คะแนน ${dorm['rating']}/5',
+            style: const TextStyle(color: Colors.red),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Details( // Assuming dorm has an 'id' field
+                  ),
+                ),
+              );
+            },
+            child: const Text('ดูรายละเอียด'),
+          ),
+        ],
+      ),
+    ),
+  ],
+),
+
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -118,25 +171,25 @@ class DormScreen extends StatelessWidget {
 
 class FilterButton extends StatelessWidget {
   final String text;
-  final Color backgroundColor;
-  final Color textColor;
-  final Color borderColor;
+  final VoidCallback onPressed;
+  final bool isSelected;
 
-  const FilterButton({super.key, 
+  const FilterButton({
+    super.key,
     required this.text,
-    this.backgroundColor = Colors.white,
-    this.textColor = Colors.purple,
-    this.borderColor = Colors.pink,
+    required this.onPressed,
+    this.isSelected = false,
   });
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        foregroundColor: textColor, backgroundColor: backgroundColor,
+        foregroundColor: isSelected ? Colors.white : Colors.purple,
+        backgroundColor: isSelected ? Colors.purple : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        side: BorderSide(color: borderColor),
+        side: BorderSide(color: isSelected ? Colors.purple : Colors.pink),
       ),
       child: Text(text),
     );
