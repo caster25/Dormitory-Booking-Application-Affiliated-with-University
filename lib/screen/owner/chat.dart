@@ -8,6 +8,7 @@ class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChatScreenState createState() => _ChatScreenState();
 }
 
@@ -120,10 +121,10 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
-        title: Text('Chat'),
+        title: const Text('Chat'),
         actions: [
           IconButton(
-            icon: Icon(Icons.message),
+            icon: const Icon(Icons.message),
             onPressed: () {}, // Add functionality if needed
           ),
         ],
@@ -135,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
               stream: _messagesCollection.orderBy('createdAt').snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final messages = snapshot.data!.docs;
@@ -151,15 +152,15 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: GestureDetector(
                         onLongPress: () => _showMessageOptions(context, messageSnapshot),
                         child: Container(
-                          margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
+                          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
                           decoration: BoxDecoration(
                             color: isMe ? Colors.blue[100] : Colors.grey[300],
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(12.0),
-                              topRight: Radius.circular(12.0),
-                              bottomLeft: isMe ? Radius.circular(12.0) : Radius.zero,
-                              bottomRight: isMe ? Radius.zero : Radius.circular(12.0),
+                              topLeft: const Radius.circular(12.0),
+                              topRight: const Radius.circular(12.0),
+                              bottomLeft: isMe ? const Radius.circular(12.0) : Radius.zero,
+                              bottomRight: isMe ? Radius.zero : const Radius.circular(12.0),
                             ),
                           ),
                           child: Column(
@@ -170,15 +171,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               if (message['text'] != null && message['text'].isNotEmpty)
                                 Text(
                                   message['text'],
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.black87,
                                     fontSize: 16.0,
                                   ),
                                 ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Text(
                                 message['sender'],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.black45,
                                   fontSize: 12.0,
                                 ),
@@ -198,7 +199,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.photo, color: Colors.purple),
+                  icon: const Icon(Icons.photo, color: Colors.purple),
                   onPressed: _pickImage,
                 ),
                 Expanded(
@@ -218,7 +219,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.purple),
+                  icon: const Icon(Icons.send, color: Colors.purple),
                   onPressed: () => _sendMessage(),
                 ),
               ],
@@ -237,16 +238,16 @@ class _ChatScreenState extends State<ChatScreen> {
         return Wrap(
           children: [
             ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('แก้ไข'),
+              leading: const Icon(Icons.edit),
+              title: const Text('แก้ไข'),
               onTap: () {
                 Navigator.pop(context);
                 _editMessage(messageSnapshot);
               },
             ),
             ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('ลบ'),
+              leading: const Icon(Icons.delete),
+              title: const Text('ลบ'),
               onTap: () {
                 Navigator.pop(context);
                 _deleteMessage(messageSnapshot);
