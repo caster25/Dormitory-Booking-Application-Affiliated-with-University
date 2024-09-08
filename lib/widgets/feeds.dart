@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/owner/details.dart';
+import 'package:dorm_app/screen/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -125,6 +125,7 @@ class FeedsScreen extends StatelessWidget {
                       return Row(
                         children: List.generate(dorms.length, (index) {
                           var dorm = dorms[index];
+                          String dormId = dorm.id; // ดึง dormId จาก Document ID
 
                           return Container(
                             margin: const EdgeInsets.only(right: 16),
@@ -174,7 +175,7 @@ class FeedsScreen extends StatelessWidget {
                                     onPressed: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
-                                        return const Details();
+                                        return DormallDetailScreen(dormId: dormId); // ส่ง dormId ที่ดึงมาจาก Document ID
                                       }));
                                     },
                                     child: const Text('เพิ่มเติม'),

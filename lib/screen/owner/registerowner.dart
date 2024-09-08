@@ -52,7 +52,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
       },
     );
   }
-
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
@@ -83,7 +82,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
             'dormitoryname': _dormitoryNameController,
             'role': 'owner',
           });
-
           _formKey.currentState!.reset();
           _passwordController.clear();
           _confirmPasswordController.clear();
@@ -181,7 +179,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   decoration: _buildInputDecoration('นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกนามสกุล';
+                      return 'กรุณากรอกชื่อ-นามสกุล';
                     }
                     return null;
                   },
@@ -191,6 +189,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _numphoneController,
                   decoration: _buildInputDecoration('เบอร์โทร'),
                   keyboardType: TextInputType.phone,
+                  decoration: _buildInputDecoration('เบอร์โทร'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกเบอร์โทร';
@@ -206,6 +205,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _emailController,
                   decoration: _buildInputDecoration('อีเมล'),
                   keyboardType: TextInputType.emailAddress,
+                  decoration: _buildInputDecoration('อีเมล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกอีเมล';
@@ -243,6 +243,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _passwordController,
                   decoration: _buildInputDecoration('รหัสผ่าน'),
                   obscureText: true,
+                  decoration: _buildInputDecoration('รหัสผ่าน'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกรหัสผ่าน';
@@ -258,6 +259,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   controller: _confirmPasswordController,
                   decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   obscureText: true,
+                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'รหัสผ่านไม่ตรงกัน';

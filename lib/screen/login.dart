@@ -100,11 +100,23 @@ class _LoginScreenState extends State<LoginScreen> {
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => const Homepage()),
-        );
+
+        String? role = await getUserRole(userCredential.user!.uid);
+        if (role != null) {
+          if (role == 'owner') {
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const Ownerhome()));
+          } else if (role == 'user') {
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const Homepage()));
+          } else {
+            _showErrorDialog('Role ไม่ถูกต้อง');
+          }
+        } else {
+          _showErrorDialog('ไม่พบข้อมูล role');
+        }
       } on FirebaseAuthException catch (e) {
         String errorMessage = 'เกิดข้อผิดพลาด: ${e.message}';
         bool showRegisterButton = false;
