@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/owner/details.dart';
+import 'package:dorm_app/screen/detail.dart';
 import 'package:flutter/material.dart';
 
 class DormScreen extends StatefulWidget {
@@ -27,7 +27,8 @@ class _DormScreenState extends State<DormScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -79,7 +80,10 @@ class _DormScreenState extends State<DormScreen> {
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('dormitories')
-                    .orderBy(sortBy, descending: sortBy == 'price' ? !isPriceAscending : !isRatingAscending)
+                    .orderBy(sortBy,
+                        descending: sortBy == 'price'
+                            ? !isPriceAscending
+                            : !isRatingAscending)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -94,6 +98,8 @@ class _DormScreenState extends State<DormScreen> {
                     itemCount: dorms.length,
                     itemBuilder: (context, index) {
                       var dorm = dorms[index];
+                      String dormId = dorm.id; // ดึง dormId จาก document ID
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Container(
@@ -102,59 +108,58 @@ class _DormScreenState extends State<DormScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Column(
-  crossAxisAlignment: CrossAxisAlignment.start,
-  children: [
-    Container(
-      height: 180,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(10)),
-        image: DecorationImage(
-          image: NetworkImage(dorm['imageUrl']),
-          fit: BoxFit.cover,
-        ),
-      ),
-    ),
-    Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            dorm['name'],
-            style: const TextStyle(
-                fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'ราคา ${dorm['price']} บาท',
-            style: const TextStyle(
-                fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'คะแนน ${dorm['rating']}/5',
-            style: const TextStyle(color: Colors.red),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Details( // Assuming dorm has an 'id' field
-                  ),
-                ),
-              );
-            },
-            child: const Text('ดูรายละเอียด'),
-          ),
-        ],
-      ),
-    ),
-  ],
-),
-
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(10)),
+                                  image: DecorationImage(
+                                    image: NetworkImage(dorm['imageUrl']),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      dorm['name'],
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'ราคา ${dorm['price']} บาท',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'คะแนน ${dorm['rating']}/5',
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DormallDetailScreen(dormId: dormId), // ส่ง dormId ที่ดึงมาจาก Document ID
+                                          ),
+                                        );
+                                      },
+                                      child: const Text('ดูรายละเอียด'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

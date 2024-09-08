@@ -164,7 +164,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                   decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกนามสกุล';
+                      return 'กรุณากรอกชื่อ-นามสกุล';
                     }
                     return null;
                   },

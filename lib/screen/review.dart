@@ -2,36 +2,101 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-class ReviewScreen extends StatelessWidget {
-  const ReviewScreen({super.key});
+class DormDetailScreen extends StatelessWidget {
+  final String dormName;
+  final String imageUrl;
+  final String price;
+  final String description;
+  final double rating;
+
+  const DormDetailScreen({
+    super.key,
+    required this.dormName,
+    required this.imageUrl,
+    required this.price,
+    required this.description,
+    required this.rating,
+  });
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: Column(
+        appBar: AppBar(
+          title: Text(dormName),
+          backgroundColor: Colors.purple,
+          bottom: const TabBar(
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(text: 'รายละเอียด'),
+              Tab(text: 'รีวิวหอพัก'),
+            ],
+          ),
+        ),
+        body: TabBarView(
           children: [
-            Container(
-              color: const Color.fromARGB(255, 241, 229, 255),
-              child: const TabBar(
-                indicatorColor: Colors.purple,
-                labelColor: Colors.purple,
-                unselectedLabelColor: Colors.grey,
-                tabs: [
-                  Tab(text: 'อ่านรีวิว'),
-                  Tab(text: 'รีวิวหอพัก'),
-                ],
-              ),
-            ),
-            const Expanded(
-              child: TabBarView(
+            // Tab 1: Dorm Detail
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ส่วนรายละเอียดหอพัก
+                  Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(imageUrl),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          dormName,
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'ราคา: $price บาท/เดือน',
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.star, color: Colors.yellow),
+                            Text('$rating/5'),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          description,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 16),
+                        const Divider(thickness: 1),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'รีวิวจากผู้ใช้งาน',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   ReadReviewsScreen(),
-                  WriteReviewScreen(),
                 ],
               ),
             ),
+            // Tab 2: Write Review
+            const WriteReviewScreen(),
           ],
         ),
       ),
@@ -44,7 +109,6 @@ class ReadReviewsScreen extends StatelessWidget {
   const ReadReviewsScreen({super.key});
 
   Future<void> _likeReview(String reviewId, int currentLikes) async {
-    // Increment likes by 1
     await FirebaseFirestore.instance
         .collection('reviews')
         .doc(reviewId)
@@ -65,6 +129,8 @@ class ReadReviewsScreen extends StatelessWidget {
         var reviews = snapshot.data!.docs;
 
         return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
           itemCount: reviews.length,
           itemBuilder: (context, index) {
@@ -160,32 +226,29 @@ class WriteReviewScreen extends StatefulWidget {
   const WriteReviewScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _WriteReviewScreenState createState() => _WriteReviewScreenState();
 }
 
 class _WriteReviewScreenState extends State<WriteReviewScreen> {
   final TextEditingController _reviewController = TextEditingController();
-  double _rating = 3.0; // Default rating
+  double _rating = 3.0;
 
   Future<void> _submitReview() async {
     String reviewText = _reviewController.text;
 
     if (reviewText.isNotEmpty) {
-      // Save review to Firebase
       await FirebaseFirestore.instance.collection('reviews').add({
-        'user': 'User Name', // Replace with actual user name
+        'user': 'User Name', 
         'date': DateTime.now().toString(),
         'text': reviewText,
-        'rating': _rating, // Include rating
+        'rating': _rating,
         'likes': 0,
         'comments': 0,
       });
 
-      // Clear the text field and reset rating
       _reviewController.clear();
       setState(() {
-        _rating = 3.0; // Reset to default
+        _rating = 3.0;
       });
     }
   }
