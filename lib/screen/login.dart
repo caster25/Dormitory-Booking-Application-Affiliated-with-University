@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/homepage.dart';
-import 'package:dorm_app/screen/owner/ownerhome.dart';
 import 'package:dorm_app/screen/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,7 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 // ฟังก์ชันสำหรับดึง role ของผู้ใช้จาก Firestore
 Future<String?> getUserRole(String userId) async {
-  DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  DocumentSnapshot doc =
+      await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
   if (doc.exists) {
     return doc['role'];
@@ -37,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
-
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(

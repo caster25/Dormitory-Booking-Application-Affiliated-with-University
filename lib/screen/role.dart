@@ -49,8 +49,8 @@ class RoleScreen extends StatelessWidget {
                   height: 100,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(context, 
-                        MaterialPageRoute(builder: (context) {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
                           return const RegisterownerScreen();
                         },
                       ));
