@@ -87,6 +87,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
         if (e.code == 'email-already-in-use') {
           // ignore: use_build_context_synchronously
           _showErrorDialog(
+              // ignore: use_build_context_synchronously
               context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
         } else {
           // ignore: use_build_context_synchronously
@@ -164,7 +165,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกนามสกุล';
+                      return 'กรุณากรอกชื่อ-นามสกุล';
                     }
                     return null;
                   },
