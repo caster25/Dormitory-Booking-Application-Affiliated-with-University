@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DormallDetailScreen extends StatefulWidget {
   final String dormId;
@@ -8,20 +9,39 @@ class DormallDetailScreen extends StatefulWidget {
   const DormallDetailScreen({super.key, required this.dormId});
 
   @override
-  State<DormallDetailScreen> createState() => _DormDetailScreenState();
+  State<DormallDetailScreen> createState() => _DormallDetailScreenState();
 }
 
-class _DormDetailScreenState extends State<DormallDetailScreen> {
+class _DormallDetailScreenState extends State<DormallDetailScreen> {
   late Future<Map<String, dynamic>> dormitoryData;
   late Future<List<Map<String, dynamic>>> reviewsData;
   final TextEditingController reviewController = TextEditingController();
   double _rating = 0;
+  User? currentUser;
+  Map<String, dynamic>? userData; // ข้อมูลผู้ใช้
 
   @override
   void initState() {
     super.initState();
     dormitoryData = _fetchDormitoryData();
     reviewsData = _fetchReviewsData();
+    _loadUserData(); // ดึงข้อมูลผู้ใช้
+  }
+
+  Future<void> _loadUserData() async {
+    currentUser = FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
+
+    if (currentUser != null) {
+      // ดึงข้อมูลผู้ใช้จาก Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+      setState(() {
+        userData = userDoc.data() as Map<String, dynamic>?;
+      });
+    }
   }
 
   Future<Map<String, dynamic>> _fetchDormitoryData() async {
@@ -38,16 +58,16 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
         .where('dormId', isEqualTo: widget.dormId)
         .get();
     return querySnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
+        .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
         .toList();
   }
 
   Future<void> _addReview() async {
-    if (reviewController.text.isEmpty || _rating == 0) return;
+    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) return;
 
     await FirebaseFirestore.instance.collection('reviews').add({
       'dormId': widget.dormId,
-      'user': 'User Name', // เปลี่ยนเป็นชื่อผู้ใช้จริง
+      'user': currentUser!.email, // ใช้อีเมลของผู้ใช้จาก FirebaseAuth
       'date': DateTime.now().toString(),
       'text': reviewController.text,
       'rating': _rating,
@@ -57,10 +77,11 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
 
     await _updateDormitoryReviews();
 
-    // Clear the text field and reset rating
+    // ล้างฟิลด์ข้อความและรีเซ็ทเรตติ้ง
     reviewController.clear();
     setState(() {
       _rating = 0;
+      reviewsData = _fetchReviewsData(); // โหลดรีวิวใหม่
     });
   }
 
@@ -81,8 +102,6 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
   }
 
   Future<void> _bookDormitory() async {
-    // Add your booking logic here
-    // For example, you could navigate to a booking form or show a confirmation dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -97,7 +116,7 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
           ),
           TextButton(
             onPressed: () {
-              // Add booking logic here
+              // ใส่ลอจิกการจองที่นี่
               Navigator.of(context).pop();
             },
             child: const Text('ยืนยัน'),
@@ -127,7 +146,7 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                 var dormitory = snapshot.data!;
                 return Column(
                   children: [
-                    // ภาพหอพัก
+                    // Dormitory Image
                     Container(
                       height: 200,
                       decoration: BoxDecoration(
@@ -142,26 +161,25 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // ชื่อหอพัก
+                          // Dormitory Name
                           Text(
                             dormitory['name'] ?? 'ไม่มีชื่อ',
                             style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 8),
-                          // ราคา
+                          // Price
                           Text(
                             'ราคา: ${dormitory['price']} บาท/เดือน',
                             style: const TextStyle(
                                 fontSize: 18, color: Colors.grey),
                           ),
                           const SizedBox(height: 8),
-                          // เรทติ้ง
+                          // Rating
                           Row(
                             children: [
                               RatingBarIndicator(
-                                rating:
-                                    (dormitory['rating']?.toDouble() ?? 0.0),
+                                rating: dormitory['rating']?.toDouble() ?? 0.0,
                                 itemBuilder: (context, index) => const Icon(
                                   Icons.star,
                                   color: Colors.amber,
@@ -174,18 +192,19 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          // จำนวนห้องว่าง
+                          // Available Rooms
                           Text(
                             'ห้องว่าง: ${dormitory['availableRooms']} ห้อง',
                             style: const TextStyle(fontSize: 16),
                           ),
                           const SizedBox(height: 16),
-                          // ปุ่มจองหอพัก
+                          // Booking Button
                           ElevatedButton(
                             onPressed: _bookDormitory,
                             child: const Text('จองหอพัก'),
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white, backgroundColor: Colors.purple, // สีของข้อความปุ่ม
+                              foregroundColor: Colors.white,
+                              backgroundColor: Colors.purple, // Button text color
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -197,7 +216,7 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 16),
-                          // ส่วนรีวิว
+                          // Reviews Section
                           FutureBuilder<List<Map<String, dynamic>>>(
                             future: reviewsData,
                             builder: (context, snapshot) {
@@ -213,7 +232,7 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                                 itemCount: reviews.length,
                                 itemBuilder: (context, index) {
                                   var review = reviews[index];
-                                  var reviewId = review['id']; // แก้ไขให้ตรงกับคอลเล็กชันรีวิว
+                                  var reviewId = review['id'];
                                   var currentLikes = review['likes'];
 
                                   return Padding(
@@ -257,8 +276,8 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                                             Text(review['text']),
                                             const SizedBox(height: 8),
                                             RatingBarIndicator(
-                                              rating:
-                                                  review['rating'].toDouble(),
+                                              rating: review['rating']
+                                                  .toDouble(),
                                               itemBuilder: (context, index) =>
                                                   const Icon(
                                                 Icons.star,
@@ -310,7 +329,7 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
-                          // ช่องสำหรับเขียนรีวิวใหม่
+                          // New Review Section
                           Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Column(
@@ -377,6 +396,9 @@ class _DormDetailScreenState extends State<DormallDetailScreen> {
         .doc(reviewId)
         .update({
       'likes': currentLikes + 1,
+    });
+    setState(() {
+      reviewsData = _fetchReviewsData(); // อัปเดตข้อมูลรีวิว
     });
   }
 }

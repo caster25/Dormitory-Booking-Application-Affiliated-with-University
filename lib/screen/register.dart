@@ -87,6 +87,7 @@ class _RegisterFormState extends State<RegisterScreen> {
         if (e.code == 'email-already-in-use') {
           // ignore: use_build_context_synchronously
           _showErrorDialog(
+              // ignore: use_build_context_synchronously
               context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
         } else {
           // ignore: use_build_context_synchronously
