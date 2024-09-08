@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/terms_and_conditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,15 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  final TextEditingController _userfnameController = TextEditingController();
-  final TextEditingController _userlnameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _dormitoryNameController =
+      TextEditingController();
+  final TextEditingController _dormitoryAddressController =
+      TextEditingController();
   bool _acceptTerms = false;
 
   final auth = FirebaseAuth.instance;
@@ -29,8 +35,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
-      barrierDismissible:
-          false, // ไม่อนุญาตให้ผู้ใช้ปิด dialog โดยการคลิกนอก dialog
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('เกิดข้อผิดพลาด'),
@@ -47,12 +52,14 @@ class _RegisterFormState extends State<RegisterownerScreen> {
       },
     );
   }
-
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TermsAndConditionsScreen(),
+          ),
         );
         return;
       }
@@ -67,34 +74,30 @@ class _RegisterFormState extends State<RegisterownerScreen> {
         var currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser != null) {
           await usersCollection.doc(currentUser.uid).set({
-            'userfname': _userfnameController.text,
-            'userlname': _userlnameController.text,
+            'username': _usernameController.text,
+            'firstname': _firstnameController.text,
+            'lastname': _lastnameController.text,
             'numphone': _numphoneController.text,
             'email': _emailController.text,
-            'role' : 'owner'
+            'dormitoryname': _dormitoryNameController,
+            'role': 'owner',
           });
-
           _formKey.currentState!.reset();
           _passwordController.clear();
           _confirmPasswordController.clear();
           Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'email-already-in-use') {
-          // ignore: use_build_context_synchronously
           _showErrorDialog(
-              // ignore: use_build_context_synchronously
               context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
         } else {
-          // ignore: use_build_context_synchronously
           _showErrorDialog(context, 'Registration error: ${e.message}');
         }
       } catch (e) {
-        // ignore: use_build_context_synchronously
         _showErrorDialog(context, 'Error: $e');
       }
     } else {
@@ -104,9 +107,9 @@ class _RegisterFormState extends State<RegisterownerScreen> {
     }
   }
 
-  InputDecoration _buildInputDecoration(String label) {
+  InputDecoration _buildInputDecoration(String labelText) {
     return InputDecoration(
-      labelText: label,
+      labelText: labelText,
       labelStyle: const TextStyle(fontSize: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
@@ -143,14 +146,14 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        Text('สร้างบัญชีใหม่', style: TextStyle(fontSize: 40)),
+                        Text('สร้างบัญชีใหม่', style: TextStyle(fontSize: 30)),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
-                  controller: _userfnameController,
+                  controller: _usernameController,
                   decoration: _buildInputDecoration('ชื่อผู้ใช้'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -159,10 +162,21 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
-                  controller: _userlnameController,
-                  decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
+                  controller: _firstnameController,
+                  decoration: _buildInputDecoration('ชื่อ'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกชื่อ';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _lastnameController,
+                  decoration: _buildInputDecoration('นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกชื่อ-นามสกุล';
@@ -170,9 +184,10 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _numphoneController,
+                  decoration: _buildInputDecoration('เบอร์โทร'),
                   keyboardType: TextInputType.phone,
                   decoration: _buildInputDecoration('เบอร์โทร'),
                   validator: (value) {
@@ -185,9 +200,10 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _emailController,
+                  decoration: _buildInputDecoration('อีเมล'),
                   keyboardType: TextInputType.emailAddress,
                   decoration: _buildInputDecoration('อีเมล'),
                   validator: (value) {
@@ -200,9 +216,32 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _dormitoryNameController,
+                  decoration: _buildInputDecoration('ชื่อหอพัก'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกชื่อหอพัก';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _dormitoryAddressController,
+                  decoration: _buildInputDecoration('ที่อยู่หอพัก'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกที่อยู่หอพัก';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _passwordController,
+                  decoration: _buildInputDecoration('รหัสผ่าน'),
                   obscureText: true,
                   decoration: _buildInputDecoration('รหัสผ่าน'),
                   validator: (value) {
@@ -215,9 +254,10 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _confirmPasswordController,
+                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   obscureText: true,
                   decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   validator: (value) {
@@ -227,24 +267,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 25),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _acceptTerms,
-                      onChanged: (value) {
-                        setState(() {
-                          _acceptTerms = value!;
-                        });
-                      },
-                    ),
-                    const Text(
-                      'ฉันยอมรับเงื่อนไขและข้อตกลงการใช้บริการ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -253,7 +276,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                         const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 Center(
                   child: TextButton(
                     onPressed: () {

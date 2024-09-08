@@ -48,6 +48,7 @@ class _RegisterFormState extends State<RegisterScreen> {
     );
   }
 
+// ในฟังก์ชัน _register ของคุณ
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
@@ -148,7 +149,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _userfnameController,
                   decoration: _buildInputDecoration('ชื่อผู้ใช้'),
@@ -253,7 +254,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                         const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 15),
                 Center(
                   child: TextButton(
                     onPressed: () {
