@@ -1,5 +1,5 @@
-// import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/index.dart';
+import 'package:dorm_app/screen/owner/chat.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
