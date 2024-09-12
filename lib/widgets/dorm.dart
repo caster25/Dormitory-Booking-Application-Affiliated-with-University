@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/detail.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // To get the current user
 
 class DormScreen extends StatefulWidget {
   const DormScreen({super.key});
@@ -26,6 +27,7 @@ class _DormScreenState extends State<DormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Search bar
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -51,6 +53,7 @@ class _DormScreenState extends State<DormScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              // Filter buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -77,6 +80,7 @@ class _DormScreenState extends State<DormScreen> {
                 ],
               ),
               const SizedBox(height: 16),
+              // StreamBuilder to fetch dormitory data
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('dormitories')
@@ -98,7 +102,8 @@ class _DormScreenState extends State<DormScreen> {
                     itemCount: dorms.length,
                     itemBuilder: (context, index) {
                       var dorm = dorms[index];
-                      String dormId = dorm.id; // ดึง dormId จาก document ID
+                      String dormId =
+                          dorm.id; // Retrieve dormId from document ID
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -110,6 +115,7 @@ class _DormScreenState extends State<DormScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              // Dorm image
                               Container(
                                 height: 180,
                                 decoration: BoxDecoration(
@@ -143,17 +149,34 @@ class _DormScreenState extends State<DormScreen> {
                                       style: const TextStyle(color: Colors.red),
                                     ),
                                     const SizedBox(height: 10),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                DormallDetailScreen(dormId: dormId), // ส่ง dormId ที่ดึงมาจาก Document ID
-                                          ),
-                                        );
-                                      },
-                                      child: const Text('ดูรายละเอียด'),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // View details button
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DormallDetailScreen(
+                                                        dormId: dormId),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text('ดูรายละเอียด'),
+                                        ),
+                                        // Favorite heart icon
+                                        IconButton(
+                                          icon:
+                                              const Icon(Icons.favorite_border),
+                                          color: Colors.pink,
+                                          onPressed: () {
+                                            _toggleFavorite(dormId);
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -171,6 +194,38 @@ class _DormScreenState extends State<DormScreen> {
         ),
       ),
     );
+  }
+
+  // Function to add/remove favorite dormitories
+  Future<void> _toggleFavorite(String dormId) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return; // If user is not signed in, do nothing
+
+    final userFavoritesRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    final userDoc = await userFavoritesRef.get();
+
+    if (userDoc.exists) {
+      List<dynamic> favorites = userDoc['favorites'] ?? [];
+
+      if (favorites.contains(dormId)) {
+        // If dormId is already in favorites, remove it
+        favorites.remove(dormId);
+      } else {
+        // Otherwise, add the dormId to favorites
+        favorites.add(dormId);
+      }
+
+      // Update the user's favorite list in Firestore
+      await userFavoritesRef.update({'favorites': favorites});
+    } else {
+      // If user document doesn't exist, create a new one with the dormId in favorites
+      await userFavoritesRef.set({
+        'favorites': [dormId],
+      });
+    }
   }
 }
 
