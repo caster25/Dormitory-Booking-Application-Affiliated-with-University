@@ -190,7 +190,7 @@ class _HomepageState extends State<Homepage> {
             items: const [
               Icon(Icons.home, size: 30),
               Icon(Icons.domain_rounded, size: 30),
-              Icon(Icons.star_sharp, size: 30),
+              Icon(Icons.chat_bubble_outlined, size: 30),
               Icon(Icons.person, size: 30),
             ],
             color: const Color.fromARGB(255, 153, 85, 240),

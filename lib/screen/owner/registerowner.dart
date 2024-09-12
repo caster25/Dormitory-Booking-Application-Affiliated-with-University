@@ -52,6 +52,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
       },
     );
   }
+
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
@@ -187,9 +188,9 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _numphoneController,
-                  decoration: _buildInputDecoration('เบอร์โทร'),
+                  decoration:
+                      _buildInputDecoration('เบอร์โทร'), // Only one decoration
                   keyboardType: TextInputType.phone,
-                  decoration: _buildInputDecoration('เบอร์โทร'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกเบอร์โทร';
@@ -203,9 +204,9 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _emailController,
-                  decoration: _buildInputDecoration('อีเมล'),
+                  decoration:
+                      _buildInputDecoration('อีเมล'), // Only one decoration
                   keyboardType: TextInputType.emailAddress,
-                  decoration: _buildInputDecoration('อีเมล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกอีเมล';
@@ -241,9 +242,9 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: _buildInputDecoration('รหัสผ่าน'),
+                  decoration:
+                      _buildInputDecoration('รหัสผ่าน'), // Only one decoration
                   obscureText: true,
-                  decoration: _buildInputDecoration('รหัสผ่าน'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกรหัสผ่าน';
@@ -257,9 +258,9 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
+                  decoration: _buildInputDecoration(
+                      'ยืนยันรหัสผ่าน'), // Only one decoration
                   obscureText: true,
-                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'รหัสผ่านไม่ตรงกัน';
