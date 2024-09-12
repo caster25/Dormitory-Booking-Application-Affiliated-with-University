@@ -56,8 +56,7 @@ dependencies:
   geolocator: ^12.0.0
   flutter_localization: ^0.2.1
   flutter_rating_bar: ^4.0.1
-
-
+  
 flutter_icons:
   android: true
   image_path: "assets/images/logo/Accom.png"

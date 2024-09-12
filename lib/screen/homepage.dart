@@ -1,4 +1,5 @@
-import 'package:dorm_app/widgets/chat.dart';
+import 'package:dorm_app/screen/owner/chat.dart';
+// import 'package:dorm_app/widgets/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -145,7 +146,7 @@ class _HomepageState extends State<Homepage> {
   final List<Widget> _screens = [
     const FeedsScreen(), // หน้าแรก
     const DormScreen(), // หอพัก
-    const Chat(), // รีวิวหอพัก
+    const ChatScreen(), // รีวิวหอพัก
     const ProfileScreen(), // โปรไฟล์
   ];
 

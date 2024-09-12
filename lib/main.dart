@@ -3,6 +3,7 @@ import 'package:dorm_app/screen/index.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+
 void main() async {
   // Ensure that Flutter services are initialized before calling Firebase
   WidgetsFlutterBinding.ensureInitialized();
