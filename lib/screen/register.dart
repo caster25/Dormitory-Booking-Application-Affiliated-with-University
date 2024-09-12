@@ -1,8 +1,8 @@
+import 'package:dorm_app/model/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:dorm_app/screen/login.dart';
-import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
+import 'package:dorm_app/screen/login.dart';// Assuming this contains the userProfile class
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
