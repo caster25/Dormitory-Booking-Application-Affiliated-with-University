@@ -68,7 +68,7 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    userData?['userfname'] ?? 'ชื่อผู้ใช้',
+                    userData?['fristname'] ?? 'ชื่อผู้ใช้',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                   ProfileInfoRow(
                     icon: Icons.person,
-                    text: userData?['userlname'] ?? 'ไม่ทราบ',
+                    text: userData?['lastname'] ?? 'ไม่ทราบ',
                   ),
                   ProfileInfoRow(
                     icon: Icons.email,

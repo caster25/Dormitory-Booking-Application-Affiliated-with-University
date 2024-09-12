@@ -274,22 +274,33 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (BuildContext context) {
         return Wrap(
           children: [
-            ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('แก้ไข'),
-              onTap: () {
-                Navigator.pop(context);
-                _editMessage(messageSnapshot);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('ลบ'),
-              onTap: () {
-                Navigator.pop(context);
-                _deleteMessage(messageSnapshot);
-              },
-            ),
+            if (isMe) ...[
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('Edit'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editMessage(messageSnapshot);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Delete'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteMessage(messageSnapshot);
+                },
+              ),
+            ] else ...[
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('View'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add any additional functionality here for viewing messages.
+                },
+              ),
+            ],
           ],
         );
       },

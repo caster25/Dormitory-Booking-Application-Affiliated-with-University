@@ -1,8 +1,9 @@
+
+import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:dorm_app/screen/login.dart';
-import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
+import 'package:dorm_app/screen/login.dart';// Assuming this contains the userProfile class
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,7 +14,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final userProfile profile = userProfile(); // Instance of userProfile
+  final UserProfile profile = UserProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -48,6 +49,7 @@ class _RegisterFormState extends State<RegisterScreen> {
     );
   }
 
+// ในฟังก์ชัน _register ของคุณ
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
@@ -87,6 +89,7 @@ class _RegisterFormState extends State<RegisterScreen> {
         if (e.code == 'email-already-in-use') {
           // ignore: use_build_context_synchronously
           _showErrorDialog(
+              // ignore: use_build_context_synchronously
               context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
         } else {
           // ignore: use_build_context_synchronously
@@ -147,7 +150,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _userfnameController,
                   decoration: _buildInputDecoration('ชื่อผู้ใช้'),
@@ -252,7 +255,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                         const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 15),
                 Center(
                   child: TextButton(
                     onPressed: () {
