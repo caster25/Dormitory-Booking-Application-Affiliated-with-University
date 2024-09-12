@@ -3,6 +3,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: 'AIzaSyDNmyeh6dFL65qhXP2bkOowgl_97O4glkY',
+      appId: '1:870658394151:android:db7be5de05075a91e5e602',
+      messagingSenderId: 'G-T3QSM1C2CH',
+      projectId: 'accommoease',
+      storageBucket: 'accommoease.appspot.com',
+    ),
+  );
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: ChatScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -17,21 +45,18 @@ class _ChatScreenState extends State<ChatScreen> {
       FirebaseFirestore.instance.collection('messages');
 
   String? _editingMessageId; // To store the message ID being edited
-  String? _deletedMessageText; // To store the deleted message text
-  String? _deletedMessageSender; // To store the sender of the deleted message
-  DocumentSnapshot? _deletedMessageSnapshot; // To store the deleted message snapshot
 
-  String currentUser = 'ป๊ะเตี๋ยว'; // Change this to 'owner' or 'tenant' based on the logged-in user
+  String currentUser = 'มี๊เจ๋ง'; // Change this to 'owner' or 'tenant' based on the logged-in user
 
-  /// Function to send a message (text or image)
-  void _sendMessage({String? imageUrl}) async {
-    if (_messageController.text.isNotEmpty || imageUrl != null) {
+  /// Function to send a message (text or images)
+  void _sendMessage({String? text, List<String>? imageUrls}) async {
+    if ((text != null && text.isNotEmpty) || (imageUrls != null && imageUrls.isNotEmpty)) {
       if (_editingMessageId != null) {
         // Update the existing message
         await _messagesCollection.doc(_editingMessageId).update({
-          'text': _messageController.text,
+          'text': text ?? '',
           'createdAt': Timestamp.now(),
-          'imageUrl': imageUrl ?? '', // Update imageUrl if provided
+          'imageUrls': imageUrls ?? [], // Update imageUrls if provided
         });
         setState(() {
           _editingMessageId = null; // Clear the editing state
@@ -39,10 +64,10 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         // Add a new message
         await _messagesCollection.add({
-          'text': _messageController.text,
+          'text': text ?? '',
           'createdAt': Timestamp.now(),
-          'sender': currentUser, // Use the current user's role ('tenant' or 'owner')
-          'imageUrl': imageUrl ?? '',
+          'sender': currentUser,
+          'imageUrls': imageUrls ?? [],
         });
       }
       _messageController.clear(); // Clear the message input field
@@ -51,40 +76,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// Function to delete a message
   void _deleteMessage(DocumentSnapshot messageSnapshot) async {
-    setState(() {
-      _deletedMessageSnapshot = messageSnapshot;
-      _deletedMessageText = messageSnapshot['text'];
-      _deletedMessageSender = messageSnapshot['sender'];
-    });
-
     // Delete the message
     await _messagesCollection.doc(messageSnapshot.id).delete();
-
-    // Show a snackbar with an Undo option
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Message deleted'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: _undoDeleteMessage,
-        ),
-      ),
-    );
-  }
-
-  /// Function to undo a deleted message
-  void _undoDeleteMessage() {
-    if (_deletedMessageSnapshot != null) {
-      _messagesCollection.add({
-        'text': _deletedMessageText,
-        'createdAt': Timestamp.now(),
-        'sender': _deletedMessageSender,
-        'imageUrl': _deletedMessageSnapshot!['imageUrl'] ?? '',
-      });
-      _deletedMessageSnapshot = null;
-      _deletedMessageText = null;
-      _deletedMessageSender = null;
-    }
   }
 
   /// Function to edit a message
@@ -95,15 +88,19 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /// Function to pick and send an image
-  Future<void> _pickImage() async {
+  /// Function to pick and send multiple images
+  Future<void> _pickImages() async {
     final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    final pickedImages = await picker.pickMultiImage(); // Allows picking multiple images
 
-    if (pickedImage != null) {
-      File imageFile = File(pickedImage.path);
-      String imageUrl = await _uploadImageToFirebase(imageFile);
-      _sendMessage(imageUrl: imageUrl);
+    if (pickedImages != null && pickedImages.isNotEmpty) {
+      List<String> imageUrls = [];
+      for (var pickedImage in pickedImages) {
+        File imageFile = File(pickedImage.path);
+        String imageUrl = await _uploadImageToFirebase(imageFile);
+        imageUrls.add(imageUrl);
+      }
+      _sendMessage(imageUrls: imageUrls);
     }
   }
 
@@ -113,6 +110,30 @@ class _ChatScreenState extends State<ChatScreen> {
     final imageRef = storageRef.child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
     await imageRef.putFile(imageFile);
     return await imageRef.getDownloadURL();
+  }
+
+  /// Function to show a full-screen image in a dialog
+  void _showFullScreenImage(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Stack(
+            children: [
+              Image.network(imageUrl, fit: BoxFit.cover),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: IconButton(
+                  icon: Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -144,7 +165,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemBuilder: (context, index) {
                     final message = messages[index].data() as Map<String, dynamic>;
                     final messageSnapshot = messages[index];
-                    final bool isMe = message['sender'] == currentUser; // Check if the message sender is the current user
+                    final bool isMe = message['sender'] == currentUser;
 
                     return Align(
                       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -165,8 +186,22 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (message['imageUrl'] != null && message['imageUrl'].isNotEmpty)
-                                Image.network(message['imageUrl']),
+                              if (message['imageUrls'] != null && (message['imageUrls'] as List<dynamic>).isNotEmpty)
+                                Wrap(
+                                  spacing: 8.0,
+                                  runSpacing: 8.0,
+                                  children: (message['imageUrls'] as List<dynamic>).map((url) {
+                                    return GestureDetector(
+                                      onTap: () => _showFullScreenImage(url),
+                                      child: Image.network(
+                                        url,
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
                               if (message['text'] != null && message['text'].isNotEmpty)
                                 Text(
                                   message['text'],
@@ -199,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 IconButton(
                   icon: Icon(Icons.photo, color: Colors.purple),
-                  onPressed: _pickImage,
+                  onPressed: _pickImages, // Updated to pick multiple images
                 ),
                 Expanded(
                   child: TextField(
@@ -219,7 +254,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 IconButton(
                   icon: Icon(Icons.send, color: Colors.purple),
-                  onPressed: () => _sendMessage(),
+                  onPressed: () => _sendMessage(text: _messageController.text),
                 ),
               ],
             ),
@@ -231,27 +266,41 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// Function to show options to edit or delete a message
   void _showMessageOptions(BuildContext context, DocumentSnapshot messageSnapshot) {
+    final message = messageSnapshot.data() as Map<String, dynamic>;
+    final bool isMe = message['sender'] == currentUser;
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Wrap(
           children: [
-            ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('แก้ไข'),
-              onTap: () {
-                Navigator.pop(context);
-                _editMessage(messageSnapshot);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('ลบ'),
-              onTap: () {
-                Navigator.pop(context);
-                _deleteMessage(messageSnapshot);
-              },
-            ),
+            if (isMe) ...[
+              ListTile(
+                leading: Icon(Icons.edit),
+                title: Text('Edit'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editMessage(messageSnapshot);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Delete'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteMessage(messageSnapshot);
+                },
+              ),
+            ] else ...[
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('View'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Add any additional functionality here for viewing messages.
+                },
+              ),
+            ],
           ],
         );
       },
