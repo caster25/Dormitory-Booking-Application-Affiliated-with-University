@@ -9,7 +9,7 @@ import 'package:dorm_app/widgets/map.dart';
 import 'package:flutter/material.dart';
 
 class Ownerhome extends StatefulWidget {
-  const Ownerhome({super.key});
+  const Ownerhome({super.key, });
 
   @override
   State<Ownerhome> createState() => _OwnerhomeState();
@@ -20,7 +20,7 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   final List<Widget> _screens = [
     const Profileowner(),
-    const DormitoryFormScreen(),
+    const AddDormitoryFormScreen(ownerId: ''), 
     const Details()
   ];
 
@@ -88,6 +88,7 @@ class _OwnerhomeState extends State<Ownerhome> {
     }
   }
 }
+
 
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({super.key});

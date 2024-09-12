@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:dorm_app/screen/login.dart';
-import 'package:dorm_app/model/profile.dart'; // Assuming this contains the userProfile class
+import 'package:dorm_app/model/Userprofile.dart'; // Assuming this contains the UserProfile class
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,7 +13,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final userProfile profile = userProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -22,6 +21,7 @@ class _RegisterFormState extends State<RegisterScreen> {
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   bool _acceptTerms = false;
+  bool _isOwner = false; // Add this to distinguish between user and owner
 
   final auth = FirebaseAuth.instance;
   final usersCollection = FirebaseFirestore.instance.collection('users');
@@ -29,18 +29,17 @@ class _RegisterFormState extends State<RegisterScreen> {
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
-      barrierDismissible:
-          false, // ไม่อนุญาตให้ผู้ใช้ปิด dialog โดยการคลิกนอก dialog
+      barrierDismissible: false, // Prevent closing dialog by tapping outside
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('เกิดข้อผิดพลาด'),
+          title: const Text('Error'),
           content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
+                Navigator.of(context).pop(); // Close dialog
               },
-              child: const Text('ตกลง'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -52,7 +51,8 @@ class _RegisterFormState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
+          const SnackBar(
+              content: Text('Please accept the terms and conditions')),
         );
         return;
       }
@@ -66,13 +66,17 @@ class _RegisterFormState extends State<RegisterScreen> {
 
         var currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser != null) {
-          await usersCollection.doc(currentUser.uid).set({
-            'userfname': _userfnameController.text,
-            'userlname': _userlnameController.text,
-            'numphone': _numphoneController.text,
-            'email': _emailController.text,
-            'role' : 'user'
-          });
+          final userProfile = UserProfile(
+            idusers: currentUser.uid, // Use String type for iduser
+            email: _emailController.text,
+            firstname: _userfnameController.text,
+            lastname: _userlnameController.text,
+            numphone: _numphoneController.text,
+            role: _isOwner ? 'owner' : 'user',
+          );
+
+          // Save user profile to Firestore
+          await usersCollection.doc(currentUser.uid).set(userProfile.toMap());
 
           _formKey.currentState!.reset();
           _passwordController.clear();
@@ -86,9 +90,8 @@ class _RegisterFormState extends State<RegisterScreen> {
       } on FirebaseAuthException catch (e) {
         if (e.code == 'email-already-in-use') {
           // ignore: use_build_context_synchronously
-          _showErrorDialog(
-              // ignore: use_build_context_synchronously
-              context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+          _showErrorDialog(context,
+              'This email is already in use. Please use another email.');
         } else {
           // ignore: use_build_context_synchronously
           _showErrorDialog(context, 'Registration error: ${e.message}');
@@ -99,7 +102,7 @@ class _RegisterFormState extends State<RegisterScreen> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+        const SnackBar(content: Text('Please check your information again')),
       );
     }
   }
@@ -143,7 +146,8 @@ class _RegisterFormState extends State<RegisterScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        Text('สร้างบัญชีใหม่', style: TextStyle(fontSize: 40)),
+                        Text('Create New Account',
+                            style: TextStyle(fontSize: 40)),
                       ],
                     ),
                   ),
@@ -151,10 +155,10 @@ class _RegisterFormState extends State<RegisterScreen> {
                 const SizedBox(height: 25),
                 TextFormField(
                   controller: _userfnameController,
-                  decoration: _buildInputDecoration('ชื่อผู้ใช้'),
+                  decoration: _buildInputDecoration('First Name'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกชื่อผู้ใช้';
+                      return 'Please enter your first name';
                     }
                     return null;
                   },
@@ -162,10 +166,10 @@ class _RegisterFormState extends State<RegisterScreen> {
                 const SizedBox(height: 25),
                 TextFormField(
                   controller: _userlnameController,
-                  decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
+                  decoration: _buildInputDecoration('Last Name'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกชื่อ-นามสกุล';
+                      return 'Please enter your last name';
                     }
                     return null;
                   },
@@ -174,13 +178,13 @@ class _RegisterFormState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _numphoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: _buildInputDecoration('เบอร์โทร'),
+                  decoration: _buildInputDecoration('Phone Number'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกเบอร์โทร';
+                      return 'Please enter your phone number';
                     }
                     if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                      return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
+                      return 'Invalid phone number format';
                     }
                     return null;
                   },
@@ -189,13 +193,13 @@ class _RegisterFormState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: _buildInputDecoration('อีเมล'),
+                  decoration: _buildInputDecoration('Email'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกอีเมล';
+                      return 'Please enter your email';
                     }
                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'รูปแบบอีเมลไม่ถูกต้อง';
+                      return 'Invalid email format';
                     }
                     return null;
                   },
@@ -204,13 +208,13 @@ class _RegisterFormState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: _buildInputDecoration('รหัสผ่าน'),
+                  decoration: _buildInputDecoration('Password'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกรหัสผ่าน';
+                      return 'Please enter your password';
                     }
                     if (value.length < 8) {
-                      return 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร';
+                      return 'Password must be at least 8 characters long';
                     }
                     return null;
                   },
@@ -219,10 +223,10 @@ class _RegisterFormState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
+                  decoration: _buildInputDecoration('Confirm Password'),
                   validator: (value) {
                     if (value != _passwordController.text) {
-                      return 'รหัสผ่านไม่ตรงกัน';
+                      return 'Passwords do not match';
                     }
                     return null;
                   },
@@ -239,7 +243,24 @@ class _RegisterFormState extends State<RegisterScreen> {
                       },
                     ),
                     const Text(
-                      'ฉันยอมรับเงื่อนไขและข้อตกลงการใช้บริการ',
+                      'I accept the terms and conditions',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isOwner,
+                      onChanged: (value) {
+                        setState(() {
+                          _isOwner = value!;
+                        });
+                      },
+                    ),
+                    const Text(
+                      'Register as Owner',
                       style: TextStyle(fontSize: 16),
                     ),
                   ],
@@ -250,7 +271,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: _register,
                     child:
-                        const Text('ลงทะเบียน', style: TextStyle(fontSize: 20)),
+                        const Text('Register', style: TextStyle(fontSize: 20)),
                   ),
                 ),
                 const SizedBox(height: 25),
@@ -264,7 +285,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                       );
                     },
                     child: const Text(
-                      'มีบัญชีอยู่แล้ว? เข้าสู่ระบบ',
+                      'Already have an account? Log in',
                       style: TextStyle(fontSize: 16, color: Colors.blue),
                     ),
                   ),

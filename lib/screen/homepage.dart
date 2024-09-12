@@ -1,3 +1,4 @@
+import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/owner/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:flutter/material.dart';
@@ -11,7 +12,10 @@ import 'package:dorm_app/widgets/feeds.dart';
 import 'package:dorm_app/screen/profile.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key, this.title = "Home"});
+  const Homepage({
+    super.key,
+    this.title = "Home",
+  });
 
   final String title;
 
@@ -20,9 +24,9 @@ class Homepage extends StatefulWidget {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({super.key, required this.user});
+  const NavigationDrawer({super.key, required this.userProfile});
 
-  final User user; // Add user parameter
+  final UserProfile userProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -39,33 +43,41 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  Widget buildHeader(BuildContext context) => Container(
-        color: const Color.fromARGB(255, 153, 85, 240),
-        padding: EdgeInsets.only(
-          top: 24 + MediaQuery.of(context).padding.top,
-          bottom: 24,
-        ),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 52,
-              backgroundImage: user.photoURL != null
-                  ? NetworkImage(user.photoURL!)
-                  : const NetworkImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              user.displayName ?? 'User Name',
-              style: const TextStyle(fontSize: 28, color: Colors.white),
-            ),
-            Text(
-              user.email ?? 'user@example.com',
-              style: const TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ],
-        ),
-      );
+  Widget buildHeader(BuildContext context) {
+    print('User Profile: ${userProfile.toMap()}');
+    print('User First Name: ${userProfile.firstname}');
+    print('User Last Name: ${userProfile.lastname}');
+    print('User Email: ${userProfile.email}');
+    return Container(
+      color: const Color.fromARGB(255, 153, 85, 240),
+      padding: EdgeInsets.only(
+        top: 24 + MediaQuery.of(context).padding.top,
+        bottom: 24,
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 52,
+            backgroundImage: userProfile.profilePictureURL != null
+                ? NetworkImage(userProfile.profilePictureURL!)
+                : const NetworkImage(
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            userProfile.username ??
+                'ชื่อผู้ใช้', // แสดงค่า 'ชื่อผู้ใช้' ถ้า userProfile.username เป็น null
+            style: const TextStyle(fontSize: 28, color: Colors.white),
+          ),
+          Text(
+            userProfile.email ??
+                'ex@example.com', // แสดงค่า 'อีเมล@example.com' ถ้า userProfile.email เป็น null
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
@@ -140,6 +152,7 @@ class NavigationDrawer extends StatelessWidget {
 
 class _HomepageState extends State<Homepage> {
   int index = 0;
+  // ignore: unused_field
   late User _currentUser;
 
   final List<Widget> _screens = [
@@ -174,7 +187,8 @@ class _HomepageState extends State<Homepage> {
             index != 3 ? getAppBar(index) : null, // Hide AppBar in Profile tab
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         drawer: index != 3
-            ? NavigationDrawer(user: _currentUser)
+            // ignore: prefer_const_constructors
+            ? NavigationDrawer(userProfile: UserProfile())
             : null, // Hide NavigationDrawer in Profile tab
         body: IndexedStack(
           index: index,
@@ -233,7 +247,7 @@ class _HomepageState extends State<Homepage> {
       case 1:
         return const Text('หอพัก');
       case 2:
-        return const Text('รีวิวหอพัก');
+        return const Text('แชท');
       default:
         return const Text('ข้อมูลส่วนตัว');
     }

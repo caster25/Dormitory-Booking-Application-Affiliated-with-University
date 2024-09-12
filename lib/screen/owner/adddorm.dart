@@ -6,14 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
-class DormitoryFormScreen extends StatefulWidget {
-  const DormitoryFormScreen({super.key});
+class AddDormitoryFormScreen extends StatefulWidget {
+  final String ownerId; // รับ ownerId จากหน้า Ownerhome
+
+  const AddDormitoryFormScreen({super.key, required this.ownerId});
 
   @override
-  State<DormitoryFormScreen> createState() => _DormitoryFormScreenState();
+  State<AddDormitoryFormScreen> createState() => _DormitoryFormScreenState();
 }
 
-class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
+class _DormitoryFormScreenState extends State<AddDormitoryFormScreen> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final _formKey = GlobalKey<FormState>();
 
@@ -85,7 +87,8 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
           'price': double.parse(_dormPriceController.text),
           'availableRooms': int.parse(_availableRoomsController.text),
           'imageUrl': _uploadedImageUrl,
-          'rating': 0
+          'rating': 0,
+          'ownerId': widget.ownerId, // เก็บ ownerId
         });
 
         // ignore: use_build_context_synchronously
@@ -190,6 +193,17 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
+
+                // แสดงรูปภาพตัวอย่างหอพัก
+                if (_dormImage != null) ...[
+                  Image.file(
+                    _dormImage!,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
                 // แสดงสถานะการอัปโหลดรูปภาพ
                 if (_isUploading) ...[

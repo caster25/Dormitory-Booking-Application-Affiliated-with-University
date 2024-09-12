@@ -1,6 +1,12 @@
+import 'package:dorm_app/model/Userprofile.dart';
+import 'package:dorm_app/screen/owner/profile.dart';
 import 'package:flutter/material.dart';
+ // เปลี่ยนให้ตรงกับ path ของไฟล์ของคุณ
+
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final UserProfile? userProfile;
+
+  const ProfileScreen({super.key, this.userProfile});
 
   @override
   Widget build(BuildContext context) {
@@ -16,23 +22,26 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
                 CircleAvatar(
-                  
-                  backgroundImage: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
+                  backgroundImage: userProfile?.profilePictureURL != null
+                      ? NetworkImage(userProfile!.profilePictureURL!)
+                      : const NetworkImage(
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('สวัสดีค่ะ คุณ ....',
-                      style: TextStyle(
+                    Text(
+                      'สวัสดีค่ะ คุณ ${userProfile?.firstname ?? 'ชื่อผู้ใช้'} ${userProfile?.lastname ?? ''}',
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text('หอพักบ้านแสนสุข'),
+                    Text(userProfile?.role ?? 'หอพักบ้านแสนสุข'),
                   ],
                 ),
               ],
@@ -43,7 +52,8 @@ class ProfileScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: const DecorationImage(
-                  image: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
+                  image: NetworkImage(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -64,40 +74,13 @@ class ProfileScreen extends StatelessWidget {
                   text: 'การตั้งค่า',
                 ),
                 MenuItem(
-                  
                   icon: Icons.notifications_none,
                   text: 'แจ้งเตือน',
-                  
                 ),
               ],
             ),
           ],
         ),
-      ),
-      
-    );
-  }
-}
-
-class MenuItem extends StatelessWidget {
-  final IconData icon;
-  final String text;
-
-  const MenuItem({super.key, required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.grey),
-          const SizedBox(width: 16),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 16),
-          ),
-        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/homepage.dart';
 import 'package:dorm_app/screen/owner/ownerhome.dart';
 import 'package:dorm_app/screen/register.dart';
@@ -102,53 +103,88 @@ class _LoginScreenState extends State<LoginScreen> {
           password: passwordController.text.trim(),
         );
 
-        String? role = await getUserRole(userCredential.user!.uid);
-        if (role != null) {
-          if (role == 'owner') {
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const Ownerhome()));
-          } else if (role == 'user') {
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const Homepage()));
-          } else {
-            _showErrorDialog('Role ไม่ถูกต้อง');
+        String? userId = userCredential.user?.uid;
+        if (userId != null) {
+          // Retrieve user profile data from Firestore
+          DocumentSnapshot doc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .get();
+
+          if (doc.exists) {
+            var userData = doc.data() as Map<String, dynamic>;
+            UserProfile userProfile = UserProfile.fromMap(userData);
+            userProfile.idusers = userId; // กำหนด iduser
+            print('User Data from Firestore: $userData');
+            print('User ID: ${userProfile.idusers}');
+            print('Username: ${userProfile.username}');
+            print('First Name: ${userProfile.firstname}');
+            print('Last Name: ${userProfile.lastname}');
+            print('Email: ${userProfile.email}');
+            print('Phone Number: ${userProfile.numphone}');
+            print('Role: ${userProfile.role}');
+            print('Profile Picture URL: ${userProfile.profilePictureURL}');
+
+            // Navigate based on the role
+            String? role = userProfile.role;
+            if (role != null) {
+              if (role == 'owner') {
+                Navigator.pushReplacement(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Ownerhome(),
+                  ),
+                );
+              } else if (role == 'user') {
+                Navigator.pushReplacement(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Homepage(),
+                  ),
+                );
+              } 
+              else {
+                _showErrorDialog('Role ไม่ถูกต้อง');
+              }
+            } else {
+              _showErrorDialog('ไม่พบข้อมูล role');
+            }
+          } else{
+          print('Document does not exist');
           }
-        } else {
-          _showErrorDialog('ไม่พบข้อมูล role');
+
+          //  else {
+          //   _showErrorDialog('ไม่พบข้อมูลผู้ใช้');
+            
+          // }
         }
       } on FirebaseAuthException catch (e) {
-        String errorMessage = 'เกิดข้อผิดพลาด: ${e.message}';
-        bool showRegisterButton = false;
-        bool showResetPasswordButton = false;
+        // Handle specific Firebase authentication errors
+        String errorMessage;
 
         switch (e.code) {
-          case 'wrong-password':
-            errorMessage = 'กรุณาใส่รหัสผ่านที่ถูกต้อง';
-            showResetPasswordButton = true;
-            break;
           case 'invalid-email':
-            errorMessage = 'อีเมลไม่ถูกต้อง';
+            errorMessage = 'อีเมลที่กรอกไม่ถูกต้อง';
+            break;
+          case 'user-disabled':
+            errorMessage = 'บัญชีผู้ใช้ถูกปิดการใช้งาน';
             break;
           case 'user-not-found':
-            errorMessage = 'ไม่มีชื่อผู้ใช้หรืออีเมลไม่ถูกต้อง';
-            showRegisterButton = true;
+            errorMessage = 'ไม่พบบัญชีผู้ใช้';
+            break;
+          case 'wrong-password':
+            errorMessage = 'รหัสผ่านไม่ถูกต้อง';
             break;
           case 'invalid-credential':
             errorMessage = 'ข้อมูลรับรองไม่ถูกต้องหรือหมดอายุ';
             break;
-          case 'too-many-requests':
-            errorMessage =
-                'เราบล็อกคำขอจากอุปกรณ์นี้เนื่องจากกิจกรรมที่ไม่ปกติ กรุณาลองอีกครั้งในภายหลัง';
-            break;
           default:
-            errorMessage = e.message ?? 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
+            errorMessage = 'เกิดข้อผิดพลาด: ${e.message}';
         }
 
-        _showErrorDialog(errorMessage,
-            showRegisterButton: showRegisterButton,
-            showResetPasswordButton: showResetPasswordButton);
+        _showErrorDialog(errorMessage);
       } catch (e) {
         _showErrorDialog('เกิดข้อผิดพลาด: ${e.toString()}');
       }
