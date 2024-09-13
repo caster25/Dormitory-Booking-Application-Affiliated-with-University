@@ -64,16 +64,16 @@ flutter_icons:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  provider: ^6.0.0
-  flutter_local_notifications: ^15.0.0
-  shared_preferences: ^2.0.15
+#   flutter_localizations:
+#     sdk: flutter
+#   provider: ^6.0.0
+#   flutter_local_notifications: ^15.0.0
+#   shared_preferences: ^2.0.15
   
-flutter:
-  assets:
-    - assets/lang/en.json
-    - assets/lang/th.json
+# flutter:
+#   assets:
+#     - assets/lang/en.json
+#     - assets/lang/th.json
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

@@ -1,4 +1,5 @@
-import 'package:dorm_app/model/profile.dart';
+
+import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final userProfile profile = userProfile(); // Instance of userProfile
+  final UserProfile profile = UserProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();

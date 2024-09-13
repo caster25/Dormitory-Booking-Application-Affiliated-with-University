@@ -6,6 +6,7 @@ class UserProfile {
   String? firstname;
   String? lastname;
   String? numphone;
+  String? password;
   String? role;
   String? profilePictureURL;
 
@@ -16,6 +17,7 @@ class UserProfile {
     this.firstname,
     this.lastname,
     this.numphone,
+    this.password,
     this.role,
     this.profilePictureURL,
   });

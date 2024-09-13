@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:dorm_app/model/profile.dart';
+import 'package:dorm_app/model/Userprofile.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
@@ -18,13 +18,13 @@ class TransactionDB {
     return db;
   }
 
-  Future<int> insertData(userProfile profile) async {
+  Future<int> insertData(UserProfile profile) async {
     var db = await openDatabase();
     var store = intMapStoreFactory.store("profiles");
 
     var keyID = await store.add(db, {
-      "userfname": profile.userfname,
-      "userlname": profile.userlname,
+      "userfname": profile.firstname,
+      "userlname": profile.lastname,
       "numphone": profile.numphone,
     });
 
@@ -32,13 +32,13 @@ class TransactionDB {
     return keyID;
   }
 
-  Future<Map<String, Object?>> updateData(userProfile profile, int id) async {
+  Future<Map<String, Object?>> updateData(UserProfile profile, int id) async {
     var db = await openDatabase();
     var store = intMapStoreFactory.store("profiles");
 
     var keyID = await store.record(id).update(db, {
-      "userfname": profile.userfname,
-      "userlname": profile.userlname,
+      "userfname": profile.firstname,
+      "userlname": profile.lastname,
       "numphone": profile.numphone,
     });
 
@@ -46,21 +46,21 @@ class TransactionDB {
     return keyID!;
   }
 
-  Future<List<userProfile>> loadAllData() async {
+  Future<List<UserProfile>> loadAllData() async {
     var db = await openDatabase();
     var store = intMapStoreFactory.store("profiles");
     var snapshot = await store.find(db);
 
-    List<userProfile> profileList = [];
+    List<UserProfile> profileList = [];
 for (var record in snapshot) {
-  profileList.add(userProfile(
-    iduser: int.parse(record['iduser'].toString()),
-    role: int.parse(record['role'].toString()),
+  profileList.add(UserProfile(
+    idusers: record['idusers'].toString(),
+    role: record['role'].toString(),
     email: record['email'].toString(),
     password: record['password'].toString(),
-    userfname: record['userfname'].toString(),
-    userlname: record['userlname'].toString(),
-    numphone: num.parse(record['numphone'].toString()), // If numphone is a number
+    firstname: record['firstname'].toString(),
+    lastname: record['lastname'].toString(),
+    numphone: record['numphone'].toString(), // If numphone is a number
   ));
 }
 
@@ -69,7 +69,7 @@ for (var record in snapshot) {
     return profileList;
   }
 
-  Future<void> addProfile(userProfile profile) async {
+  Future<void> addProfile(UserProfile profile) async {
     await insertData(profile);
   }
 
