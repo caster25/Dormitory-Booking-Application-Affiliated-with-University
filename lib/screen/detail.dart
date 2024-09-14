@@ -29,7 +29,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   }
 
   Future<void> _loadUserData() async {
-    currentUser = FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
+    currentUser =
+        FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
 
     if (currentUser != null) {
       // ดึงข้อมูลผู้ใช้จาก Firestore
@@ -63,42 +64,59 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   }
 
   Future<void> _addReview() async {
-    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) return;
+    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null)
+      return;
 
-    await FirebaseFirestore.instance.collection('reviews').add({
-      'dormId': widget.dormId,
-      'user': currentUser!.email, // ใช้อีเมลของผู้ใช้จาก FirebaseAuth
-      'date': DateTime.now().toString(),
-      'text': reviewController.text,
-      'rating': _rating,
-      'likes': 0,
-      'comments': 0
-    });
+    try {
+      await FirebaseFirestore.instance.collection('reviews').add({
+        'dormId': widget.dormId,
+        'user': currentUser!.email,
+        'date': DateTime.now().toString(),
+        'text': reviewController.text,
+        'rating': _rating,
+        'likes': 0,
+        'comments': 0
+      });
 
-    await _updateDormitoryReviews();
+      await _updateDormitoryReviews();
 
-    // ล้างฟิลด์ข้อความและรีเซ็ทเรตติ้ง
-    reviewController.clear();
-    setState(() {
-      _rating = 0;
-      reviewsData = _fetchReviewsData(); // โหลดรีวิวใหม่
-    });
+      reviewController.clear();
+      setState(() {
+        _rating = 0;
+        reviewsData = _fetchReviewsData();
+      });
+    } catch (e) {
+      print('Error adding review: $e');
+    }
   }
 
   Future<void> _updateDormitoryReviews() async {
-    QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
-        .collection('reviews')
-        .where('dormId', isEqualTo: widget.dormId)
-        .get();
+    try {
+      QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('dormId', isEqualTo: widget.dormId)
+          .get();
 
-    int reviewCount = reviewsSnapshot.size;
+      int reviewCount = reviewsSnapshot.size;
+      double totalRating = 0;
 
-    await FirebaseFirestore.instance
-        .collection('dormitories')
-        .doc(widget.dormId)
-        .update({
-      'reviewCount': reviewCount,
-    });
+      for (var doc in reviewsSnapshot.docs) {
+        totalRating +=
+            (doc.data() as Map<String, dynamic>)['rating']?.toDouble() ?? 0;
+      }
+
+      double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+
+      await FirebaseFirestore.instance
+          .collection('dormitories')
+          .doc(widget.dormId)
+          .update({
+        'reviewCount': reviewCount,
+        'rating': averageRating,
+      });
+    } catch (e) {
+      print('Error updating dormitory reviews: $e');
+    }
   }
 
   Future<void> _bookDormitory() async {
@@ -131,7 +149,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายละเอียดหอพัก'),
-        backgroundColor: Colors.purple,
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -188,7 +206,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                 itemSize: 20.0,
                                 direction: Axis.horizontal,
                               ),
-                              Text('${dormitory['rating']} / 5'),
+                              Text(
+                                  '${dormitory['rating']?.toStringAsFixed(1) ?? '0.0'} / 5'),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -204,7 +223,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                             child: const Text('จองหอพัก'),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: Colors.purple, // Button text color
+                              backgroundColor:
+                                  Colors.purple, // Button text color
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -276,8 +296,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                             Text(review['text']),
                                             const SizedBox(height: 8),
                                             RatingBarIndicator(
-                                              rating: review['rating']
-                                                  .toDouble(),
+                                              rating:
+                                                  review['rating'].toDouble(),
                                               itemBuilder: (context, index) =>
                                                   const Icon(
                                                 Icons.star,
@@ -370,10 +390,17 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                   maxLines: 4,
                                 ),
                                 const SizedBox(height: 8),
-                                ElevatedButton(
-                                  onPressed: _addReview,
-                                  child: const Text('ส่งรีวิว'),
-                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child:  ElevatedButton(
+                                    onPressed: _addReview,
+                                    child: const Text('ส่งรีวิว'),
+                                    style: ElevatedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      backgroundColor: const Color.fromARGB(255, 202, 83, 223),
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                           ),

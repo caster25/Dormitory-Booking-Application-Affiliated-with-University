@@ -282,7 +282,7 @@ class FilterButton extends StatelessWidget {
         foregroundColor: isSelected ? Colors.white : Colors.purple,
         backgroundColor: isSelected ? const Color.fromARGB(255, 153, 85, 240) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        side: BorderSide(color: isSelected ? Colors.purple : Colors.pink),
+        side: BorderSide(color: isSelected ? Colors.purple : Colors.white),
       ),
       child: Text(text),
     );
