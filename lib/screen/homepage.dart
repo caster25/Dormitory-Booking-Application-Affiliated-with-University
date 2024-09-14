@@ -233,7 +233,7 @@ class _HomepageState extends State<Homepage> {
       case 1:
         return const Text('หอพัก');
       case 2:
-        return const Text('รีวิวหอพัก');
+        return const Text('CHAT');
       default:
         return const Text('ข้อมูลส่วนตัว');
     }
