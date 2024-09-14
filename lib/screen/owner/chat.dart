@@ -61,10 +61,11 @@ class _ChatScreenState extends State<ChatScreen> {
     // Delete the message
     await _messagesCollection.doc(messageSnapshot.id).delete();
 
-    // Show a snackbar with an Undo option
+
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Message deleted'),
+        content: const Text('Message deleted'),
         action: SnackBarAction(
           label: 'Undo',
           onPressed: _undoDeleteMessage,

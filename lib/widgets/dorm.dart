@@ -205,10 +205,16 @@ class _DormScreenState extends State<DormScreen> {
     final userFavoritesRef =
         FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-    final userDoc = await userFavoritesRef.get();
+    // Retrieve the user's document
+    DocumentSnapshot userDoc = await userFavoritesRef.get();
 
+    // Check if the document exists
     if (userDoc.exists) {
-      List<dynamic> favorites = userDoc['favorites'] ?? [];
+      // Explicitly cast the data to Map<String, dynamic>
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+
+      // Retrieve favorites list or initialize it as an empty list
+      List<dynamic> favorites = userData['favorites'] ?? [];
 
       if (favorites.contains(dormId)) {
         // If dormId is already in favorites, remove it
@@ -221,7 +227,7 @@ class _DormScreenState extends State<DormScreen> {
       // Update the user's favorite list in Firestore
       await userFavoritesRef.update({'favorites': favorites});
     } else {
-      // If user document doesn't exist, create a new one with the dormId in favorites
+      // Document does not exist, create a new one with the dormId in favorites
       await userFavoritesRef.set({
         'favorites': [dormId],
       });

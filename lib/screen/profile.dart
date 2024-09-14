@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:dorm_app/widgets/like.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -68,9 +69,17 @@ class ProfileScreen extends StatelessWidget {
                     );
                   },
                 ),
-                const MenuItem(
+                MenuItem(
                   icon: Icons.favorite_border,
                   text: 'หอพักที่ถูกใจ',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LikeScreen(),
+                      ),
+                    );
+                  },
                 ),
                 MenuItem(
                   icon: Icons.settings,
@@ -136,8 +145,10 @@ class DormitoryDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: no_leading_underscores_for_local_identifiers
     final TextEditingController _currentDormController =
         TextEditingController();
+    // ignore: no_leading_underscores_for_local_identifiers
     final TextEditingController _previousDormController =
         TextEditingController();
 
@@ -258,6 +269,7 @@ class AccountInfoScreen extends StatefulWidget {
   const AccountInfoScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AccountInfoScreenState createState() => _AccountInfoScreenState();
 }
 
@@ -302,7 +314,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   Text('ชื่อบัญชี: ${userProfile.username}',
                       style: TextStyle(fontSize: 16)),
                   SizedBox(height: 8),
-                  Text('ชื่อ-นามสกุล: ${userProfile.fullName}',
+                  Text(
+                      'ชื่อ-นามสกุล: ${userProfile.fullName} + ${userProfile.fullName}',
                       style: TextStyle(fontSize: 16)),
                   SizedBox(height: 8),
                   Text('รหัสผ่าน: ${userProfile.password}',
