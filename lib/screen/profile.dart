@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/setting/detaildromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:dorm_app/widgets/like.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io'; // Import for File
+import 'package:path/path.dart' as p;
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,7 +21,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   File? _profileImage;
-  String _userName = 'Unknown User'; // Default username
+  File? _tempImage; // Temporary image to be saved
+  String _userName = 'Unknown User';
+  String? _profileImageUrl;
 
   @override
   void initState() {
@@ -31,30 +36,126 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final userProfile = await getUserProfile();
       setState(() {
         _userName = userProfile.username ?? 'Unknown User';
-        // You can also update other fields if needed
+        _profileImageUrl = userProfile.profilePictureURL;
       });
     } catch (e) {
-      // Handle errors here
       print('Error loading user profile: $e');
     }
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (image != null) {
+    if (pickedFile != null) {
       setState(() {
-        _profileImage = File(image.path);
+        _tempImage = File(pickedFile.path); // Use a temporary image
       });
-
-      // Upload the image to Firebase Storage or any backend
-      // For example: await uploadProfileImage(_profileImage!);
+      _showConfirmationDialog(); // Show the confirmation dialog after image selection
     }
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ยืนยันการเปลี่ยนรูปโปรไฟล์'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _tempImage != null
+                  ? Image.file(
+                      _tempImage!,
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    )
+                  : const SizedBox.shrink(),
+              const SizedBox(height: 10),
+              const Text('คุณแน่ใจว่าจะเปลี่ยนรูปโปรไฟล์?'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog without saving
+                setState(() {
+                  _tempImage = null; // Revert to previous image
+                });
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Save'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _uploadProfileImage(); // Upload the image if confirmed
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _uploadProfileImage() async {
+    if (_tempImage == null) return;
+
+    try {
+      final fileName = p.basename(_tempImage!.path);
+      final destination = 'profiles/$fileName';
+      final ref = FirebaseStorage.instance.ref(destination);
+      final uploadTask = ref.putFile(_tempImage!);
+      final snapshot = await uploadTask.whenComplete(() {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw Exception('User not logged in');
+
+      // Update the profile picture URL in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({'profilePictureURL': downloadUrl});
+
+      setState(() {
+        _profileImageUrl = downloadUrl; // Update the profile image URL
+        _tempImage = null; // Clear the temporary image
+      });
+      print('Profile image uploaded successfully');
+    } catch (e) {
+      print('Failed to upload profile image: $e');
+    }
+  }
+
+  Future<UserProfile> getUserProfile() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      throw Exception('User not logged in');
+    }
+
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (!userDoc.exists) {
+      throw Exception('User profile not found');
+    }
+
+    final userData = userDoc.data()!;
+    return UserProfile(
+      email: userData['email'],
+      numphone: userData['numphone'],
+      username: userData['username'],
+      firstname: userData['firstname'],
+      profilePictureURL: userData['profilePictureURL'],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       appBar: AppBar(
@@ -64,17 +165,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: FutureBuilder<UserProfile>(
-          future: getUserProfile(),
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: userId != null
+              ? FirebaseFirestore.instance.collection('users').doc(userId).snapshots()
+              : null,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
+              return const Center(child: Text('No data available'));
             } else {
-              final userProfile = snapshot.data!;
+              final userProfile = UserProfile.fromMap(snapshot.data!.data() as Map<String, dynamic>);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -83,11 +186,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: _profileImage != null
-                              ? FileImage(_profileImage!)
-                              : const NetworkImage(
+                          backgroundImage: _tempImage != null
+                              ? FileImage(_tempImage!)
+                              : _profileImageUrl != null
+                                  ? NetworkImage(_profileImageUrl!)
+                                  : const NetworkImage(
                                       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s')
-                                  as ImageProvider,
+                                      as ImageProvider,
                           radius: 40,
                         ),
                         const SizedBox(width: 16),
@@ -129,8 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  const DormitoryDetailsScreen(),
+                              builder: (context) => const DormitoryDetailsScreen(),
                             ),
                           );
                         },
@@ -171,30 +275,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
         ),
       ),
-    );
-  }
-
-  Future<UserProfile> getUserProfile() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) {
-      throw Exception('User not logged in');
-    }
-
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-    if (!userDoc.exists) {
-      throw Exception('User profile not found');
-    }
-
-    final userData = userDoc.data()!;
-    return UserProfile(
-      email: userData['email'],
-      numphone: userData['numphone'],
-      username: userData['username'],
-      firstname: userData['firstname'],
-      password: userData[
-          'password'], // Consider security concerns about storing passwords
     );
   }
 }

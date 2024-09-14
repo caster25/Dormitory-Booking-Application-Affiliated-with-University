@@ -15,7 +15,7 @@ class DormitoryDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายละเอียดหอพักของคุณ'),
-        backgroundColor: Colors.purple,
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

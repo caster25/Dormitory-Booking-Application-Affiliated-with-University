@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AccountInfoScreen extends StatefulWidget {
   const AccountInfoScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AccountInfoScreenState createState() => _AccountInfoScreenState();
 }
 
@@ -22,7 +23,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ข้อมูลบัญชี'),
-        backgroundColor: Colors.purple,
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: FutureBuilder<UserProfile>(
         future: _userProfile,
@@ -40,21 +41,14 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('อีเมล: ${userProfile.email}',
-                      style: const TextStyle(fontSize: 16)),
+                  Text('อีเมล: ${userProfile.email}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
-                  Text('เบอร์โทร: ${userProfile.phoneNumber}',
-                      style: const TextStyle(fontSize: 16)),
+                  Text('เบอร์โทร: ${userProfile.phoneNumber}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
-                  Text('ชื่อบัญชี: ${userProfile.username}',
-                      style: const TextStyle(fontSize: 16)),
+                  Text('ชื่อบัญชี: ${userProfile.username}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
-                  Text(
-                      'ชื่อ-นามสกุล: ${userProfile.fullName} + ${userProfile.fullName}',
-                      style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 8),
-                  Text('รหัสผ่าน: ${userProfile.password}',
-                      style: const TextStyle(fontSize: 16)),
+                  Text('ชื่อ-นามสกุล: ${userProfile.fullName}', style: const TextStyle(fontSize: 16)),
+                  // Do not display password in the UI for security reasons
                 ],
               ),
             );
@@ -65,15 +59,26 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
   }
 
   Future<UserProfile> getUserProfile() async {
-    // ฟังก์ชันนี้จะดึงข้อมูลจากฐานข้อมูลจริง
-    // นี่เป็นตัวอย่าง
-    await Future.delayed(const Duration(seconds: 1)); // จำลองการรอคอย
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      throw Exception('User not logged in');
+    }
+
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (!userDoc.exists) {
+      throw Exception('User profile not found');
+    }
+
+    final userData = userDoc.data()!;
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+
     return UserProfile(
-      email: 'example@example.com',
-      phoneNumber: '1234567890',
-      username: 'user123',
-      fullName: 'John Doe',
-      password: 'password123',
+      email: userData['email'] ?? 'Unknown',
+      phoneNumber: userData['numphone'] ?? 'Unknown',
+      username: userData['username'] ?? 'Unknown',
+      fullName: (userData['firstname'] ?? '') + ' ' + (userData['lastname'] ?? ''),
+      password: '********', // Display a placeholder for password
     );
   }
 }

@@ -16,6 +16,19 @@ class _DormScreenState extends State<DormScreen> {
   String sortBy = 'price'; // Default sort by price
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
+  late Stream<DocumentSnapshot> userFavoritesStream;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      userFavoritesStream = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +42,7 @@ class _DormScreenState extends State<DormScreen> {
             children: [
               // Search bar
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -81,109 +93,126 @@ class _DormScreenState extends State<DormScreen> {
               ),
               const SizedBox(height: 16),
               // StreamBuilder to fetch dormitory data
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('dormitories')
-                    .orderBy(sortBy,
-                        descending: sortBy == 'price'
-                            ? !isPriceAscending
-                            : !isRatingAscending)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
+              StreamBuilder<DocumentSnapshot>(
+                stream: userFavoritesStream,
+                builder: (context, userSnapshot) {
+                  if (!userSnapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final dorms = snapshot.data!.docs;
+                  final favorites = userSnapshot.data!['favorites'] ?? [];
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: dorms.length,
-                    itemBuilder: (context, index) {
-                      var dorm = dorms[index];
-                      String dormId =
-                          dorm.id; // Retrieve dormId from document ID
+                  return StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('dormitories')
+                        .orderBy(sortBy,
+                            descending: sortBy == 'price'
+                                ? !isPriceAscending
+                                : !isRatingAscending)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 241, 229, 255),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Dorm image
-                              Container(
-                                height: 180,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(10)),
-                                  image: DecorationImage(
-                                    image: NetworkImage(dorm['imageUrl']),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                      final dorms = snapshot.data!.docs;
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: dorms.length,
+                        itemBuilder: (context, index) {
+                          var dorm = dorms[index];
+                          String dormId = dorm.id; // Retrieve dormId from document ID
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 241, 229, 255),
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      dorm['name'],
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Dorm image
+                                  Container(
+                                    height: 180,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.vertical(
+                                          top: Radius.circular(10)),
+                                      image: DecorationImage(
+                                        image: NetworkImage(dorm['imageUrl']),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'ราคา ${dorm['price']} บาท',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'คะแนน ${dorm['rating']}/5',
-                                      style: const TextStyle(color: Colors.red),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        // View details button
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DormallDetailScreen(
-                                                        dormId: dormId),
-                                              ),
-                                            );
-                                          },
-                                          child: const Text('ดูรายละเอียด'),
+                                        Text(
+                                          dorm['name'],
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                        // Favorite heart icon
-                                        IconButton(
-                                          icon:
-                                              const Icon(Icons.favorite_border),
-                                          color: Colors.pink,
-                                          onPressed: () {
-                                            _toggleFavorite(dormId);
-                                          },
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'ราคา ${dorm['price']} บาท',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'คะแนน ${dorm['rating']}/5',
+                                          style: const TextStyle(
+                                              color: Colors.red),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // View details button
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DormallDetailScreen(
+                                                            dormId: dormId),
+                                                  ),
+                                                );
+                                              },
+                                              child:
+                                                  const Text('ดูรายละเอียด'),
+                                            ),
+                                            // Favorite heart icon
+                                            IconButton(
+                                              icon: Icon(
+                                                favorites.contains(dormId)
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                              ),
+                                              color: Colors.pink,
+                                              onPressed: () async {
+                                                // Update Firestore first
+                                                await _toggleFavorite(dormId);
+                                              },
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
@@ -210,10 +239,8 @@ class _DormScreenState extends State<DormScreen> {
 
     // Check if the document exists
     if (userDoc.exists) {
-      // Explicitly cast the data to Map<String, dynamic>
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
-      // Retrieve favorites list or initialize it as an empty list
       List<dynamic> favorites = userData['favorites'] ?? [];
 
       if (favorites.contains(dormId)) {
@@ -253,7 +280,7 @@ class FilterButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         foregroundColor: isSelected ? Colors.white : Colors.purple,
-        backgroundColor: isSelected ? Colors.purple : Colors.white,
+        backgroundColor: isSelected ? const Color.fromARGB(255, 153, 85, 240) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         side: BorderSide(color: isSelected ? Colors.purple : Colors.pink),
       ),

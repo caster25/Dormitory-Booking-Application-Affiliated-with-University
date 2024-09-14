@@ -141,7 +141,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.purple,
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('Chat'),
         actions: [
           IconButton(
@@ -231,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.photo, color: Colors.purple),
+                  icon: const Icon(Icons.photo, color: Color.fromARGB(255, 153, 85, 240)),
                   onPressed: _pickImage,
                 ),
                 Expanded(
