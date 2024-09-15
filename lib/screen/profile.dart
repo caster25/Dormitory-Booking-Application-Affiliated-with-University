@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';

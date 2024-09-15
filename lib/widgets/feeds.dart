@@ -114,7 +114,9 @@ class FeedsScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('dormitories').snapshots(),
+                    stream: FirebaseFirestore.instance
+                        .collection('dormitories')
+                        .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(child: CircularProgressIndicator());
@@ -144,7 +146,13 @@ class FeedsScreen extends StatelessWidget {
                                       top: Radius.circular(20),
                                     ),
                                     image: DecorationImage(
-                                      image: NetworkImage(dorm['imageUrl']),
+                                      image: dorm['imageUrl'] !=
+                                              null // ตรวจสอบว่าฟิลด์ imageUrl มีอยู่หรือไม่
+                                          ? NetworkImage(dorm[
+                                              'imageUrl']) // ใช้ฟิลด์ imageUrl แทน imageUrls
+                                          : const AssetImage(
+                                                  'assets/images/placeholder.png')
+                                              as ImageProvider, // กรณีไม่มีรูปภาพ
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -175,7 +183,9 @@ class FeedsScreen extends StatelessWidget {
                                     onPressed: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
-                                        return DormallDetailScreen(dormId: dormId); // ส่ง dormId ที่ดึงมาจาก Document ID
+                                        return DormallDetailScreen(
+                                            dormId:
+                                                dormId); // ส่ง dormId ที่ดึงมาจาก Document ID
                                       }));
                                     },
                                     child: const Text('เพิ่มเติม'),

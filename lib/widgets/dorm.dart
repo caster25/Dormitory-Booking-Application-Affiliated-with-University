@@ -16,17 +16,17 @@ class _DormScreenState extends State<DormScreen> {
   String sortBy = 'price'; // Default sort by price
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
-  late Stream<DocumentSnapshot> userFavoritesStream;
+  late Future<DocumentSnapshot> userFavoritesFuture;
 
   @override
   void initState() {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      userFavoritesStream = FirebaseFirestore.instance
+      userFavoritesFuture = FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .snapshots();
+          .get(); // Use Future instead of Stream
     }
   }
 
@@ -42,7 +42,8 @@ class _DormScreenState extends State<DormScreen> {
             children: [
               // Search bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -92,30 +93,72 @@ class _DormScreenState extends State<DormScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              // StreamBuilder to fetch dormitory data
-              StreamBuilder<DocumentSnapshot>(
-                stream: userFavoritesStream,
+              // FutureBuilder to fetch dormitory data
+              FutureBuilder<DocumentSnapshot>(
+                future: userFavoritesFuture,
                 builder: (context, userSnapshot) {
-                  if (!userSnapshot.hasData) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final favorites = userSnapshot.data!['favorites'] ?? [];
+                  if (!userSnapshot.hasData) {
+                    return const Center(child: Text('ไม่พบข้อมูล'));
+                  }
+
+                  // แปลงข้อมูลจาก userDoc เป็น Map<String, dynamic>
+                  final userDoc = userSnapshot.data!;
+                  final Map<String, dynamic> userData =
+                      userDoc.data() as Map<String, dynamic>;
+
+                  final favorites = userData.containsKey('favorites')
+                      ? List<String>.from(userData['favorites'])
+                      : [];
+
+                  // ถ้า searchQuery ว่าง จะแสดงผลลัพธ์ทั้งหมด
+                  Query dormQuery = FirebaseFirestore.instance
+                      .collection('dormitories')
+                      .orderBy(sortBy,
+                          descending: sortBy == 'price'
+                              ? !isPriceAscending
+                              : !isRatingAscending);
+
+                  // ถ้า searchQuery ไม่ว่าง จึงทำการกรองผลลัพธ์
+                  if (searchQuery.isNotEmpty) {
+                    dormQuery = dormQuery
+                        .where('name', isGreaterThanOrEqualTo: searchQuery)
+                        .where('name',
+                            isLessThanOrEqualTo: '$searchQuery\uf8ff');
+                  }
 
                   return StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('dormitories')
-                        .orderBy(sortBy,
-                            descending: sortBy == 'price'
-                                ? !isPriceAscending
-                                : !isRatingAscending)
+                        .where('name',
+                            isGreaterThanOrEqualTo: searchQuery.isNotEmpty
+                                ? searchQuery.toLowerCase()
+                                : null)
+                        .where('name',
+                            isLessThanOrEqualTo: searchQuery.isNotEmpty
+                                ? searchQuery.toLowerCase() + '\uf8ff'
+                                : null)
+                        .orderBy('name') // Sort by name
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(child: CircularProgressIndicator());
                       }
 
+                      if (snapshot.hasError) {
+                        return const Center(
+                            child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
+                      }
+
                       final dorms = snapshot.data!.docs;
+
+                      if (dorms.isEmpty) {
+                        return const Center(
+                            child: Text('ไม่พบหอพักที่มีชื่อนี้'));
+                      }
 
                       return ListView.builder(
                         shrinkWrap: true,
@@ -123,7 +166,8 @@ class _DormScreenState extends State<DormScreen> {
                         itemCount: dorms.length,
                         itemBuilder: (context, index) {
                           var dorm = dorms[index];
-                          String dormId = dorm.id; // Retrieve dormId from document ID
+                          String dormId =
+                              dorm.id; // Retrieve dormId from document ID
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -187,8 +231,7 @@ class _DormScreenState extends State<DormScreen> {
                                                   ),
                                                 );
                                               },
-                                              child:
-                                                  const Text('ดูรายละเอียด'),
+                                              child: const Text('ดูรายละเอียด'),
                                             ),
                                             // Favorite heart icon
                                             IconButton(
@@ -199,7 +242,6 @@ class _DormScreenState extends State<DormScreen> {
                                               ),
                                               color: Colors.pink,
                                               onPressed: () async {
-                                                // Update Firestore first
                                                 await _toggleFavorite(dormId);
                                               },
                                             ),
@@ -280,7 +322,8 @@ class FilterButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         foregroundColor: isSelected ? Colors.white : Colors.purple,
-        backgroundColor: isSelected ? const Color.fromARGB(255, 153, 85, 240) : Colors.white,
+        backgroundColor:
+            isSelected ? const Color.fromARGB(255, 153, 85, 240) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         side: BorderSide(color: isSelected ? Colors.purple : Colors.white),
       ),

@@ -95,6 +95,7 @@ class IndexScreen extends StatelessWidget {
 
                       // On successful login, navigate to Homepage
                       Navigator.pushReplacement(
+                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                             builder: (context) => const Homepage()),
@@ -103,6 +104,7 @@ class IndexScreen extends StatelessWidget {
                       // Handle authentication errors
                       String errorMessage = 'Login failed: ${e.message}';
                       // Display error message (you can use a dialog or Snackbar)
+                      // ignore: use_build_context_synchronously
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(errorMessage)),
                       );
@@ -115,14 +117,41 @@ class IndexScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const Ownerhome();
-                      }));
-                    },
-                    child: const Text('testowner')),
-              )
+                  onPressed: () async {
+                    // Predefined credentials for test user
+                    String testEmail = 'ownertest@gmail.com';
+                    String testPassword = 'owner1234';
+
+                    try {
+                      // Sign in the user with Firebase Authentication
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .signInWithEmailAndPassword(
+                        email: testEmail,
+                        password: testPassword,
+                      );
+
+                      // On successful login, navigate to Homepage
+                      Navigator.pushReplacement(
+                        // ignore: use_build_context_synchronously
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Ownerhome()),
+                      );
+                    } on FirebaseAuthException catch (e) {
+                      // Handle authentication errors
+                      String errorMessage = 'Login failed: ${e.message}';
+                      // Display error message (you can use a dialog or Snackbar)
+                      // ignore: use_build_context_synchronously
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(errorMessage)),
+                      );
+                    }
+                  },
+                  child: const Text('testowner'),
+                ),
+              ),
+              
             ],
           ),
         ),

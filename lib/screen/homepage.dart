@@ -1,11 +1,11 @@
 import 'package:dorm_app/screen/owner/chat.dart';
+import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/user.dart';
-import 'package:dorm_app/widgets/editpassword.dart';
 import 'package:dorm_app/widgets/dorm.dart';
 import 'package:dorm_app/widgets/feeds.dart';
 import 'package:dorm_app/screen/profile.dart';
@@ -86,7 +86,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.settings,
               text: 'การตั้งค่า',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const Editpassword()),
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               ),
             ),
             buildMenuItem(

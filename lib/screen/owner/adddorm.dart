@@ -21,42 +21,43 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   final TextEditingController _dormPriceController = TextEditingController();
   final TextEditingController _availableRoomsController = TextEditingController();
 
-  File? _dormImage;
+  List<File> _dormImages = [];
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
-  String? _uploadedImageUrl;
+  List<String> _uploadedImageUrls = [];
 
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+  Future<void> _pickImages() async {
+    final pickedFiles = await _picker.pickMultiImage();
+    // ignore: unnecessary_null_comparison
+    if (pickedFiles != null) {
       setState(() {
-        _dormImage = File(pickedFile.path);
+        // เพิ่มรูปใหม่ที่เลือกเข้ามาในรายการรูปที่มีอยู่
+        _dormImages.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
       });
     }
   }
 
-  Future<void> _uploadImageToFirebase() async {
-    if (_dormImage == null) return;
+  Future<void> _uploadImagesToFirebase() async {
+    if (_dormImages.isEmpty) return;
 
     setState(() {
       _isUploading = true;
     });
 
     try {
-      String fileName = path.basename(_dormImage!.path);
-      Reference firebaseStorageRef = FirebaseStorage.instance
-          .ref()
-          .child('dormitory_images/$fileName');
+      for (var image in _dormImages) {
+        String fileName = path.basename(image.path);
+        Reference firebaseStorageRef =
+            FirebaseStorage.instance.ref().child('dormitory_images/$fileName');
 
-      // Upload image file to Firebase Storage
-      UploadTask uploadTask = firebaseStorageRef.putFile(_dormImage!);
-      TaskSnapshot taskSnapshot = await uploadTask;
+        // Upload image file to Firebase Storage
+        UploadTask uploadTask = firebaseStorageRef.putFile(image);
+        TaskSnapshot taskSnapshot = await uploadTask;
 
-      // Get the download URL of the uploaded image
-      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      setState(() {
-        _uploadedImageUrl = downloadUrl;
-      });
+        // Get the download URL of the uploaded image
+        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+        _uploadedImageUrls.add(downloadUrl);
+      }
     } catch (e) {
       print('Error uploading image: $e');
     } finally {
@@ -68,7 +69,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      if (_dormImage == null) {
+      if (_dormImages.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('กรุณาเลือกรูปภาพ')),
         );
@@ -76,15 +77,15 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       }
 
       // อัปโหลดรูปภาพไปยัง Firebase Storage
-      await _uploadImageToFirebase();
+      await _uploadImagesToFirebase();
 
-      if (_uploadedImageUrl != null) {
+      if (_uploadedImageUrls.isNotEmpty) {
         // บันทึกข้อมูลหอพักลง Firestore พร้อม URL ของรูปภาพ
         await FirebaseFirestore.instance.collection('dormitories').add({
           'name': _dormNameController.text,
           'price': double.parse(_dormPriceController.text),
           'availableRooms': int.parse(_availableRoomsController.text),
-          'imageUrl': _uploadedImageUrl,
+          'imageUrls': _uploadedImageUrls,
           'rating': 0
         });
 
@@ -96,8 +97,8 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         // ล้างแบบฟอร์ม
         _formKey.currentState!.reset();
         setState(() {
-          _dormImage = null;
-          _uploadedImageUrl = null;
+          _dormImages = [];
+          _uploadedImageUrls = [];
         });
       }
     }
@@ -178,17 +179,55 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                 Row(
                   children: [
                     ElevatedButton(
-                      onPressed: _pickImage,
+                      onPressed: _pickImages,
                       child: const Text('เลือกรูปหอพัก'),
                     ),
                     const SizedBox(width: 16),
-                    if (_dormImage != null)
+                    if (_dormImages.isNotEmpty)
                       const Text(
                         'เลือกรูปภาพแล้ว',
                         style: TextStyle(color: Colors.green),
                       ),
                   ],
                 ),
+                const SizedBox(height: 16),
+
+                // แสดงรูปภาพที่เลือก
+                if (_dormImages.isNotEmpty)
+                  SizedBox(
+                    height: 150,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _dormImages.length,
+                      itemBuilder: (context, index) {
+                        return Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.file(
+                                _dormImages[index],
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(() {
+                                    _dormImages.removeAt(index);
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 const SizedBox(height: 16),
 
                 // แสดงสถานะการอัปโหลดรูปภาพ
