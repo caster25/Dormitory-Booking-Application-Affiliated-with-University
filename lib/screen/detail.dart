@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:math' show cos, sqrt, asin;
 
 class DormallDetailScreen extends StatefulWidget {
   final String dormId;
@@ -18,7 +23,9 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   final TextEditingController reviewController = TextEditingController();
   double _rating = 0;
   User? currentUser;
-  Map<String, dynamic>? userData; // ข้อมูลผู้ใช้
+  Map<String, dynamic>? userData;
+  double? distanceInKm; // เพิ่มตัวแปรสำหรับเก็บระยะทาง
+  final Completer<GoogleMapController> _mapController = Completer();
 
   @override
   void initState() {
@@ -29,16 +36,12 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   }
 
   Future<void> _loadUserData() async {
-    currentUser =
-        FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
-
+    currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      // ดึงข้อมูลผู้ใช้จาก Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser!.uid)
           .get();
-
       setState(() {
         userData = userDoc.data() as Map<String, dynamic>?;
       });
@@ -61,6 +64,81 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return querySnapshot.docs
         .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
         .toList();
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    const p = 0.017453292519943295;
+    const c = cos;
+    final a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
+
+  Future<void> _showDistance() async {
+    try {
+      Position userPosition = await _determinePosition();
+
+      Map<String, dynamic> dormitory = await dormitoryData;
+
+      double dormLat = (dormitory['latitude'] as num).toDouble();
+      double dormLon = (dormitory['longitude'] as num).toDouble();
+
+      double distance = calculateDistance(
+        userPosition.latitude,
+        userPosition.longitude,
+        dormLat,
+        dormLon,
+      );
+
+      setState(() {
+        distanceInKm = distance;
+      });
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('ระยะทาง'),
+            content: Text(
+                'หอพักนี้อยู่ห่างจากตำแหน่งของคุณ ${distance.toStringAsFixed(2)} กม.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('ตกลง'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   Future<void> _addReview() async {
@@ -162,16 +240,21 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 var dormitory = snapshot.data!;
+
+                // Extract the data for the dormitory
+                double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
+                double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
+
+                // Display the dormitory image
                 return Column(
                   children: [
-                    // Dormitory Image
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(dormitory['imageUrl']),
-                          fit: BoxFit.cover,
-                        ),
+                    SizedBox(
+                      height: 200, // Adjust as needed
+                      width: double.infinity,
+                      child: Image.network(
+                        dormitory['imageUrl'] ??
+                            '', // Make sure 'imageUrl' is the correct field name
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Padding(
@@ -179,21 +262,17 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Dormitory Name
                           Text(
                             dormitory['name'] ?? 'ไม่มีชื่อ',
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.headlineMedium,
                           ),
                           const SizedBox(height: 8),
-                          // Price
                           Text(
                             'ราคา: ${dormitory['price']} บาท/เดือน',
                             style: const TextStyle(
                                 fontSize: 18, color: Colors.grey),
                           ),
                           const SizedBox(height: 8),
-                          // Rating
                           Row(
                             children: [
                               RatingBarIndicator(
@@ -207,202 +286,20 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                 direction: Axis.horizontal,
                               ),
                               Text(
-                                  '${dormitory['rating']?.toStringAsFixed(1) ?? '0.0'} / 5'),
+                                ' ${dormitory['rating']?.toStringAsFixed(1) ?? '0.0'}',
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                ' (${dormitory['reviewCount']?.toString() ?? '0'} รีวิว)',
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.grey),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
-                          // Available Rooms
                           Text(
-                            'ห้องว่าง: ${dormitory['availableRooms']} ห้อง',
+                            dormitory['description'] ?? '',
                             style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 16),
-                          // Booking Button
-                          ElevatedButton(
-                            onPressed: _bookDormitory,
-                            child: const Text('จองหอพัก'),
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor:
-                                  Colors.purple, // Button text color
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          const Divider(thickness: 1),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'รีวิวจากผู้ใช้งาน',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
-                          // Reviews Section
-                          FutureBuilder<List<Map<String, dynamic>>>(
-                            future: reviewsData,
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                              var reviews = snapshot.data!;
-                              return ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: const EdgeInsets.all(16),
-                                itemCount: reviews.length,
-                                itemBuilder: (context, index) {
-                                  var review = reviews[index];
-                                  var reviewId = review['id'];
-                                  var currentLikes = review['likes'];
-
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color.fromARGB(
-                                            255, 241, 229, 255),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                const CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      review['user'],
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    Text(review['date']),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(review['text']),
-                                            const SizedBox(height: 8),
-                                            RatingBarIndicator(
-                                              rating:
-                                                  review['rating'].toDouble(),
-                                              itemBuilder: (context, index) =>
-                                                  const Icon(
-                                                Icons.star,
-                                                color: Colors.amber,
-                                              ),
-                                              itemCount: 5,
-                                              itemSize: 20.0,
-                                              direction: Axis.horizontal,
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    IconButton(
-                                                      icon: const Icon(
-                                                          Icons.thumb_up,
-                                                          color: Colors.blue),
-                                                      onPressed: () {
-                                                        _likeReview(reviewId,
-                                                            currentLikes);
-                                                      },
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text('$currentLikes คน'),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    const Icon(Icons.comment,
-                                                        color: Colors.grey),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                        'ตอบกลับ (${review['comments']})'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          // New Review Section
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'เขียนรีวิว',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 8),
-                                RatingBar.builder(
-                                  initialRating: _rating,
-                                  minRating: 1,
-                                  direction: Axis.horizontal,
-                                  allowHalfRating: true,
-                                  itemCount: 5,
-                                  itemBuilder: (context, _) => const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
-                                  onRatingUpdate: (rating) {
-                                    setState(() {
-                                      _rating = rating;
-                                    });
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                TextField(
-                                  controller: reviewController,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    hintText: 'เขียนรีวิวของคุณ...',
-                                  ),
-                                  maxLines: 4,
-                                ),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child:  ElevatedButton(
-                                    onPressed: _addReview,
-                                    child: const Text('ส่งรีวิว'),
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: const Color.fromARGB(255, 202, 83, 223),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
                           ),
                         ],
                       ),
@@ -411,21 +308,131 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 );
               },
             ),
+            FutureBuilder<Map<String, dynamic>>(
+              future: dormitoryData,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                var dormitory = snapshot.data!;
+                double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
+                double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
+
+                if (dormLat == null || dormLon == null) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'ข้อมูลหอพักนี้ยังไม่ครบท้วน',
+                      style: const TextStyle(fontSize: 18, color: Colors.red),
+                    ),
+                  );
+                }
+
+                final CameraPosition _kDormitoryPosition = CameraPosition(
+                  target: LatLng(dormLat, dormLon),
+                  zoom: 14.0,
+                );
+
+                return SizedBox(
+                  height: 300, // Adjust as needed
+                  child: GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: _kDormitoryPosition,
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('dormitory'),
+                        position: LatLng(dormLat, dormLon),
+                        infoWindow: InfoWindow(
+                          title: dormitory['name'] ?? 'ไม่มีชื่อ',
+                        ),
+                      ),
+                    },
+                    onMapCreated: (GoogleMapController controller) {
+                      _mapController.complete(controller);
+                    },
+                  ),
+                );
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: _showDistance, // ปุ่มสำหรับแสดงระยะทาง
+                child: const Text('แสดงระยะทางจากตำแหน่งของคุณ'),
+              ),
+            ),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: reviewsData,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                var reviews = snapshot.data!;
+                return Column(
+                  children: reviews.map((review) {
+                    return ListTile(
+                      title: Text(review['user'] ?? 'ผู้ใช้ไม่ระบุชื่อ'),
+                      subtitle: Text(review['text'] ?? ''),
+                      trailing: RatingBarIndicator(
+                        rating: review['rating']?.toDouble() ?? 0.0,
+                        itemBuilder: (context, index) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        itemCount: 5,
+                        itemSize: 20.0,
+                        direction: Axis.horizontal,
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                controller: reviewController,
+                decoration: const InputDecoration(
+                  labelText: 'แสดงความคิดเห็น',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: RatingBar.builder(
+                initialRating: _rating,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    _rating = rating;
+                  });
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: _addReview,
+                child: const Text('เพิ่มรีวิว'),
+              ),
+            ),
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _bookDormitory,
+        child: const Icon(Icons.book),
+      ),
     );
-  }
-
-  Future<void> _likeReview(String reviewId, int currentLikes) async {
-    await FirebaseFirestore.instance
-        .collection('reviews')
-        .doc(reviewId)
-        .update({
-      'likes': currentLikes + 1,
-    });
-    setState(() {
-      reviewsData = _fetchReviewsData(); // อัปเดตข้อมูลรีวิว
-    });
   }
 }

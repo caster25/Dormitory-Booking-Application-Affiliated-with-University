@@ -75,7 +75,7 @@ class _DormScreenState extends State<DormScreen> {
                     onPressed: () {
                       setState(() {
                         sortBy = 'price';
-                        isPriceAscending = !isPriceAscending;
+                        isPriceAscending = true; // Reset other sort options
                       });
                     },
                     isSelected: sortBy == 'price',
@@ -85,7 +85,7 @@ class _DormScreenState extends State<DormScreen> {
                     onPressed: () {
                       setState(() {
                         sortBy = 'rating';
-                        isRatingAscending = !isRatingAscending;
+                        isRatingAscending = true;
                       });
                     },
                     isSelected: sortBy == 'rating',
@@ -115,15 +115,17 @@ class _DormScreenState extends State<DormScreen> {
                       : [];
 
                   // ถ้า searchQuery ว่าง จะแสดงผลลัพธ์ทั้งหมด
-                  Query dormQuery = FirebaseFirestore.instance
+                  Query dormQueryprice = FirebaseFirestore.instance
                       .collection('dormitories')
                       .orderBy(sortBy,
                           descending: sortBy == 'price'
                               ? !isPriceAscending
                               : !isRatingAscending);
 
+                  
                   // ถ้า searchQuery ไม่ว่าง จึงทำการกรองผลลัพธ์
                   if (searchQuery.isNotEmpty) {
+                    Query dormQuery = FirebaseFirestore.instance.collection('dormitories');
                     dormQuery = dormQuery
                         .where('name', isGreaterThanOrEqualTo: searchQuery)
                         .where('name',
@@ -135,11 +137,12 @@ class _DormScreenState extends State<DormScreen> {
                         .collection('dormitories')
                         .where('name',
                             isGreaterThanOrEqualTo: searchQuery.isNotEmpty
-                                ? searchQuery.toLowerCase()
+                                ? searchQuery.toString()
                                 : null)
                         .where('name',
                             isLessThanOrEqualTo: searchQuery.isNotEmpty
-                                ? searchQuery.toLowerCase() + '\uf8ff'
+                                // ignore: prefer_interpolation_to_compose_strings
+                                ? searchQuery.toString() + '\uf8ff'
                                 : null)
                         .orderBy('name') // Sort by name
                         .snapshots(),
@@ -242,6 +245,7 @@ class _DormScreenState extends State<DormScreen> {
                                               ),
                                               color: Colors.pink,
                                               onPressed: () async {
+                                                // Update Firestore first
                                                 await _toggleFavorite(dormId);
                                               },
                                             ),
