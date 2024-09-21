@@ -149,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       email: userData['email'],
       numphone: userData['numphone'],
       username: userData['username'],
-      firstname: userData['firstname'],
+      fullname: userData['fullname'],
       profilePictureURL: userData['profilePictureURL'],
     );
   }
@@ -208,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(userProfile.firstname ?? 'No name provided'),
+                            Text(userProfile.fullname ?? 'No name provided'),
                           ],
                         ),
                       ],
