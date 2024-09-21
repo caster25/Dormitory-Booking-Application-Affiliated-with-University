@@ -3,8 +3,7 @@ class UserProfile {
   String? idusers;
   String? email;
   String? username;
-  String? firstname;
-  String? lastname;
+  String? fullname;
   String? numphone;
   String? password;
   String? role;
@@ -14,8 +13,7 @@ class UserProfile {
     this.idusers,
     this.email,
     this.username,
-    this.firstname,
-    this.lastname,
+    this.fullname,
     this.numphone,
     this.password,
     this.role,
@@ -28,8 +26,7 @@ class UserProfile {
       idusers: map['iduser'] as String?,
       email: map['email'] as String?,
       username: map['username'] as String?,
-      firstname: map['firstname'] as String?,
-      lastname: map['lastname'] as String?,
+      fullname: map['fullname'] as String?,
       numphone: map['numphone'] as String?,
       role: map['role'] as String?,
       profilePictureURL: map['profilePictureURL'] as String?,
@@ -42,8 +39,7 @@ class UserProfile {
       'iduser': idusers,
       'email': email,
       'username': username,
-      'firstname': firstname,
-      'lastname': lastname,
+      'fullname': fullname,
       'numphone': numphone,
       'role': role,
       'profilePictureURL': profilePictureURL,

@@ -1,7 +1,5 @@
-
-import 'package:dorm_app/model/Userprofile.dart';
+import 'package:dorm_app/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:dorm_app/screen/login.dart';// Assuming this contains the userProfile class
 
@@ -14,42 +12,15 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final UserProfile profile = UserProfile(); // Instance of userProfile
+  final AuthService _authService = AuthService();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  final TextEditingController _userfnameController = TextEditingController();
-  final TextEditingController _userlnameController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   bool _acceptTerms = false;
 
-  final auth = FirebaseAuth.instance;
-  final usersCollection = FirebaseFirestore.instance.collection('users');
-
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      barrierDismissible:
-          false, // ไม่อนุญาตให้ผู้ใช้ปิด dialog โดยการคลิกนอก dialog
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('เกิดข้อผิดพลาด'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
-              },
-              child: const Text('ตกลง'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-// ในฟังก์ชัน _register ของคุณ
   void _register() async {
     if (_formKey.currentState!.validate()) {
       if (!_acceptTerms) {
@@ -60,50 +31,50 @@ class _RegisterFormState extends State<RegisterScreen> {
       }
 
       try {
-        UserCredential userCredential =
-            await auth.createUserWithEmailAndPassword(
+        await _authService.registerUser(
           email: _emailController.text,
           password: _passwordController.text,
+          username: _usernameController.text,
+          fullname: _fullnameController.text,
+          numphone: _numphoneController.text,
         );
 
-        var currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser != null) {
-          await usersCollection.doc(currentUser.uid).set({
-            'userfname': _userfnameController.text,
-            'userlname': _userlnameController.text,
-            'numphone': _numphoneController.text,
-            'email': _emailController.text,
-            'role' : 'user'
-          });
-
-          _formKey.currentState!.reset();
-          _passwordController.clear();
-          _confirmPasswordController.clear();
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
-        }
+        _formKey.currentState!.reset();
+        _passwordController.clear();
+        _confirmPasswordController.clear();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'email-already-in-use') {
-          // ignore: use_build_context_synchronously
-          _showErrorDialog(
-              // ignore: use_build_context_synchronously
-              context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
-        } else {
-          // ignore: use_build_context_synchronously
-          _showErrorDialog(context, 'Registration error: ${e.message}');
-        }
-      } catch (e) {
-        // ignore: use_build_context_synchronously
-        _showErrorDialog(context, 'Error: $e');
+        _showErrorDialog(context, e.message ?? 'Error occurred');
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
       );
     }
+  }
+
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('เกิดข้อผิดพลาด'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('ตกลง'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   InputDecoration _buildInputDecoration(String label) {
@@ -152,7 +123,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 30),
                 TextFormField(
-                  controller: _userfnameController,
+                  controller: _usernameController,
                   decoration: _buildInputDecoration('ชื่อผู้ใช้'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -163,7 +134,7 @@ class _RegisterFormState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 25),
                 TextFormField(
-                  controller: _userlnameController,
+                  controller: _fullnameController,
                   decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {

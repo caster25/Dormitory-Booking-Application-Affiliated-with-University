@@ -100,47 +100,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return 12742 * asin(sqrt(a));
   }
 
-  Future<void> _showDistance() async {
-    try {
-      Position userPosition = await _determinePosition();
-
-      Map<String, dynamic> dormitory = await dormitoryData;
-
-      double dormLat = (dormitory['latitude'] as num).toDouble();
-      double dormLon = (dormitory['longitude'] as num).toDouble();
-
-      double distance = calculateDistance(
-        userPosition.latitude,
-        userPosition.longitude,
-        dormLat,
-        dormLon,
-      );
-
-      setState(() {
-        distanceInKm = distance;
-      });
-
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('ระยะทาง'),
-            content: Text(
-                'หอพักนี้อยู่ห่างจากตำแหน่งของคุณ ${distance.toStringAsFixed(2)} กม.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('ตกลง'),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
-
   Future<void> _addReview() async {
     if (reviewController.text.isEmpty || _rating == 0 || currentUser == null)
       return;
@@ -319,11 +278,11 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
                 if (dormLat == null || dormLon == null) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'ข้อมูลหอพักนี้ยังไม่ครบท้วน',
-                      style: const TextStyle(fontSize: 18, color: Colors.red),
+                      style: TextStyle(fontSize: 18, color: Colors.red),
                     ),
                   );
                 }
@@ -354,12 +313,12 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 );
               },
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _showDistance, // ปุ่มสำหรับแสดงระยะทาง
-                child: const Text('แสดงระยะทางจากตำแหน่งของคุณ'),
-              ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Padding(
+              padding: EdgeInsets.all(10),
+              child: Text('รีวิว'),
             ),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: reviewsData,

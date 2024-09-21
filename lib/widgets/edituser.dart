@@ -16,11 +16,11 @@ class EditUser extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('ชื่อ', style: TextStyle(fontSize: 20)),
+              const Text('ชื่อโปรไฟล์', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
               TextFormField(
                 decoration: InputDecoration(
-                  hintText: "กรอกชื่อใหม่",
+                  hintText: "ชื่อโปรไฟล์",
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 10.0),
                   border: OutlineInputBorder(
@@ -35,16 +35,16 @@ class EditUser extends StatelessWidget {
                   fillColor: Colors.white,
                 ),
                 validator: (String? str) {
-                  if (str == '') return "กรอกชื่อใหม่";
+                  if (str == '') return "กรอกชื่อโปรไฟล์ใหม่";
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-              const Text('นามสกุล', style: TextStyle(fontSize: 20)),
+              const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
               TextFormField(
                 decoration: InputDecoration(
-                  hintText: "กรอกนามสกุลใหม่",
+                  hintText: "กรอกชื่อ-นามสกุล",
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 15.0, horizontal: 10.0),
                   border: OutlineInputBorder(
@@ -59,7 +59,7 @@ class EditUser extends StatelessWidget {
                   fillColor: Colors.white,
                 ),
                 validator: (String? str) {
-                  if (str == '') return "กรอกนามสกุลใหม่";
+                  if (str == '') return "กรอกชื่อ-นามสกุลใหม่";
                   return null;
                 },
               ),

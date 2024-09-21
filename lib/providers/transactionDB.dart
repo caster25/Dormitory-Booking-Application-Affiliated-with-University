@@ -23,8 +23,7 @@ class TransactionDB {
     var store = intMapStoreFactory.store("profiles");
 
     var keyID = await store.add(db, {
-      "userfname": profile.firstname,
-      "userlname": profile.lastname,
+      "userfname": profile.fullname,
       "numphone": profile.numphone,
     });
 
@@ -37,8 +36,7 @@ class TransactionDB {
     var store = intMapStoreFactory.store("profiles");
 
     var keyID = await store.record(id).update(db, {
-      "userfname": profile.firstname,
-      "userlname": profile.lastname,
+      "userfname": profile.fullname,
       "numphone": profile.numphone,
     });
 
@@ -58,8 +56,7 @@ for (var record in snapshot) {
     role: record['role'].toString(),
     email: record['email'].toString(),
     password: record['password'].toString(),
-    firstname: record['firstname'].toString(),
-    lastname: record['lastname'].toString(),
+    fullname: record['fullname'].toString(),
     numphone: record['numphone'].toString(), // If numphone is a number
   ));
 }
