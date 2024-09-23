@@ -1,8 +1,9 @@
+
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -12,6 +13,7 @@ if (localPropertiesFile.exists()) {
         localProperties.load(reader)
     }
 }
+
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
@@ -68,4 +70,4 @@ flutter {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.1.2')
  }
-
+apply plugin: 'com.google.gms.google-services'

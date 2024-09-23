@@ -67,6 +67,8 @@ flutter_icons:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
 #   flutter_localizations:
 #     sdk: flutter
 #   provider: ^6.0.0

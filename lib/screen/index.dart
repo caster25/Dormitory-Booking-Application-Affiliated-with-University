@@ -81,8 +81,8 @@ class IndexScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     // Predefined credentials for test user
-                    String testEmail = 'usertest@gmail.com';
-                    String testPassword = 'user1234';
+                    String testEmail = 'servicetest@gmail.com';
+                    String testPassword = 'test1234';
 
                     try {
                       // Sign in the user with Firebase Authentication
