@@ -4,6 +4,7 @@ import 'package:dorm_app/screen/login.dart';
 class TermsAndConditionsScreen extends StatelessWidget {
   const TermsAndConditionsScreen({super.key});
 
+  // ignore: unused_element
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,

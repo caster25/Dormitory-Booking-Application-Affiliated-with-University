@@ -66,8 +66,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
 
       double price = 0;
       int availableRooms = 0;
-      double rating = 0;
-      int reviewCount = 0;
+
 
       // ตรวจสอบและแปลงค่า
       if (priceText.isNotEmpty) {
@@ -86,22 +85,6 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         }
       }
 
-      if (ratingText.isNotEmpty) {
-        try {
-          rating = double.parse(ratingText);
-        } catch (e) {
-          print('Invalid rating format: $e');
-        }
-      }
-
-      if (reviewCountText.isNotEmpty) {
-        try {
-          reviewCount = int.parse(reviewCountText);
-        } catch (e) {
-          print('Invalid reviewCount format: $e');
-        }
-      }
-
       final dormitoryData = {
         'name': name,
         'price': price,
@@ -110,27 +93,28 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         'latitude': latitude,
         'longitude': longitude,
         'imageUrl': imageUrl,
-        'rating': rating,
-        'reviewCount': reviewCount,
-        'favorites': favorites,
       };
 
       final docSnapshot = await docRef.get();
 
       if (docSnapshot.exists) {
         await docRef.update(dormitoryData);
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('ข้อมูลหอพักได้รับการอัปเดต')),
         );
       } else {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('ไม่พบเอกสารหอพัก')),
         );
       }
 
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } catch (e) {
       print('Error saving dormitory: $e');
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกข้อมูล')),
       );
@@ -186,24 +170,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
               controller: _addressController,
               decoration: const InputDecoration(labelText: 'ที่อยู่'),
             ),
-            TextField(
-              controller: _imageUrlController,
-              decoration: const InputDecoration(labelText: 'URL ของรูปภาพ'),
-            ),
-            TextField(
-              controller: _ratingController,
-              decoration: const InputDecoration(labelText: 'คะแนน'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _reviewCountController,
-              decoration: const InputDecoration(labelText: 'จำนวนรีวิว'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _favoritesController,
-              decoration: const InputDecoration(labelText: 'รายการที่ชื่นชอบ'),
-            ),
+
             const SizedBox(height: 16),
             SizedBox(
               height: 200,

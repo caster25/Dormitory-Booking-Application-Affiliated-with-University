@@ -14,13 +14,11 @@ class RegisterownerScreen extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterownerScreen> {
   final _formKey = GlobalKey<FormState>();
-  // final OwnerProfile profile = OwnerProfile(); // Instance of userProfile
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _firstnameController = TextEditingController();
-  final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   // ignore: unused_field
@@ -29,7 +27,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   // ignore: unused_field
   final TextEditingController _dormitoryAddressController =
       TextEditingController();
-  // ignore: unused_field
+  // ignore: prefer_final_fields
   bool _acceptTerms = false;
 
   final auth = FirebaseAuth.instance;
@@ -77,8 +75,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
         if (currentUser != null) {
           await usersCollection.doc(currentUser.uid).set({
             'username': _usernameController.text,
-            'firstname': _firstnameController.text,
-            'lastname': _lastnameController.text,
+            'fullname': _fullnameController.text,
             'numphone': _numphoneController.text,
             'email': _emailController.text,
             'dormitoryname': _dormitoryNameController.text,
@@ -165,6 +162,22 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 ),
                 const SizedBox(height: 30),
                 TextFormField(
+                  controller: _emailController,
+                  decoration:
+                      _buildInputDecoration('อีเมล'), // Only one decoration
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกอีเมล';
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return 'รูปแบบอีเมลไม่ถูกต้อง';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 30),
+                TextFormField(
                   controller: _usernameController,
                   decoration: _buildInputDecoration('ชื่อผู้ใช้'),
                   validator: (value) {
@@ -176,19 +189,8 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 ),
                 const SizedBox(height: 30),
                 TextFormField(
-                  controller: _firstnameController,
-                  decoration: _buildInputDecoration('ชื่อ'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกชื่อ';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: _lastnameController,
-                  decoration: _buildInputDecoration('นามสกุล'),
+                  controller: _fullnameController,
+                  decoration: _buildInputDecoration('ชื่อ-นามสกุล'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกชื่อ-นามสกุล';
@@ -208,22 +210,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     }
                     if (!RegExp(r'^\d{10}$').hasMatch(value)) {
                       return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: _emailController,
-                  decoration:
-                      _buildInputDecoration('อีเมล'), // Only one decoration
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกอีเมล';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'รูปแบบอีเมลไม่ถูกต้อง';
                     }
                     return null;
                   },
