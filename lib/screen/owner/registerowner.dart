@@ -21,13 +21,11 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  // ignore: unused_field
   final TextEditingController _dormitoryNameController =
       TextEditingController();
-  // ignore: unused_field
   final TextEditingController _dormitoryAddressController =
       TextEditingController();
-  // ignore: prefer_final_fields
+  // ignore: prefer_final_fields, unused_field
   bool _acceptTerms = false;
 
   final auth = FirebaseAuth.instance;

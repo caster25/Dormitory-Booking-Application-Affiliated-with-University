@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/owner/DormitoryDetailsScreen.dart';
 import 'package:dorm_app/screen/owner/ownerhome.dart';
+import 'package:dorm_app/screen/owner/screen/ListOfBookings.dart';
 import 'package:flutter/material.dart';
+import 'list_of_tenants.dart'; // หน้าที่แสดงรายชื่อผู้เช่า
 
-class DormitoryListScreen extends StatelessWidget {
-  const DormitoryListScreen({super.key});
+
+class Ownerdormlistscreen extends StatelessWidget {
+  const Ownerdormlistscreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +14,12 @@ class DormitoryListScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('รายการหอพัก'),
         leading: IconButton(
-            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Ownerhome()),
-                  (route) => false,
-                ),
-            icon: const Icon(Icons.arrow_back)),
+          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const Ownerhome()),
+            (route) => false,
+          ),
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream:
@@ -66,19 +69,36 @@ class DormitoryListScreen extends StatelessWidget {
                       Text('ห้องว่าง: $availableRooms ห้อง'),
                     ],
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DormitoryDetailsScreen(
-                            dormitory: dormitory,
-                            dormitoryId: dormId, // ส่ง ID ของหอพัก
-                          ),
-                        ),
-                      );
-                    },
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // ปุ่มแสดงผู้เช่า
+                      IconButton(
+                        icon: const Icon(Icons.people),
+                        tooltip: 'ผู้เช่า',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ListOfTenants(dormitoryId: dormId),
+                            ),
+                          );
+                        },
+                      ),
+                      // ปุ่มแสดงผู้จอง
+                      IconButton(
+                        icon: const Icon(Icons.book_online),
+                        tooltip: 'ผู้จอง',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ListOfBookings(dormitoryId: dormId),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               );

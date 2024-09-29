@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -21,7 +20,9 @@ class _ChatScreenState extends State<ChatScreen> {
       FirebaseFirestore.instance.collection('messages');
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
+  // ignore: prefer_final_fields
   FocusNode _focusNode = FocusNode();
+  // ignore: prefer_final_fields
   ScrollController _scrollController = ScrollController();
   String? _editingMessageId;
   String? _deletedMessageText;
@@ -33,13 +34,15 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   bool _isAtBottom = true;
+  // ignore: prefer_final_fields, unused_field
   bool _isFirstTimeOpeningChat = true;
   DocumentSnapshot?
-      _deletedMessageSnapshot; // To store the message ID being edited
+      _deletedMessageSnapshot; 
 
   String?
-      currentUserId; // Change this to 'owner' or 'tenant' based on the logged-in user
-  bool _showNewMessagesButton = false; // Flag to show/hide the button
+      currentUserId;
+  // ignore: unused_field
+  bool _showNewMessagesButton = false; 
 
   @override
   void initState() {
@@ -117,6 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _scrollToBottom();
         _messageController.clear();
       } catch (e) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to send message: $e'),
@@ -135,6 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     // Delete the message
     await _messagesCollection.doc(messageSnapshot.id).delete();
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('Message deleted'),
@@ -171,8 +176,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _pickImages() async {
     final picker = ImagePicker();
     final pickedImages =
-        await picker.pickMultiImage(); // Allows picking multiple images
+        await picker.pickMultiImage();
 
+    // ignore: unnecessary_null_comparison
     if (pickedImages != null && pickedImages.isNotEmpty) {
       List<String> imageUrls = [];
       for (var pickedImage in pickedImages) {
@@ -206,7 +212,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  /// Function to show a full-screen image in a dialog
   void _showFullScreenImage(String imageUrl) {
     showDialog(
       context: context,
@@ -254,14 +259,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
                 final messages = snapshot.data!.docs;
 
-                // เลื่อนไปที่ข้อความล่าสุดเมื่อมีการอัปเดตข้อมูล
                 if (_isAtBottom) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     _scrollToBottom();
                   });
                 }
                 return ListView.builder(
-                  controller: _scrollController, // ผูก ScrollController
+                  controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {});
@@ -445,7 +449,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 title: const Text('View'),
                 onTap: () {
                   Navigator.pop(context);
-                  // Add any additional functionality here for viewing messages.
                 },
               ),
             ],

@@ -26,6 +26,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   Map<String, dynamic>? userData;
   double? distanceInKm; // เพิ่มตัวแปรสำหรับเก็บระยะทาง
   final Completer<GoogleMapController> _mapController = Completer();
+  Map<String, dynamic>? selectedDormitory;
 
   @override
   void initState() {
@@ -33,6 +34,10 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     dormitoryData = _fetchDormitoryData();
     reviewsData = _fetchReviewsData();
     _loadUserData(); // ดึงข้อมูลผู้ใช้
+    selectedDormitory = {
+      'id': widget.dormId,
+      'name': currentUser?.displayName,
+    };
   }
 
   Future<void> _loadUserData() async {
@@ -91,18 +96,11 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-  double calculateDistance(lat1, lon1, lat2, lon2) {
-    const p = 0.017453292519943295;
-    const c = cos;
-    final a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
-  }
 
   Future<void> _addReview() async {
-    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null)
+    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
       return;
+    }
 
     try {
       await FirebaseFirestore.instance.collection('reviews').add({
@@ -156,7 +154,9 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     }
   }
 
-  Future<void> _bookDormitory() async {
+  Future<void> _bookDormitory(String userId, String dormitoryId) async {
+  try {
+    // แสดง AlertDialog เพื่อยืนยันการจอง
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -165,21 +165,64 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
             },
             child: const Text('ยกเลิก'),
           ),
           TextButton(
-            onPressed: () {
-              // ใส่ลอจิกการจองที่นี่
-              Navigator.of(context).pop();
+            onPressed: () async {
+              Navigator.of(context).pop(); // ปิด Dialog ถ้ากดยืนยัน
+
+              // เริ่มบันทึกข้อมูลการจอง
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .update({
+                'bookedDormitory': dormitoryId, // บันทึกหอพักที่จองในฟิลด์ของผู้ใช้
+              });
+
+              // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
+              DocumentReference dormitoryRef = FirebaseFirestore.instance
+                  .collection('dormitories')
+                  .doc(dormitoryId);
+              DocumentSnapshot dormitorySnapshot = await dormitoryRef.get();
+
+              int availableRooms = dormitorySnapshot.get('availableRooms');
+
+              if (availableRooms > 0) {
+                // ถ้ายังมีห้องว่าง ลดจำนวนห้องว่างลง 1
+                await dormitoryRef.update({
+                  'availableRooms': availableRooms - 1,
+                  'usersBooked': FieldValue.arrayUnion([userId]), // เพิ่ม userId ไปยังลิสต์ผู้ใช้ที่จองหอพัก
+                });
+
+                // แสดงข้อความแจ้งเตือนสำเร็จ
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('จองหอพักสำเร็จ')),
+                );
+              } else {
+                // ถ้าไม่มีห้องว่าง แจ้งเตือนผู้ใช้
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('หอพักนี้ไม่มีห้องว่างแล้ว')),
+                );
+              }
             },
             child: const Text('ยืนยัน'),
           ),
         ],
       ),
     );
+  } catch (e) {
+    // จัดการข้อผิดพลาดถ้ามี
+    print('Error booking dormitory: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('เกิดข้อผิดพลาดในการจองหอพัก')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -287,6 +330,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   );
                 }
 
+                // ignore: no_leading_underscores_for_local_identifiers
                 final CameraPosition _kDormitoryPosition = CameraPosition(
                   target: LatLng(dormLat, dormLon),
                   zoom: 14.0,
@@ -389,7 +433,9 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _bookDormitory,
+        onPressed: () {
+          _bookDormitory(currentUser!.uid, selectedDormitory!['id']);
+        },
         child: const Icon(Icons.book),
       ),
     );

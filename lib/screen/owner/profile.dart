@@ -1,15 +1,7 @@
+import 'package:dorm_app/screen/owner/dormitoryListScreen.dart';
+import 'package:dorm_app/screen/owner/screen/OwnerDormListScreen.dart';
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Profileowner(),
-    );
-  }
-}
 class Profileowner extends StatelessWidget {
   const Profileowner({super.key});
 
@@ -25,14 +17,15 @@ class Profileowner extends StatelessWidget {
             const Row(
               children: [
                 CircleAvatar(
-                  
-                  backgroundImage: NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
+                  backgroundImage: NetworkImage(
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
                 ),
                 SizedBox(width: 16),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('สวัสดีค่ะ คุณ ....',
+                    Text(
+                      'สวัสดีค่ะ คุณ ....',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -55,25 +48,39 @@ class Profileowner extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Column(
+            Column(
               children: [
                 MenuItem(
                   icon: Icons.info_outline,
                   text: 'รายละเอียดหอพัก',
+                  // onTap: () {
+                  //   Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => const DormitoryListScreen(),
+                  //     ),
+                  //   );
+                  // },
                 ),
                 MenuItem(
                   icon: Icons.account_box_outlined,
                   text: 'รายชื่อผู้เช่า',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Ownerdormlistscreen(),
+                      ),
+                    );
+                  },
                 ),
-                MenuItem(
+                const MenuItem(
                   icon: Icons.settings,
                   text: 'การตั้งค่า',
                 ),
-                MenuItem(
-                  
+                const MenuItem(
                   icon: Icons.notifications_none,
                   text: 'แจ้งเตือน',
-                  
                 ),
               ],
             ),
@@ -87,23 +94,28 @@ class Profileowner extends StatelessWidget {
 class MenuItem extends StatelessWidget {
   final IconData icon;
   final String text;
+  final VoidCallback? onTap; // เพิ่มตัวแปร onTap
 
-  const MenuItem({super.key, required this.icon, required this.text});
+  const MenuItem({super.key, required this.icon, required this.text, this.onTap}); // เพิ่ม onTap ใน constructor
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.grey),
-          const SizedBox(width: 16),
-          Text(
-            text,
-            style: const TextStyle(fontSize: 16),
-          ),
-        ],
+      child: GestureDetector( // ใช้ GestureDetector เพื่อให้สามารถคลิกได้
+        onTap: onTap, // เรียกใช้ onTap เมื่อคลิก
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.grey),
+            const SizedBox(width: 16),
+            Text(
+              text,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
