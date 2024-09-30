@@ -1,4 +1,3 @@
-import 'package:dorm_app/screen/owner/dormitoryListScreen.dart';
 import 'package:dorm_app/screen/owner/screen/OwnerDormListScreen.dart';
 import 'package:flutter/material.dart';
 

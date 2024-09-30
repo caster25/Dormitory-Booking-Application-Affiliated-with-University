@@ -7,6 +7,10 @@ class UserProfile {
   String? password;
   String? role;
   String? profilePictureURL;
+  String? bookedDormitory; // New field for booked dormitory
+  String? currentDormitoryId; // New field for current dormitory ID
+  List<String> favorites; // New field for favorites
+  bool isStaying; // New field to indicate if user is currently staying
 
   UserProfile({
     this.idusers,
@@ -17,7 +21,11 @@ class UserProfile {
     this.password,
     this.role,
     this.profilePictureURL,
-  });
+    this.bookedDormitory,
+    this.currentDormitoryId,
+    List<String>? favorites,
+    this.isStaying = false, // Default value for isStaying
+  }) : favorites = favorites ?? [];
 
   // Create a UserProfile instance from a Map
   factory UserProfile.fromMap(Map<String, dynamic> map) {
@@ -29,6 +37,10 @@ class UserProfile {
       numphone: map['numphone'] as String?,
       role: map['role'] as String?,
       profilePictureURL: map['profilePictureURL'] as String?,
+      bookedDormitory: map['bookedDormitory'] as String?,
+      currentDormitoryId: map['currentDormitoryId'] as String?,
+      favorites: List<String>.from(map['favorites'] ?? []),
+      isStaying: map['isStaying'] as bool? ?? false, // Default to false if not provided
     );
   }
 
@@ -42,6 +54,10 @@ class UserProfile {
       'numphone': numphone,
       'role': role,
       'profilePictureURL': profilePictureURL,
+      'bookedDormitory': bookedDormitory,
+      'currentDormitoryId': currentDormitoryId,
+      'favorites': favorites,
+      'isStaying': isStaying,
     };
   }
 }

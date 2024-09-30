@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ListOfBookings extends StatelessWidget {
   final String dormitoryId;
 
+  // ignore: use_super_parameters
   const ListOfBookings({Key? key, required this.dormitoryId}) : super(key: key);
 
   Future<List<Map<String, dynamic>>> _fetchBookings() async {
@@ -27,7 +28,10 @@ class ListOfBookings extends StatelessWidget {
           .get();
 
       if (userSnapshot.exists) {
-        bookings.add(userSnapshot.data() as Map<String, dynamic>);
+        Map<String, dynamic> userData =
+            userSnapshot.data() as Map<String, dynamic>;
+        userData['userId'] = userId; // เพิ่ม userId ลงในข้อมูลของ user
+        bookings.add(userData);
       }
     }
 
@@ -51,60 +55,71 @@ class ListOfBookings extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
-              // ไม่ปิด Dialog ทันที
               try {
                 DocumentReference dormitoryRef = FirebaseFirestore.instance
                     .collection('dormitories')
                     .doc(dormitoryId);
 
-                // ดึงข้อมูลเอกสารของหอพัก
                 DocumentSnapshot dormitorySnapshot = await dormitoryRef.get();
 
-                // ตรวจสอบว่าเอกสารนี้มีอยู่และมีข้อมูลหรือไม่
                 if (dormitorySnapshot.exists) {
                   Map<String, dynamic>? dormitoryData =
                       dormitorySnapshot.data() as Map<String, dynamic>?;
 
-                  // ตรวจสอบว่ามีฟิลด์ 'tenants' หรือไม่
-                  if (dormitoryData == null ||
-                      !dormitoryData.containsKey('tenants')) {
-                    // ถ้าไม่มีฟิลด์ 'tenants' ให้สร้างฟิลด์นี้ขึ้นมาเป็นลิสต์ว่าง
+                  if (dormitoryData != null) {
+                    if (!dormitoryData.containsKey('tenants')) {
+                      await dormitoryRef.update({
+                        'tenants': [],
+                      });
+                    }
+
+                    if (dormitoryData.containsKey('usersBooked')) {
+                      List<dynamic> usersBooked =
+                          dormitoryData['usersBooked'] as List<dynamic>;
+
+                      await dormitoryRef.update({
+                        'tenants': FieldValue.arrayUnion(usersBooked),
+                        'usersBooked':
+                            FieldValue.delete(), // ลบฟิลด์ usersBooked
+                      });
+                    }
+
                     await dormitoryRef.update({
-                      'tenants': [],
+                      'tenants': FieldValue.arrayUnion([userId]),
                     });
+
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(userId)
+                        .update({
+                      'isStaying': true,
+                      'currentDormitoryId': dormitoryId,
+                    });
+
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content:
+                              Text('การจองสำเร็จและคุณได้ย้ายเข้าหอพักแล้ว')),
+                    );
+
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                  } else {
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('หอพักไม่พบหรือไม่มีอยู่')),
+                    );
                   }
-
-                  // เพิ่ม userId เข้าไปในลิสต์ tenants
-                  await dormitoryRef.update({
-                    'tenants': FieldValue.arrayUnion([userId]),
-                  });
-
-                  // อัปเดตสถานะของผู้ใช้ว่ากำลังพักอาศัยในหอพักนี้
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .update({
-                    'isStaying': true,
-                    'currentDormitoryId':
-                        dormitoryId, // เก็บข้อมูลหอพักที่ผู้ใช้กำลังพักอยู่
-                  });
-
-                  // แสดงข้อความยืนยันการจอง
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                            Text('การจองสำเร็จและคุณได้ย้ายเข้าหอพักแล้ว')),
-                  );
-
-                  // ปิด Dialog หลังจากการจองสำเร็จ
-                  Navigator.of(context).pop();
                 } else {
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('หอพักไม่พบหรือไม่มีอยู่')),
                   );
                 }
               } catch (e) {
                 print('เกิดข้อผิดพลาด: $e');
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('เกิดข้อผิดพลาดในการจอง')),
                 );
@@ -141,38 +156,65 @@ class ListOfBookings extends StatelessWidget {
                 return Card(
                   margin: const EdgeInsets.all(10),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(15.0),
                     side: const BorderSide(color: Colors.grey, width: 1),
                   ),
+                  elevation: 3, // เพิ่มเงาเพื่อให้การ์ดมีมิติมากขึ้น
                   child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
+                    padding: const EdgeInsets.all(15),
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          booking['username'] ?? 'ไม่มีชื่อ',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        const CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.blueAccent,
+                          child:
+                              Icon(Icons.person, size: 30, color: Colors.white),
                         ),
-                        const SizedBox(height: 5),
-                        Text('อีเมล: ${booking['email'] ?? 'ไม่มีอีเมล'}'),
-                        const SizedBox(height: 10),
-                        TextButton(
-                          onPressed: () async {
-                            try {
-                              // Your booking confirmation logic here
-                            } catch (e) {
-                              print(
-                                  'Error occurred: $e'); // Log the error for debugging
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('เกิดข้อผิดพลาดในการจอง')),
-                              );
-                            }
-                          },
-                          child: const Text('ยืนยัน'),
+                        const SizedBox(width: 15),
+                        // ข้อมูลผู้จอง
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                booking['username'] ?? 'ไม่มีชื่อ',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'อีเมล: ${booking['email'] ?? 'ไม่มีอีเมล'}',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'เบอร์โทรศัพท์: ${booking['numphone'] ?? 'ไม่มีเบอร์'}',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(height: 10),
+                              // ปุ่มยืนยันการจอง
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await _confirmBooking(context, dormitoryId,
+                                        booking['userId']);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Colors.green, // สีพื้นหลังปุ่ม
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                  ),
+                                  child: const Text('ยืนยัน'),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
