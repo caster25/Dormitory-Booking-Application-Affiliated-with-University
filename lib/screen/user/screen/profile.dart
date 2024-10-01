@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/setting/detaildromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
-import 'package:dorm_app/widgets/like.dart';
+import 'package:dorm_app/screen/user/widgets/like_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';

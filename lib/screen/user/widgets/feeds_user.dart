@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/detail.dart';
+import 'package:dorm_app/screen/user/screen/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';

@@ -1,4 +1,4 @@
-import 'package:dorm_app/screen/homepage.dart';
+import 'package:dorm_app/screen/user/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
 class EditUser extends StatelessWidget {

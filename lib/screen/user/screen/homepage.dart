@@ -1,14 +1,14 @@
-import 'package:dorm_app/screen/owner/chat.dart';
+import 'package:dorm_app/screen/user/widgets/chat.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
-import 'package:dorm_app/screen/user.dart';
-import 'package:dorm_app/widgets/dorm.dart';
-import 'package:dorm_app/widgets/feeds.dart';
-import 'package:dorm_app/screen/profile.dart';
+import 'package:dorm_app/screen/user/screen/user.dart';
+import 'package:dorm_app/screen/user/widgets/dorm_user.dart';
+import 'package:dorm_app/screen/user/widgets/feeds_user.dart';
+import 'package:dorm_app/screen/user/screen/profile.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key, this.title = "Home"});

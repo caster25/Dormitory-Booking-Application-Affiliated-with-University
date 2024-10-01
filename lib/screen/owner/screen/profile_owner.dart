@@ -1,4 +1,6 @@
-import 'package:dorm_app/screen/owner/screen/OwnerDormListScreen.dart';
+import 'package:dorm_app/screen/owner/widget/details_dorm.dart';
+import 'package:dorm_app/screen/owner/widget/ownerdorm_list_screen.dart';
+import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:flutter/material.dart';
 
 class Profileowner extends StatelessWidget {
@@ -52,14 +54,14 @@ class Profileowner extends StatelessWidget {
                 MenuItem(
                   icon: Icons.info_outline,
                   text: 'รายละเอียดหอพัก',
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => const DormitoryListScreen(),
-                  //     ),
-                  //   );
-                  // },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Details(),
+                      ),
+                    );
+                  },
                 ),
                 MenuItem(
                   icon: Icons.account_box_outlined,
@@ -73,9 +75,15 @@ class Profileowner extends StatelessWidget {
                     );
                   },
                 ),
-                const MenuItem(
+                MenuItem(
                   icon: Icons.settings,
                   text: 'การตั้งค่า',
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SettingsScreen()));
+                  },
                 ),
                 const MenuItem(
                   icon: Icons.notifications_none,
@@ -95,13 +103,18 @@ class MenuItem extends StatelessWidget {
   final String text;
   final VoidCallback? onTap; // เพิ่มตัวแปร onTap
 
-  const MenuItem({super.key, required this.icon, required this.text, this.onTap}); // เพิ่ม onTap ใน constructor
+  const MenuItem(
+      {super.key,
+      required this.icon,
+      required this.text,
+      this.onTap}); // เพิ่ม onTap ใน constructor
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: GestureDetector( // ใช้ GestureDetector เพื่อให้สามารถคลิกได้
+      child: GestureDetector(
+        // ใช้ GestureDetector เพื่อให้สามารถคลิกได้
         onTap: onTap, // เรียกใช้ onTap เมื่อคลิก
         child: Row(
           children: [
@@ -117,4 +130,3 @@ class MenuItem extends StatelessWidget {
     );
   }
 }
-
