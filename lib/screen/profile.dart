@@ -157,12 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid;
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0,
         iconTheme: const IconThemeData(color: Colors.purple),
       ),
       body: Padding(

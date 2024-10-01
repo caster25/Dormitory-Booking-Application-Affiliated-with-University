@@ -2,7 +2,6 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/owner/adddorm.dart';
-import 'package:dorm_app/screen/owner/details.dart';
 import 'package:dorm_app/screen/owner/dormitoryListScreen.dart';
 import 'package:dorm_app/screen/owner/profile.dart';
 import 'package:dorm_app/widgets/map.dart';
@@ -21,7 +20,7 @@ class _OwnerhomeState extends State<Ownerhome> {
   final List<Widget> _screens = [
     const Profileowner(),
     const DormitoryFormScreen(),
-    const Details()
+    const DormitoryListScreen(),
   ];
 
   @override
@@ -197,13 +196,4 @@ class NavigationDrawer extends StatelessWidget {
       onTap: onTap,
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: const Ownerhome(),
-    theme: ThemeData(
-      primaryColor: const Color.fromARGB(255, 241, 229, 255),
-    ),
-  ));
 }

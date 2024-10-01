@@ -1,8 +1,8 @@
 class Dormitory {
-  String? id; // Add an ID field
+  String? id; 
   String? address;
   int availableRooms;
-  List<String> favorites; // Assuming this is a list of user IDs or similar
+  List<String> favorites; 
   String imageUrl;
   double latitude;
   double longitude;
@@ -10,10 +10,10 @@ class Dormitory {
   int price;
   double rating;
   int reviewCount;
-  List<String> tenants; // Assuming this is a list of user IDs for the tenants
+  List<String> tenants;
 
   Dormitory({
-    this.id, // Include id in the constructor
+    this.id, 
     this.address,
     required this.availableRooms,
     required this.favorites,
@@ -27,7 +27,6 @@ class Dormitory {
     required this.tenants,
   });
 
-  // Factory method to create a Dormitory object from a Firestore document
   factory Dormitory.fromMap(Map<String, dynamic> data, String documentId) {
     return Dormitory(
       id: documentId, // Set the id from the document ID
@@ -45,7 +44,6 @@ class Dormitory {
     );
   }
 
-  // Method to convert the Dormitory object back to a Firestore document
   Map<String, dynamic> toMap() {
     return {
       'address': address,
