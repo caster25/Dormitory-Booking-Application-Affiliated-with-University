@@ -22,7 +22,7 @@ class Homepage extends StatefulWidget {
 class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({super.key, required this.user});
 
-  final User user; 
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -213,6 +213,8 @@ class _HomepageState extends State<Homepage> {
   AppBar getAppBar(int index) {
     return AppBar(
       title: getTitle(index),
+      backgroundColor:
+          const Color.fromARGB(255, 153, 85, 240), // กำหนดสีแบล็กกราวที่นี่
       actions: [
         IconButton(
           onPressed: () {

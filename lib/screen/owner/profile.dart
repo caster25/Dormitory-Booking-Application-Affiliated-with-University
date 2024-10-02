@@ -95,13 +95,18 @@ class MenuItem extends StatelessWidget {
   final String text;
   final VoidCallback? onTap; // เพิ่มตัวแปร onTap
 
-  const MenuItem({super.key, required this.icon, required this.text, this.onTap}); // เพิ่ม onTap ใน constructor
+  const MenuItem(
+      {super.key,
+      required this.icon,
+      required this.text,
+      this.onTap}); // เพิ่ม onTap ใน constructor
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: GestureDetector( // ใช้ GestureDetector เพื่อให้สามารถคลิกได้
+      child: GestureDetector(
+        // ใช้ GestureDetector เพื่อให้สามารถคลิกได้
         onTap: onTap, // เรียกใช้ onTap เมื่อคลิก
         child: Row(
           children: [
@@ -117,4 +122,3 @@ class MenuItem extends StatelessWidget {
     );
   }
 }
-
