@@ -137,6 +137,7 @@ class ListOfBookings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายชื่อผู้จอง'),
+        
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchBookings(),

@@ -1,8 +1,8 @@
+import 'package:dorm_app/screen/user/widgets/edit_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:dorm_app/widgets/edituser.dart';
-import 'package:dorm_app/screen/homepage.dart';
+import 'package:dorm_app/screen/user/screen/homepage.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -136,7 +136,6 @@ class ProfileInfoRow extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
             onPressed: () {
-              // Handle edit action
             },
           ),
         ],

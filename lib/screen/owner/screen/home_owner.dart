@@ -1,11 +1,10 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
-import 'package:dorm_app/screen/owner/adddorm.dart';
-import 'package:dorm_app/screen/owner/details.dart';
-import 'package:dorm_app/screen/owner/dormitoryListScreen.dart';
-import 'package:dorm_app/screen/owner/profile.dart';
-import 'package:dorm_app/widgets/map.dart';
+import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
+import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
+import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
+import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:flutter/material.dart';
 
 class Ownerhome extends StatefulWidget {
@@ -20,8 +19,8 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   final List<Widget> _screens = [
     const Profileowner(),
+    const DormitoryListScreen(),
     const DormitoryFormScreen(),
-    const Details()
   ];
 
   @override
@@ -146,7 +145,8 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.person,
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const DormitoryListScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const DormitoryListScreen()),
               ),
             ),
             buildMenuItem(
@@ -154,7 +154,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.settings,
               text: 'การตั้งค่า',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const MapScreen()),
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               ),
             ),
             buildMenuItem(
@@ -173,9 +173,10 @@ class NavigationDrawer extends StatelessWidget {
                         child: const Text('ยกเลิก'),
                       ),
                       TextButton(
-                        onPressed: () => 
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => const IndexScreen()),
+                        onPressed: () =>
+                            Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const IndexScreen()),
                           (Route<dynamic> route) => false,
                         ),
                         child: const Text('ยืนยัน'),
@@ -190,20 +191,13 @@ class NavigationDrawer extends StatelessWidget {
       );
 
   Widget buildMenuItem(BuildContext context,
-      {required IconData icon, required String text, required VoidCallback onTap}) {
+      {required IconData icon,
+      required String text,
+      required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
       title: Text(text),
       onTap: onTap,
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: const Ownerhome(),
-    theme: ThemeData(
-      primaryColor: const Color.fromARGB(255, 241, 229, 255),
-    ),
-  ));
 }

@@ -7,10 +7,10 @@ class UserProfile {
   String? password;
   String? role;
   String? profilePictureURL;
-  String? bookedDormitory; // New field for booked dormitory
-  String? currentDormitoryId; // New field for current dormitory ID
-  List<String> favorites; // New field for favorites
-  bool isStaying; // New field to indicate if user is currently staying
+  String? bookedDormitory;
+  String? currentDormitoryId;
+  List<String> favorites; 
+  bool isStaying; 
 
   UserProfile({
     this.idusers,
@@ -24,10 +24,9 @@ class UserProfile {
     this.bookedDormitory,
     this.currentDormitoryId,
     List<String>? favorites,
-    this.isStaying = false, // Default value for isStaying
+    this.isStaying = false,
   }) : favorites = favorites ?? [];
 
-  // Create a UserProfile instance from a Map
   factory UserProfile.fromMap(Map<String, dynamic> map) {
     return UserProfile(
       idusers: map['iduser'] as String?,
@@ -40,11 +39,11 @@ class UserProfile {
       bookedDormitory: map['bookedDormitory'] as String?,
       currentDormitoryId: map['currentDormitoryId'] as String?,
       favorites: List<String>.from(map['favorites'] ?? []),
-      isStaying: map['isStaying'] as bool? ?? false, // Default to false if not provided
+      isStaying: map['isStaying'] as bool? ?? false,
     );
   }
 
-  // Convert UserProfile instance to a Map
+
   Map<String, dynamic> toMap() {
     return {
       'iduser': idusers,

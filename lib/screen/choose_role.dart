@@ -1,5 +1,5 @@
-import 'package:dorm_app/screen/owner/registerowner.dart';
-import 'package:dorm_app/screen/register.dart';
+import 'package:dorm_app/screen/owner/screen/register_owner.dart';
+import 'package:dorm_app/screen/user/screen/register_user.dart';
 import 'package:flutter/material.dart';
 
 // ignore: camel_case_types

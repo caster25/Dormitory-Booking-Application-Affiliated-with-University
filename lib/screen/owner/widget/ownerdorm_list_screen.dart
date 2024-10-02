@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/owner/ownerhome.dart';
-import 'package:dorm_app/screen/owner/screen/ListOfBookings.dart';
+import 'package:dorm_app/screen/owner/screen/home_owner.dart';
+import 'package:dorm_app/screen/owner/widget/list_of_bookings.dart';
 import 'package:flutter/material.dart';
 import 'list_of_tenants.dart'; // หน้าที่แสดงรายชื่อผู้เช่า
 
