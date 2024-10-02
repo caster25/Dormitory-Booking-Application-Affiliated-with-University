@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class DormitoryDetailsScreen extends StatefulWidget {
+class EditDormitoryScreen extends StatefulWidget {
   final Map<String, dynamic> dormitory;
   final String dormitoryId;
 
-  const DormitoryDetailsScreen({
+  const EditDormitoryScreen({
     super.key,
     required this.dormitory,
     required this.dormitoryId,
@@ -17,7 +17,7 @@ class DormitoryDetailsScreen extends StatefulWidget {
   _EditDormitoryScreenState createState() => _EditDormitoryScreenState();
 }
 
-class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
+class _EditDormitoryScreenState extends State<EditDormitoryScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _availableRoomsController = TextEditingController();

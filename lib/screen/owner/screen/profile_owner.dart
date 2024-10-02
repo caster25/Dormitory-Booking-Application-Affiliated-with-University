@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/details_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/ownerdorm_list_screen.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
@@ -58,7 +59,7 @@ class Profileowner extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Details(),
+                        builder: (context) => const DormitoryFormScreen(),
                       ),
                     );
                   },
@@ -84,10 +85,6 @@ class Profileowner extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) => const SettingsScreen()));
                   },
-                ),
-                const MenuItem(
-                  icon: Icons.notifications_none,
-                  text: 'แจ้งเตือน',
                 ),
               ],
             ),

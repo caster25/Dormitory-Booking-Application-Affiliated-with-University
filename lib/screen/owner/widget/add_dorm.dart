@@ -20,6 +20,15 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   final TextEditingController _dormNameController = TextEditingController();
   final TextEditingController _dormPriceController = TextEditingController();
   final TextEditingController _availableRoomsController = TextEditingController();
+  final TextEditingController _roomTypeController = TextEditingController();
+  final TextEditingController _occupantsController = TextEditingController();
+  final TextEditingController _monthlyRentController = TextEditingController();
+  final TextEditingController _maintenanceFeeController = TextEditingController();
+  final TextEditingController _electricityRateController = TextEditingController();
+  final TextEditingController _waterRateController = TextEditingController();
+  final TextEditingController _furnitureFeeController = TextEditingController();
+  final TextEditingController _securityDepositController = TextEditingController();
+  final TextEditingController _equipmentController = TextEditingController();
 
   List<File> _dormImages = [];
   final ImagePicker _picker = ImagePicker();
@@ -31,7 +40,6 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     // ignore: unnecessary_null_comparison
     if (pickedFiles != null) {
       setState(() {
-        // เพิ่มรูปใหม่ที่เลือกเข้ามาในรายการรูปที่มีอยู่
         _dormImages.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
       });
     }
@@ -50,11 +58,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         Reference firebaseStorageRef =
             FirebaseStorage.instance.ref().child('dormitory_images/$fileName');
 
-        // Upload image file to Firebase Storage
         UploadTask uploadTask = firebaseStorageRef.putFile(image);
         TaskSnapshot taskSnapshot = await uploadTask;
 
-        // Get the download URL of the uploaded image
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
         _uploadedImageUrls.add(downloadUrl);
       }
@@ -76,25 +82,30 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         return;
       }
 
-      // อัปโหลดรูปภาพไปยัง Firebase Storage
       await _uploadImagesToFirebase();
 
       if (_uploadedImageUrls.isNotEmpty) {
-        // บันทึกข้อมูลหอพักลง Firestore พร้อม URL ของรูปภาพ
         await FirebaseFirestore.instance.collection('dormitories').add({
           'name': _dormNameController.text,
           'price': double.parse(_dormPriceController.text),
           'availableRooms': int.parse(_availableRoomsController.text),
+          'roomType': _roomTypeController.text,
+          'occupants': int.parse(_occupantsController.text),
+          'monthlyRent': double.parse(_monthlyRentController.text),
+          'maintenanceFee': double.parse(_maintenanceFeeController.text),
+          'electricityRate': double.parse(_electricityRateController.text),
+          'waterRate': double.parse(_waterRateController.text),
+          'furnitureFee': double.parse(_furnitureFeeController.text),
+          'securityDeposit': double.parse(_securityDepositController.text),
+          'equipment': _equipmentController.text,
           'imageUrl': _uploadedImageUrls,
           'rating': 0
         });
 
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('บันทึกข้อมูลหอพักเรียบร้อยแล้ว')),
         );
 
-        // ล้างแบบฟอร์ม
         _formKey.currentState!.reset();
         setState(() {
           _dormImages = [];
@@ -109,7 +120,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('เพิ่มข้อมูลหอพัก'),
-        automaticallyImplyLeading: false, // Hide the back button
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -119,135 +130,81 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ฟิลด์สำหรับชื่อหอพัก
-                TextFormField(
-                  controller: _dormNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'ชื่อหอพัก',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกชื่อหอพัก';
-                    }
-                    return null;
-                  },
-                ),
+                _buildTextField('ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
+                _buildTextField('ราคาหอพัก (บาท/เดือน)', _dormPriceController, 'กรุณากรอกราคาหอพัก', isNumber: true),
+                _buildTextField('จำนวนห้องว่าง', _availableRoomsController, 'กรุณากรอกจำนวนห้องว่าง', isNumber: true),
+                _buildTextField('ประเภทห้องพัก', _roomTypeController, 'กรุณากรอกประเภทห้องพัก'),
+                _buildTextField('จำนวนคนพัก', _occupantsController, 'กรุณากรอกจำนวนคนพัก', isNumber: true),
+                _buildTextField('อัตราค่าห้องพัก', _monthlyRentController, 'กรุณากรอกอัตราค่าห้องพัก', isNumber: true),
+                _buildTextField('ค่าบำรุงหอ', _maintenanceFeeController, 'กรุณากรอกค่าบำรุงหอ', isNumber: true),
+                _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController, 'กรุณากรอกค่าไฟ', isNumber: true),
+                _buildTextField('ค่าน้ำ (หน่วยละ)', _waterRateController, 'กรุณากรอกค่าน้ำ', isNumber: true),
+                _buildTextField('ค่าเฟอร์นิเจอร์เพิ่มเติม', _furnitureFeeController, 'กรุณากรอกค่าเฟอร์นิเจอร์เพิ่มเติม', isNumber: true),
+                _buildTextField('ค่าประกันความเสียหาย', _securityDepositController, 'กรุณากรอกค่าประกันความเสียหาย', isNumber: true),
+                _buildTextField('อุปกรณ์ที่มีในห้องพัก', _equipmentController, 'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
+
+                // Add image picker and submit button
                 const SizedBox(height: 16),
-
-                // ฟิลด์สำหรับราคาหอพัก
-                TextFormField(
-                  controller: _dormPriceController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'ราคาหอพัก (บาท/เดือน)',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกราคาหอพัก';
-                    }
-                    if (double.tryParse(value) == null) {
-                      return 'กรุณากรอกตัวเลขที่ถูกต้อง';
-                    }
-                    return null;
-                  },
-                ),
+                _buildImagePicker(),
+                if (_isUploading) const CircularProgressIndicator(),
                 const SizedBox(height: 16),
-
-                // ฟิลด์สำหรับห้องที่ว่าง
-                TextFormField(
-                  controller: _availableRoomsController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'จำนวนห้องว่าง',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกจำนวนห้องว่าง';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return 'กรุณากรอกตัวเลขที่ถูกต้อง';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // ปุ่มเลือกรูปภาพหอพัก
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: _pickImages,
-                      child: const Text('เลือกรูปหอพัก'),
-                    ),
-                    const SizedBox(width: 16),
-                    if (_dormImages.isNotEmpty)
-                      const Text(
-                        'เลือกรูปภาพแล้ว',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // แสดงรูปภาพที่เลือก
-                if (_dormImages.isNotEmpty)
-                  SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _dormImages.length,
-                      itemBuilder: (context, index) {
-                        return Stack(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.file(
-                                _dormImages[index],
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  setState(() {
-                                    _dormImages.removeAt(index);
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                const SizedBox(height: 16),
-
-                // แสดงสถานะการอัปโหลดรูปภาพ
-                if (_isUploading) ...[
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                ],
-
-                // ปุ่มส่งข้อมูล
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text('บันทึกข้อมูล'),
-                  ),
-                ),
+                _buildSubmitButton(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, String validationMessage, {bool isNumber = false}) {
+    return Column(
+      children: [
+        TextFormField(
+          controller: controller,
+          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          decoration: InputDecoration(
+            labelText: label,
+            border: const OutlineInputBorder(),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return validationMessage;
+            }
+            if (isNumber && double.tryParse(value) == null) {
+              return 'กรุณากรอกตัวเลขที่ถูกต้อง';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildImagePicker() {
+    return Row(
+      children: [
+        ElevatedButton(
+          onPressed: _pickImages,
+          child: const Text('เลือกรูปหอพัก'),
+        ),
+        const SizedBox(width: 16),
+        if (_dormImages.isNotEmpty)
+          const Text(
+            'เลือกรูปภาพแล้ว',
+            style: TextStyle(color: Colors.green),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _submitForm,
+        child: const Text('บันทึกข้อมูล'),
       ),
     );
   }

@@ -19,8 +19,8 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   final List<Widget> _screens = [
     const Profileowner(),
-    const DormitoryFormScreen(),
     const DormitoryListScreen(),
+    const DormitoryFormScreen(),
   ];
 
   @override
@@ -145,7 +145,8 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.person,
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const DormitoryListScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const DormitoryListScreen()),
               ),
             ),
             buildMenuItem(
@@ -172,9 +173,10 @@ class NavigationDrawer extends StatelessWidget {
                         child: const Text('ยกเลิก'),
                       ),
                       TextButton(
-                        onPressed: () => 
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) => const IndexScreen()),
+                        onPressed: () =>
+                            Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const IndexScreen()),
                           (Route<dynamic> route) => false,
                         ),
                         child: const Text('ยืนยัน'),
@@ -189,7 +191,9 @@ class NavigationDrawer extends StatelessWidget {
       );
 
   Widget buildMenuItem(BuildContext context,
-      {required IconData icon, required String text, required VoidCallback onTap}) {
+      {required IconData icon,
+      required String text,
+      required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
       title: Text(text),

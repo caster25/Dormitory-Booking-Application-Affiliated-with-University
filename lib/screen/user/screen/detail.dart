@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
 class DormallDetailScreen extends StatefulWidget {
   final String dormId;
 
@@ -96,7 +95,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-
   Future<void> _addReview() async {
     if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
       return;
@@ -155,74 +153,75 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   }
 
   Future<void> _bookDormitory(String userId, String dormitoryId) async {
-  try {
-    // แสดง AlertDialog เพื่อยืนยันการจอง
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('จองหอพัก'),
-        content: const Text('คุณต้องการจองหอพักนี้หรือไม่?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
-            },
-            child: const Text('ยกเลิก'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop(); // ปิด Dialog ถ้ากดยืนยัน
+    try {
+      // แสดง AlertDialog เพื่อยืนยันการจอง
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('จองหอพัก'),
+          content: const Text('คุณต้องการจองหอพักนี้หรือไม่?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
+              },
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // ปิด Dialog ถ้ากดยืนยัน
 
-              // เริ่มบันทึกข้อมูลการจอง
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(userId)
-                  .update({
-                'bookedDormitory': dormitoryId, // บันทึกหอพักที่จองในฟิลด์ของผู้ใช้
-              });
-
-              // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
-              DocumentReference dormitoryRef = FirebaseFirestore.instance
-                  .collection('dormitories')
-                  .doc(dormitoryId);
-              DocumentSnapshot dormitorySnapshot = await dormitoryRef.get();
-
-              int availableRooms = dormitorySnapshot.get('availableRooms');
-
-              if (availableRooms > 0) {
-                // ถ้ายังมีห้องว่าง ลดจำนวนห้องว่างลง 1
-                await dormitoryRef.update({
-                  'availableRooms': availableRooms - 1,
-                  'usersBooked': FieldValue.arrayUnion([userId]), // เพิ่ม userId ไปยังลิสต์ผู้ใช้ที่จองหอพัก
+                // เริ่มบันทึกข้อมูลการจอง
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .update({
+                  'bookedDormitory':
+                      dormitoryId, // บันทึกหอพักที่จองในฟิลด์ของผู้ใช้
                 });
 
-                // แสดงข้อความแจ้งเตือนสำเร็จ
-                // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('จองหอพักสำเร็จ')),
-                );
-              } else {
-                // ถ้าไม่มีห้องว่าง แจ้งเตือนผู้ใช้
-                // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('หอพักนี้ไม่มีห้องว่างแล้ว')),
-                );
-              }
-            },
-            child: const Text('ยืนยัน'),
-          ),
-        ],
-      ),
-    );
-  } catch (e) {
-    // จัดการข้อผิดพลาดถ้ามี
-    print('Error booking dormitory: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('เกิดข้อผิดพลาดในการจองหอพัก')),
-    );
-  }
-}
+                // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
+                DocumentReference dormitoryRef = FirebaseFirestore.instance
+                    .collection('dormitories')
+                    .doc(dormitoryId);
+                DocumentSnapshot dormitorySnapshot = await dormitoryRef.get();
 
+                int availableRooms = dormitorySnapshot.get('availableRooms');
+
+                if (availableRooms > 0) {
+                  // ถ้ายังมีห้องว่าง ลดจำนวนห้องว่างลง 1
+                  await dormitoryRef.update({
+                    'availableRooms': availableRooms - 1,
+                    'usersBooked': FieldValue.arrayUnion(
+                        [userId]), // เพิ่ม userId ไปยังลิสต์ผู้ใช้ที่จองหอพัก
+                  });
+
+                  // แสดงข้อความแจ้งเตือนสำเร็จ
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('จองหอพักสำเร็จ')),
+                  );
+                } else {
+                  // ถ้าไม่มีห้องว่าง แจ้งเตือนผู้ใช้
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('หอพักนี้ไม่มีห้องว่างแล้ว')),
+                  );
+                }
+              },
+              child: const Text('ยืนยัน'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      // จัดการข้อผิดพลาดถ้ามี
+      print('Error booking dormitory: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('เกิดข้อผิดพลาดในการจองหอพัก')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,15 +246,16 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
                 double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
-                // Display the dormitory image
+                // Display the dormitory image and information
                 return Column(
                   children: [
+                    // Dormitory Image Section
                     SizedBox(
                       height: 200, // Adjust as needed
                       width: double.infinity,
                       child: Image.network(
                         dormitory['imageUrl'] ??
-                            '', // Make sure 'imageUrl' is the correct field name
+                            '', // Ensure 'imageUrl' is the correct field name
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -274,6 +274,56 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                             style: const TextStyle(
                                 fontSize: 18, color: Colors.grey),
                           ),
+                          const SizedBox(height: 16),
+
+                          // Type of tenant
+                          Text(
+                              'ประเภทผู้พัก: ${dormitory['residentType'] ?? 'ไม่มีข้อมูล'}'),
+                          const SizedBox(height: 8),
+
+                          // Room type
+                          Text(
+                              'ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}'),
+                          const SizedBox(height: 8),
+
+                          // Number of occupants
+                          Text(
+                              'จำนวนคนพัก: ${dormitory['occupancy'] ?? 'ไม่มีข้อมูล'}'),
+                          const SizedBox(height: 8),
+
+                          // Maintenance fee
+                          Text(
+                              'ค่าบำรุงหอ: ${dormitory['maintenanceFee'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          const SizedBox(height: 8),
+
+                          // Electricity charge per unit
+                          Text(
+                              'ค่าไฟหน่วยละ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          const SizedBox(height: 8),
+
+                          // Water charge per unit
+                          Text(
+                              'ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          const SizedBox(height: 8),
+
+                          // Additional furniture charge
+                          Text(
+                              'ค่าเฟอร์นิเจอร์เพิ่มเติม: ${dormitory['furnitureFee'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          const SizedBox(height: 8),
+
+                          // Damage deposit
+                          Text(
+                              'ค่าประกันความเสียหาย: ${dormitory['damageDeposit'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          const SizedBox(height: 16),
+
+                          // Equipment available in the room
+                          Text(
+                            'อุปกรณ์ที่มีในห้องพัก:',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(dormitory['roomFacilities']?.join(', ') ??
+                              'ไม่มีข้อมูล'),
                           const SizedBox(height: 8),
                           Row(
                             children: [
@@ -306,54 +356,41 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                         ],
                       ),
                     ),
-                  ],
-                );
-              },
-            ),
-            FutureBuilder<Map<String, dynamic>>(
-              future: dormitoryData,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                var dormitory = snapshot.data!;
-                double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
-                double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
-                if (dormLat == null || dormLon == null) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'ข้อมูลหอพักนี้ยังไม่ครบท้วน',
-                      style: TextStyle(fontSize: 18, color: Colors.red),
-                    ),
-                  );
-                }
-
-                // ignore: no_leading_underscores_for_local_identifiers
-                final CameraPosition _kDormitoryPosition = CameraPosition(
-                  target: LatLng(dormLat, dormLon),
-                  zoom: 14.0,
-                );
-
-                return SizedBox(
-                  height: 300, // Adjust as needed
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: _kDormitoryPosition,
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId('dormitory'),
-                        position: LatLng(dormLat, dormLon),
-                        infoWindow: InfoWindow(
-                          title: dormitory['name'] ?? 'ไม่มีชื่อ',
+                    // Map Section
+                    if (dormLat != null && dormLon != null) ...[
+                      SizedBox(
+                        height: 300, // Adjust as needed
+                        child: GoogleMap(
+                          mapType: MapType.normal,
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(dormLat, dormLon),
+                            zoom: 14.0,
+                          ),
+                          markers: {
+                            Marker(
+                              markerId: const MarkerId('dormitory'),
+                              position: LatLng(dormLat, dormLon),
+                              infoWindow: InfoWindow(
+                                title: dormitory['name'] ?? 'ไม่มีชื่อ',
+                              ),
+                            ),
+                          },
+                          onMapCreated: (GoogleMapController controller) {
+                            _mapController.complete(controller);
+                          },
                         ),
                       ),
-                    },
-                    onMapCreated: (GoogleMapController controller) {
-                      _mapController.complete(controller);
-                    },
-                  ),
+                    ] else ...[
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'ข้อมูลหอพักนี้ยังไม่ครบท้วน',
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ],
                 );
               },
             ),
