@@ -23,7 +23,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   double _rating = 0;
   User? currentUser;
   Map<String, dynamic>? userData;
-  double? distanceInKm; // เพิ่มตัวแปรสำหรับเก็บระยะทาง
+  double? distanceInKm;
   final Completer<GoogleMapController> _mapController = Completer();
   Map<String, dynamic>? selectedDormitory;
 

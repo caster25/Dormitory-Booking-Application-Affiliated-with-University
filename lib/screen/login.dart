@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/screen/admin/adminscreen.dart';
 import 'package:dorm_app/screen/user/screen/homepage.dart';
 import 'package:dorm_app/screen/owner/screen/home_owner.dart';
 import 'package:dorm_app/screen/user/screen/register_user.dart';
@@ -112,6 +113,10 @@ class _LoginScreenState extends State<LoginScreen> {
             // ignore: use_build_context_synchronously
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) => const Homepage()));
+          } else if (role == 'admin') {
+            // ignore: use_build_context_synchronously
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const AdminScreen()));
           } else {
             _showErrorDialog('Role ไม่ถูกต้อง');
           }

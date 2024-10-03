@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +22,19 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
 
   final TextEditingController _dormNameController = TextEditingController();
   final TextEditingController _dormPriceController = TextEditingController();
-  final TextEditingController _availableRoomsController = TextEditingController();
+  final TextEditingController _availableRoomsController =
+      TextEditingController();
   final TextEditingController _roomTypeController = TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
   final TextEditingController _monthlyRentController = TextEditingController();
-  final TextEditingController _maintenanceFeeController = TextEditingController();
-  final TextEditingController _electricityRateController = TextEditingController();
+  final TextEditingController _maintenanceFeeController =
+      TextEditingController();
+  final TextEditingController _electricityRateController =
+      TextEditingController();
   final TextEditingController _waterRateController = TextEditingController();
   final TextEditingController _furnitureFeeController = TextEditingController();
-  final TextEditingController _securityDepositController = TextEditingController();
+  final TextEditingController _securityDepositController =
+      TextEditingController();
   final TextEditingController _equipmentController = TextEditingController();
 
   List<File> _dormImages = [];
@@ -40,7 +47,8 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     // ignore: unnecessary_null_comparison
     if (pickedFiles != null) {
       setState(() {
-        _dormImages.addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
+        _dormImages
+            .addAll(pickedFiles.map((pickedFile) => File(pickedFile.path)));
       });
     }
   }
@@ -85,32 +93,47 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       await _uploadImagesToFirebase();
 
       if (_uploadedImageUrls.isNotEmpty) {
-        await FirebaseFirestore.instance.collection('dormitories').add({
-          'name': _dormNameController.text,
-          'price': double.parse(_dormPriceController.text),
-          'availableRooms': int.parse(_availableRoomsController.text),
-          'roomType': _roomTypeController.text,
-          'occupants': int.parse(_occupantsController.text),
-          'monthlyRent': double.parse(_monthlyRentController.text),
-          'maintenanceFee': double.parse(_maintenanceFeeController.text),
-          'electricityRate': double.parse(_electricityRateController.text),
-          'waterRate': double.parse(_waterRateController.text),
-          'furnitureFee': double.parse(_furnitureFeeController.text),
-          'securityDeposit': double.parse(_securityDepositController.text),
-          'equipment': _equipmentController.text,
-          'imageUrl': _uploadedImageUrls,
-          'rating': 0
-        });
+        // Get the current user
+        final User? currentUser = FirebaseAuth.instance.currentUser;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('บันทึกข้อมูลหอพักเรียบร้อยแล้ว')),
-        );
+        // Make sure user is logged in
+        if (currentUser != null) {
+          // Get the user's ID
+          String userId = currentUser.uid;
 
-        _formKey.currentState!.reset();
-        setState(() {
-          _dormImages = [];
-          _uploadedImageUrls = [];
-        });
+          // Add dormitory data along with user ID
+          await FirebaseFirestore.instance.collection('dormitories').add({
+            'name': _dormNameController.text,
+            'price': double.parse(_dormPriceController.text),
+            'availableRooms': int.parse(_availableRoomsController.text),
+            'roomType': _roomTypeController.text,
+            'occupants': int.parse(_occupantsController.text),
+            'monthlyRent': double.parse(_monthlyRentController.text),
+            'maintenanceFee': double.parse(_maintenanceFeeController.text),
+            'electricityRate': double.parse(_electricityRateController.text),
+            'waterRate': double.parse(_waterRateController.text),
+            'furnitureFee': double.parse(_furnitureFeeController.text),
+            'securityDeposit': double.parse(_securityDepositController.text),
+            'equipment': _equipmentController.text,
+            'imageUrl': _uploadedImageUrls,
+            'rating': 0,
+            'submittedBy': userId, // Store user ID
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('บันทึกข้อมูลหอพักเรียบร้อยแล้ว')),
+          );
+
+          _formKey.currentState!.reset();
+          setState(() {
+            _dormImages = [];
+            _uploadedImageUrls = [];
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('กรุณาล็อกอินก่อนเพิ่มหอพัก')),
+          );
+        }
       }
     }
   }
@@ -130,18 +153,41 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTextField('ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
-                _buildTextField('ราคาหอพัก (บาท/เดือน)', _dormPriceController, 'กรุณากรอกราคาหอพัก', isNumber: true),
-                _buildTextField('จำนวนห้องว่าง', _availableRoomsController, 'กรุณากรอกจำนวนห้องว่าง', isNumber: true),
-                _buildTextField('ประเภทห้องพัก', _roomTypeController, 'กรุณากรอกประเภทห้องพัก'),
-                _buildTextField('จำนวนคนพัก', _occupantsController, 'กรุณากรอกจำนวนคนพัก', isNumber: true),
-                _buildTextField('อัตราค่าห้องพัก', _monthlyRentController, 'กรุณากรอกอัตราค่าห้องพัก', isNumber: true),
-                _buildTextField('ค่าบำรุงหอ', _maintenanceFeeController, 'กรุณากรอกค่าบำรุงหอ', isNumber: true),
-                _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController, 'กรุณากรอกค่าไฟ', isNumber: true),
-                _buildTextField('ค่าน้ำ (หน่วยละ)', _waterRateController, 'กรุณากรอกค่าน้ำ', isNumber: true),
-                _buildTextField('ค่าเฟอร์นิเจอร์เพิ่มเติม', _furnitureFeeController, 'กรุณากรอกค่าเฟอร์นิเจอร์เพิ่มเติม', isNumber: true),
-                _buildTextField('ค่าประกันความเสียหาย', _securityDepositController, 'กรุณากรอกค่าประกันความเสียหาย', isNumber: true),
-                _buildTextField('อุปกรณ์ที่มีในห้องพัก', _equipmentController, 'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
+                _buildTextField(
+                    'ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
+                _buildTextField('ราคาหอพัก (บาท/เดือน)', _dormPriceController,
+                    'กรุณากรอกราคาหอพัก',
+                    isNumber: true),
+                _buildTextField('จำนวนห้องว่าง', _availableRoomsController,
+                    'กรุณากรอกจำนวนห้องว่าง',
+                    isNumber: true),
+                _buildTextField('ประเภทห้องพัก', _roomTypeController,
+                    'กรุณากรอกประเภทห้องพัก'),
+                _buildTextField(
+                    'จำนวนคนพัก', _occupantsController, 'กรุณากรอกจำนวนคนพัก',
+                    isNumber: true),
+                _buildTextField('อัตราค่าห้องพัก', _monthlyRentController,
+                    'กรุณากรอกอัตราค่าห้องพัก',
+                    isNumber: true),
+                _buildTextField('ค่าบำรุงหอ', _maintenanceFeeController,
+                    'กรุณากรอกค่าบำรุงหอ',
+                    isNumber: true),
+                _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController,
+                    'กรุณากรอกค่าไฟ',
+                    isNumber: true),
+                _buildTextField(
+                    'ค่าน้ำ (หน่วยละ)', _waterRateController, 'กรุณากรอกค่าน้ำ',
+                    isNumber: true),
+                _buildTextField(
+                    'ค่าเฟอร์นิเจอร์เพิ่มเติม',
+                    _furnitureFeeController,
+                    'กรุณากรอกค่าเฟอร์นิเจอร์เพิ่มเติม',
+                    isNumber: true),
+                _buildTextField('ค่าประกันความเสียหาย',
+                    _securityDepositController, 'กรุณากรอกค่าประกันความเสียหาย',
+                    isNumber: true),
+                _buildTextField('อุปกรณ์ที่มีในห้องพัก', _equipmentController,
+                    'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
 
                 // Add image picker and submit button
                 const SizedBox(height: 16),
@@ -157,7 +203,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, String validationMessage, {bool isNumber = false}) {
+  Widget _buildTextField(
+      String label, TextEditingController controller, String validationMessage,
+      {bool isNumber = false}) {
     return Column(
       children: [
         TextFormField(
@@ -183,29 +231,37 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   }
 
   Widget _buildImagePicker() {
-    return Row(
-      children: [
-        ElevatedButton(
-          onPressed: _pickImages,
-          child: const Text('เลือกรูปหอพัก'),
-        ),
-        const SizedBox(width: 16),
-        if (_dormImages.isNotEmpty)
-          const Text(
-            'เลือกรูปภาพแล้ว',
-            style: TextStyle(color: Colors.green),
+    return Row(children: [
+      ElevatedButton(
+        onPressed: _pickImages,
+        child: const Text('เลือกรูปภาพ'),
+      ),
+      const SizedBox(width: 16),
+      Expanded(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: _dormImages
+                .map((image) => Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Image.file(
+                        image,
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
+                    ))
+                .toList(),
           ),
-      ],
-    );
+        ),
+      ),
+    ]);
   }
 
   Widget _buildSubmitButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _submitForm,
-        child: const Text('บันทึกข้อมูล'),
-      ),
+    return ElevatedButton(
+      onPressed: _submitForm,
+      child: const Text('บันทึกข้อมูล'),
     );
   }
 }
