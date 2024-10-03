@@ -154,6 +154,35 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
   Future<void> _bookDormitory(String userId, String dormitoryId) async {
     try {
+      // ดึงข้อมูลผู้ใช้เพื่อตรวจสอบว่ามีหอพักที่จองไว้หรือไม่
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      // ตรวจสอบว่ามีการจองหอพักอยู่แล้วหรือไม่
+      String? bookedDormitory =
+          (userSnapshot.data() as Map<String, dynamic>)['bookedDormitory'];
+
+      if (bookedDormitory != null && bookedDormitory.isNotEmpty) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('แจ้งเตือน'),
+            content: const Text('คุณมีการจองหอพักไว้แล้วไม่สามารถจองเพิ่มได้'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('ตกลง'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
       // แสดง AlertDialog เพื่อยืนยันการจอง
       showDialog(
         context: context,

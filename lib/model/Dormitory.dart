@@ -12,9 +12,10 @@ class Dormitory {
   double electricityRate; 
   double waterRate; 
   double rating; 
-  List<String> imageUrls; 
+  String imageUrls; 
   List<String> tenants;
   String equipment;
+  String address;
 
   Dormitory({
     required this.id,
@@ -33,6 +34,7 @@ class Dormitory {
     required this.imageUrls,
     required this.tenants,
     required this.equipment,
+    required this.address
   });
 
   // Method to create a Dormitory instance from Firestore data
@@ -51,9 +53,10 @@ class Dormitory {
       electricityRate: data['electricityRate']?.toDouble() ?? 0.0,
       waterRate: data['waterRate']?.toDouble() ?? 0.0,
       rating: data['rating']?.toDouble() ?? 0.0,
-      imageUrls: List<String>.from(data['imageUrl'] ?? []),
+      imageUrls: data['imageUrl'] ?? [],
       tenants: List<String>.from(data['tenants'] ?? []),
       equipment: data['equipment'] ?? '-',
+      address: data['address']
     );
   }
 
@@ -75,6 +78,7 @@ class Dormitory {
       'imageUrl': imageUrls,
       'tenants': tenants,
       'equipment': equipment,
+      'address' : address
     };
   }
 }

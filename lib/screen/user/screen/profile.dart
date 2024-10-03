@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/setting/detaildromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
+import 'package:dorm_app/screen/user/screen/book_dorm.dart';
 import 'package:dorm_app/screen/user/widgets/like_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -235,6 +236,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => DormitoryDetailsScreen(userId: userId!),
+                            ),
+                          );
+                        },
+                      ),
+                      MenuItem(
+                        icon: Icons.domain_rounded,
+                        text: 'หอพักของคุณจองไว้',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookDorm(userId: userId!),
                             ),
                           );
                         },

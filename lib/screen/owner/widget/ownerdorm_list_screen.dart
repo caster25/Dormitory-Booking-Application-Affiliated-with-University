@@ -38,35 +38,24 @@ class Ownerdormlistscreen extends StatelessWidget {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              var dormitory =
-                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              var dormitory = snapshot.data!.docs[index].data() as Map<String, dynamic>;
               String dormId = snapshot.data!.docs[index].id;
               String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
               double dormPrice = dormitory['price']?.toDouble() ?? 0;
               int availableRooms = dormitory['availableRooms']?.toInt() ?? 0;
 
-              // Handle imageUrl as a List<dynamic>
-              List<dynamic> imageUrls = dormitory['imageUrl'] ?? [];
+              // Handle imageUrl as either String or List<String>
+              var imageUrlField = dormitory['imageUrl'];
 
-              // Get the first image URL if available
               String? firstImageUrl;
-              if (imageUrls.isNotEmpty && imageUrls[0] is String) {
-                firstImageUrl = imageUrls[0] as String; // Cast the first image URL to String
+              if (imageUrlField is String) {
+                firstImageUrl = imageUrlField;
+              } else if (imageUrlField is List<String> && imageUrlField.isNotEmpty) {
+                firstImageUrl = imageUrlField[0]; // Use the first image in the list
               }
 
               // Handle tenants
-              List<dynamic> tenants = dormitory['tenants'] ?? [];
-              List<String> tenantNames = [];
-
-              for (var tenant in tenants) {
-                // Ensure each tenant is a string before adding it
-                if (tenant is String) {
-                  tenantNames.add(tenant);
-                } else if (tenant is Map<String, dynamic>) {
-                  // If tenant is a Map, adjust this according to your Firestore structure
-                  tenantNames.add(tenant['name'] ?? ''); // Adjust this if your tenant object structure is different
-                }
-              }
+              List<String> tenants = List<String>.from(dormitory['tenants'] ?? []);
 
               return Card(
                 margin: const EdgeInsets.all(10),
@@ -92,7 +81,7 @@ class Ownerdormlistscreen extends StatelessWidget {
                       Text('ห้องว่าง: $availableRooms ห้อง'),
                       // Display tenant names
                       Text(
-                        'ผู้เช่า: ${tenantNames.isNotEmpty ? tenantNames.join(', ') : 'ไม่มีผู้เช่า'}', // Join names for display
+                        'ผู้เช่า:\n${tenants.isNotEmpty ? tenants.join('\n') : 'ไม่มีผู้เช่า'}', // Join names for display
                       ),
                     ],
                   ),

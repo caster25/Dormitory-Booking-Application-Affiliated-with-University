@@ -12,7 +12,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('การตั้งค่า'),
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        automaticallyImplyLeading: true,
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
