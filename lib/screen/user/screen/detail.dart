@@ -34,7 +34,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     super.initState();
     dormitoryData = _fetchDormitoryData();
     reviewsData = _fetchReviewsData();
-    _loadUserData(); // ดึงข้อมูลผู้ใช้
+    _loadUserData();
     selectedDormitory = {
       'id': widget.dormId,
       'name': currentUser?.displayName,
@@ -155,8 +155,37 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     }
   }
 
-  Future<void> _bookDormitory(String userId, String dormitoryId) async {
+  Future<void> _bookDormitory(
+      BuildContext context, String userId, String dormitoryId) async {
     try {
+      // ดึงข้อมูลของหอพักเพื่อตรวจสอบจำนวนห้องว่างก่อน
+      DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+          .collection('dormitories')
+          .doc(dormitoryId)
+          .get();
+
+      int availableRooms = dormitorySnapshot.get('availableRooms');
+
+      // ถ้าห้องเต็ม (availableRooms == 0) ให้แสดงการแจ้งเตือนและไม่ให้จอง
+      if (availableRooms == 0) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('ห้องพักเต็ม'),
+            content: const Text('หอพักนี้ไม่มีห้องว่างแล้ว'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('ตกลง'),
+              ),
+            ],
+          ),
+        );
+        return; // ออกจากฟังก์ชันถ้าห้องเต็ม
+      }
+
       // ดึงข้อมูลผู้ใช้เพื่อตรวจสอบว่ามีหอพักที่จองไว้หรือไม่
       DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -216,28 +245,18 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 DocumentReference dormitoryRef = FirebaseFirestore.instance
                     .collection('dormitories')
                     .doc(dormitoryId);
-                DocumentSnapshot dormitorySnapshot = await dormitoryRef.get();
 
-                int availableRooms = dormitorySnapshot.get('availableRooms');
+                // ลดจำนวนห้องว่างลง 1
+                await dormitoryRef.update({
+                  'availableRooms': availableRooms - 1,
+                  'usersBooked': FieldValue.arrayUnion(
+                      [userId]), // เพิ่ม userId ไปยังลิสต์ผู้ใช้ที่จองหอพัก
+                });
 
-                if (availableRooms > 0) {
-                  // ถ้ายังมีห้องว่าง ลดจำนวนห้องว่างลง 1
-                  await dormitoryRef.update({
-                    'availableRooms': availableRooms - 1,
-                    'usersBooked': FieldValue.arrayUnion(
-                        [userId]), // เพิ่ม userId ไปยังลิสต์ผู้ใช้ที่จองหอพัก
-                  });
-
-                  // แสดงข้อความแจ้งเตือนสำเร็จ
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('จองหอพักสำเร็จ')),
-                  );
-                } else {
-                  // ถ้าไม่มีห้องว่าง แจ้งเตือนผู้ใช้
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('หอพักนี้ไม่มีห้องว่างแล้ว')),
-                  );
-                }
+                // แสดงข้อความแจ้งเตือนสำเร็จ
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('จองหอพักสำเร็จ')),
+                );
               },
               child: const Text('ยืนยัน'),
             ),
@@ -352,8 +371,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                           const SizedBox(height: 8),
-                          Text(dormitory['roomFacilities']?.join(', ') ??
-                              'ไม่มีข้อมูล'),
+                          Text(
+                            (dormitory['equipment'] != null &&
+                                    dormitory['equipment'].isNotEmpty)
+                                ? dormitory['equipment']
+                                    .split('\n')
+                                    .map((e) => e.trim())
+                                    .join(', ')
+                                : 'ไม่มีข้อมูล',
+                          ),
                           const SizedBox(height: 8),
                           Row(
                             children: [
@@ -501,7 +527,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _bookDormitory(currentUser!.uid, selectedDormitory!['id']);
+          _bookDormitory(context, currentUser!.uid, selectedDormitory!['id']);
         },
         child: const Icon(Icons.book),
       ),

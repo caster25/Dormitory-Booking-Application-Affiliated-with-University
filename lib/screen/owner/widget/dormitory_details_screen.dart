@@ -87,7 +87,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
         'waterRate': double.parse(_waterRateController.text.trim()),
         'furnitureFee': double.parse(_furnitureFeeController.text.trim()),
         'securityDeposit': double.parse(_securityDepositController.text.trim()),
-        'equipment': _equipmentController.text,
+        'equipment': _equipmentController.text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList().join(', '), // Convert list back to string
         'latitude': _dormitoryLocation.latitude,
         'longitude': _dormitoryLocation.longitude,
       };
@@ -212,6 +212,8 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
               controller: _equipmentController,
               decoration:
                   const InputDecoration(labelText: 'อุปกรณ์ที่มีในห้องพัก'),
+              maxLines: 5,
+              keyboardType: TextInputType.multiline,
             ),
             // Button to edit the location marker
             const SizedBox(height: 16),

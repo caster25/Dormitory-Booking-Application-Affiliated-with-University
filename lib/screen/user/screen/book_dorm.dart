@@ -1,10 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class BookDorm extends StatelessWidget {
-  final String userId; // เพิ่มการรับค่า userId ผ่าน constructor
+class BookDorm extends StatefulWidget {
+  final String userId; // Accept userId through constructor
 
   const BookDorm({required this.userId, super.key});
+
+  @override
+  _BookDormState createState() => _BookDormState();
+}
+
+class _BookDormState extends State<BookDorm> {
+  bool _isBookingCanceled = false; // State variable to track booking cancellation
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +22,7 @@ class BookDorm extends StatelessWidget {
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
-            .doc(userId) // ใช้ userId ที่ถูกส่งเข้ามา
+            .doc(widget.userId) // Use the userId that is passed
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -32,6 +39,7 @@ class BookDorm extends StatelessWidget {
 
           String? bookedDormId = snapshot.data!.get('bookedDormitory');
 
+          // Check if bookedDormId is null or empty and return appropriate message
           if (bookedDormId == null || bookedDormId.isEmpty) {
             return const Center(child: Text('คุณยังไม่ได้จองหอพักใด ๆ'));
           }
@@ -81,9 +89,11 @@ class BookDorm extends StatelessWidget {
                       subtitle:
                           Text('ราคา: ฿${price.toStringAsFixed(2)} บาท/เดือน'),
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        showDialog(
+                    // Render button only if the booking is not canceled
+                    if (!_isBookingCanceled)
+                      ElevatedButton(
+                        onPressed: () async {
+                          showDialog(
                             context: context,
                             builder: (BuildContext content) {
                               return AlertDialog(
@@ -98,30 +108,35 @@ class BookDorm extends StatelessWidget {
                                     child: const Text('ยกเลิก'),
                                   ),
                                   TextButton(
-                                      onPressed: () async {
-                                        await FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(userId)
-                                            .update({'bookedDormitory': null});
+                                    onPressed: () async {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(widget.userId)
+                                          .update({'bookedDormitory': null});
 
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                'ยกเลิกการจองหอพักเรียบร้อยแล้ว'),
-                                          ),
-                                        );
-                                        Navigator.of(content).pop();
-                                      },
-                                      child: const Text('ยืนยัน'),
-                                    )
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'ยกเลิกการจองหอพักเรียบร้อยแล้ว'),
+                                        ),
+                                      );
+
+                                      // Set the state to indicate the booking has been canceled
+                                      setState(() {
+                                        _isBookingCanceled = true;
+                                      });
+
+                                      Navigator.of(content).pop();
+                                    },
+                                    child: const Text('ยืนยัน'),
+                                  ),
                                 ],
                               );
-                            }
+                            },
                           );
-                      },
-                      child: const Text('ยกเลิกการจองแล้ว'),
-                    ),
+                        },
+                        child: const Text('ยกเลิกการจองแล้ว'),
+                      ),
                   ],
                 ),
               );

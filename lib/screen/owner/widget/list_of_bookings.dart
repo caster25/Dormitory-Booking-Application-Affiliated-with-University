@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ListOfBookings extends StatelessWidget {
   final String dormitoryId;
 
-  // ignore: use_super_parameters
   const ListOfBookings({Key? key, required this.dormitoryId}) : super(key: key);
 
   Future<List<Map<String, dynamic>>> _fetchBookings() async {
@@ -40,7 +39,6 @@ class ListOfBookings extends StatelessWidget {
 
   Future<void> _confirmBooking(
       BuildContext context, String dormitoryId, String userId) async {
-    // แสดง AlertDialog เพื่อยืนยันการจอง
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -49,7 +47,7 @@ class ListOfBookings extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
+              Navigator.of(context).pop();
             },
             child: const Text('ยกเลิก'),
           ),
@@ -132,12 +130,95 @@ class ListOfBookings extends StatelessWidget {
     );
   }
 
+  Future<void> _rejectBooking(
+      BuildContext context, String dormitoryId, String userId) async {
+    // แสดง AlertDialog เพื่อยืนยันการปฏิเสธการจอง
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('ยืนยันการปฏิเสธการจอง'),
+        content: const Text('คุณแน่ใจว่าต้องการปฏิเสธการจองนี้หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
+            },
+            child: const Text('ยกเลิก'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                // ลบ userId ออกจาก usersBooked
+                await FirebaseFirestore.instance
+                    .collection('dormitories')
+                    .doc(dormitoryId)
+                    .update({
+                  'usersBooked': FieldValue.arrayRemove([userId])
+                });
+
+                // รีเซ็ตข้อมูลการจองของผู้ใช้
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .update({
+                  'bookedDormitory': null,
+                  'currentDormitoryId': null,
+                });
+
+                // ดึงข้อมูล dormitory จาก Firestore และเพิ่มค่า availableRooms ขึ้น 1
+                DocumentSnapshot dormitorySnapshot = await FirebaseFirestore
+                    .instance
+                    .collection('dormitories')
+                    .doc(dormitoryId)
+                    .get();
+
+                if (dormitorySnapshot.exists) {
+                  Map<String, dynamic> dormitoryData =
+                      dormitorySnapshot.data() as Map<String, dynamic>;
+
+                  int availableRooms = dormitoryData['availableRooms'] ?? 0;
+                  availableRooms += 1; // เพิ่มจำนวนห้องว่างขึ้น 1
+
+                  // อัปเดตค่า availableRooms ใน Firestore
+                  await FirebaseFirestore.instance
+                      .collection('dormitories')
+                      .doc(dormitoryId)
+                      .update({'availableRooms': availableRooms});
+
+                  // แสดงข้อความสำเร็จ
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content:
+                            Text('การจองถูกปฏิเสธและเพิ่มจำนวนห้องว่างแล้ว')),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('ไม่พบหอพักที่ต้องการ')),
+                  );
+                }
+              } catch (e) {
+                print('เกิดข้อผิดพลาด: $e');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('เกิดข้อผิดพลาดในการปฏิเสธการจอง')),
+                );
+              }
+
+              // ปิด Dialog หลังการยืนยันเสร็จสิ้น
+              Navigator.of(context).pop();
+            },
+            child: const Text('ยืนยัน'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายชื่อผู้จอง'),
-        
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _fetchBookings(),
@@ -196,23 +277,43 @@ class ListOfBookings extends StatelessWidget {
                                 style: const TextStyle(fontSize: 14),
                               ),
                               const SizedBox(height: 10),
-                              // ปุ่มยืนยันการจอง
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await _confirmBooking(context, dormitoryId,
-                                        booking['userId']);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        Colors.green, // สีพื้นหลังปุ่ม
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  // ปุ่มยืนยันการจอง
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      await _confirmBooking(context,
+                                          dormitoryId, booking['userId']);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.green, // สีพื้นหลังปุ่ม
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
                                     ),
+                                    child: const Text('ยืนยัน'),
                                   ),
-                                  child: const Text('ยืนยัน'),
-                                ),
+                                  const SizedBox(width: 10),
+                                  // ปุ่มไม่อนุมัติการจอง
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      await _rejectBooking(context, dormitoryId,
+                                          booking['userId']);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          Colors.red, // สีพื้นหลังปุ่ม
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    ),
+                                    child: const Text('ไม่อนุมัติ'),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
