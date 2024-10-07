@@ -4,7 +4,6 @@ import 'package:dorm_app/screen/owner/widget/list_of_bookings.dart';
 import 'package:flutter/material.dart';
 import 'list_of_tenants.dart'; // หน้าที่แสดงรายชื่อผู้เช่า
 
-
 class Ownerdormlistscreen extends StatelessWidget {
   const Ownerdormlistscreen({super.key});
 
@@ -22,8 +21,7 @@ class Ownerdormlistscreen extends StatelessWidget {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream:
-            FirebaseFirestore.instance.collection('dormitories').snapshots(),
+        stream: FirebaseFirestore.instance.collection('dormitories').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -41,21 +39,35 @@ class Ownerdormlistscreen extends StatelessWidget {
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               var dormitory = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-              String dormId = snapshot.data!.docs[index].id; 
+              String dormId = snapshot.data!.docs[index].id;
               String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
               double dormPrice = dormitory['price']?.toDouble() ?? 0;
               int availableRooms = dormitory['availableRooms']?.toInt() ?? 0;
-              String imageUrl = dormitory['imageUrl'] ?? '';
+
+              // Handle imageUrl as either String or List<String>
+              var imageUrlField = dormitory['imageUrl'];
+
+              String? firstImageUrl;
+              if (imageUrlField is String) {
+                firstImageUrl = imageUrlField;
+              } else if (imageUrlField is List<String> && imageUrlField.isNotEmpty) {
+                firstImageUrl = imageUrlField[0]; // Use the first image in the list
+              }
+
+              // Handle tenants
+              List<String> tenants = List<String>.from(dormitory['tenants'] ?? []);
 
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
-                  leading: imageUrl.isNotEmpty
+                  leading: firstImageUrl != null
                       ? Image.network(
-                          imageUrl,
+                          firstImageUrl, // Use the first image if available
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.error, size: 50),
                         )
                       : const Icon(Icons.image, size: 50),
                   title: Text(
@@ -65,14 +77,18 @@ class Ownerdormlistscreen extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ราคา: $dormPrice บาท/เดือน'),
+                      Text('ราคา: ฿${dormPrice.toStringAsFixed(2)} บาท/เดือน'),
                       Text('ห้องว่าง: $availableRooms ห้อง'),
+                      // Display tenant names
+                      Text(
+                        'ผู้เช่า:\n${tenants.isNotEmpty ? tenants.join('\n') : 'ไม่มีผู้เช่า'}', // Join names for display
+                      ),
                     ],
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ปุ่มแสดงผู้เช่า
+                      // Button to show tenants
                       IconButton(
                         icon: const Icon(Icons.people),
                         tooltip: 'ผู้เช่า',
@@ -85,7 +101,7 @@ class Ownerdormlistscreen extends StatelessWidget {
                           );
                         },
                       ),
-                      // ปุ่มแสดงผู้จอง
+                      // Button to show bookings
                       IconButton(
                         icon: const Icon(Icons.book_online),
                         tooltip: 'ผู้จอง',

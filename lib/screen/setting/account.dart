@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -43,11 +44,11 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                 children: [
                   Text('อีเมล: ${userProfile.email}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
-                  Text('เบอร์โทร: ${userProfile.phoneNumber}', style: const TextStyle(fontSize: 16)),
+                  Text('เบอร์โทร: ${userProfile.numphone}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
                   Text('ชื่อบัญชี: ${userProfile.username}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
-                  Text('ชื่อ-นามสกุล: ${userProfile.fullName}', style: const TextStyle(fontSize: 16)),
+                  Text('ชื่อ-นามสกุล: ${userProfile.fullname}', style: const TextStyle(fontSize: 16)),
                   // Do not display password in the UI for security reasons
                 ],
               ),
@@ -71,30 +72,15 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     }
 
     final userData = userDoc.data()!;
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
 
     return UserProfile(
       email: userData['email'] ?? 'Unknown',
-      phoneNumber: userData['numphone'] ?? 'Unknown',
+      numphone: userData['numphone'] ?? 'Unknown',
       username: userData['username'] ?? 'Unknown',
-      fullName: (userData['firstname'] ?? '') + ' ' + (userData['lastname'] ?? ''),
-      password: '********', // Display a placeholder for password
+      fullname: (userData['fullname'] ?? ''),
+      password: '********',
     );
   }
 }
 
-class UserProfile {
-  final String email;
-  final String phoneNumber;
-  final String username;
-  final String fullName;
-  final String password;
-
-  UserProfile({
-    required this.email,
-    required this.phoneNumber,
-    required this.username,
-    required this.fullName,
-    required this.password,
-  });
-}

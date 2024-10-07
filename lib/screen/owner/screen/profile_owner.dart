@@ -1,5 +1,4 @@
-import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
-import 'package:dorm_app/screen/owner/widget/details_dorm.dart';
+import 'package:dorm_app/screen/owner/widget/dormitory_list_edit.dart';
 import 'package:dorm_app/screen/owner/widget/ownerdorm_list_screen.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +58,7 @@ class Profileowner extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DormitoryFormScreen(),
+                        builder: (context) => const DormitoryListEditScreen(),
                       ),
                     );
                   },
