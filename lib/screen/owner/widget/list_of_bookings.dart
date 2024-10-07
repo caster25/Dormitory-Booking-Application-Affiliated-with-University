@@ -92,7 +92,7 @@ class ListOfBookings extends StatelessWidget {
                         .collection('users')
                         .doc(userId)
                         .update({
-                      'isStaying': true,
+                      'isStaying': dormitoryId,
                       'currentDormitoryId': dormitoryId,
                     });
 

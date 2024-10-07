@@ -45,7 +45,7 @@ class UserDetailsScreen extends StatelessWidget {
                 Text('Username: ${user['username'] ?? 'No Username'}', style: const TextStyle(fontSize: 16)),
                 const SizedBox(height: 8),
                 user['isStaying'] != null
-                    ? Text('Staying Status: ${user['isStaying'] ? 'Currently Staying' : 'Not Staying'}', style: const TextStyle(fontSize: 16))
+                    ? Text('Staying Status: ${user['isStaying'] ?? 'Currently Staying'}', style: const TextStyle(fontSize: 16))
                     : const Text('Staying Status: No Data'),
               ],
             ),

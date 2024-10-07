@@ -226,7 +226,7 @@ class FeedsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                        'ราคาเริ่มต้น ${dorm['price']} บาท/เดือน',
+                                        'ราคาเริ่มต้น ${dorm['price']} บาท/เทอม',
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                     ],

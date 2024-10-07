@@ -10,7 +10,7 @@ class UserProfile {
   String? bookedDormitory;
   String? currentDormitoryId;
   List<String> favorites; 
-  bool isStaying; 
+  String? isStaying; 
 
   UserProfile({
     this.idusers,
@@ -24,7 +24,7 @@ class UserProfile {
     this.bookedDormitory,
     this.currentDormitoryId,
     List<String>? favorites,
-    this.isStaying = false,
+    this.isStaying ,
   }) : favorites = favorites ?? [];
 
   factory UserProfile.fromMap(Map<String, dynamic> map) {
@@ -39,7 +39,7 @@ class UserProfile {
       bookedDormitory: map['bookedDormitory'] as String?,
       currentDormitoryId: map['currentDormitoryId'] as String?,
       favorites: List<String>.from(map['favorites'] ?? []),
-      isStaying: map['isStaying'] as bool? ?? false,
+      isStaying: map['isStaying'] as String? ,
     );
   }
 

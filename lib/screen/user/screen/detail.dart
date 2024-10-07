@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,6 +72,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         .toList();
   }
 
+  // ignore: unused_element
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -168,7 +171,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('แจ้งเตือน'),
+            title: const Text('แจ้งเตือน'),
             content: const Text('คุณมีการจองหอพักไว้แล้วไม่สามารถจองเพิ่มได้'),
             actions: [
               TextButton(
@@ -226,13 +229,11 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   });
 
                   // แสดงข้อความแจ้งเตือนสำเร็จ
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('จองหอพักสำเร็จ')),
                   );
                 } else {
                   // ถ้าไม่มีห้องว่าง แจ้งเตือนผู้ใช้
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('หอพักนี้ไม่มีห้องว่างแล้ว')),
                   );
