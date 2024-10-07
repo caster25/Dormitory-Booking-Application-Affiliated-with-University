@@ -36,13 +36,11 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isAtBottom = true;
   // ignore: prefer_final_fields, unused_field
   bool _isFirstTimeOpeningChat = true;
-  DocumentSnapshot?
-      _deletedMessageSnapshot; 
+  DocumentSnapshot? _deletedMessageSnapshot;
 
-  String?
-      currentUserId;
+  String? currentUserId;
   // ignore: unused_field
-  bool _showNewMessagesButton = false; 
+  bool _showNewMessagesButton = false;
 
   @override
   void initState() {
@@ -175,8 +173,7 @@ class _ChatScreenState extends State<ChatScreen> {
   /// Function to pick and send multiple images
   Future<void> _pickImages() async {
     final picker = ImagePicker();
-    final pickedImages =
-        await picker.pickMultiImage();
+    final pickedImages = await picker.pickMultiImage();
 
     // ignore: unnecessary_null_comparison
     if (pickedImages != null && pickedImages.isNotEmpty) {
@@ -238,16 +235,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('Chat'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.message),
-            onPressed: () {}, // Add functionality if needed
-          ),
-        ],
-      ),
       body: Column(
         children: [
           Expanded(

@@ -9,7 +9,7 @@ class FeedsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 223, 212, 253),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(0),
@@ -85,7 +85,7 @@ class FeedsScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Color.fromARGB(255, 255, 255, 255),
                                   shadows: [
                                     Shadow(
                                       blurRadius: 10.0,
@@ -125,7 +125,7 @@ class FeedsScreen extends StatelessWidget {
                                       BorderRadius.all(Radius.circular(1.0))),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: Colors.grey,
+                                  color: Color.fromARGB(255, 153, 158, 158),
                                   width: 1.0,
                                 ),
                                 borderRadius:

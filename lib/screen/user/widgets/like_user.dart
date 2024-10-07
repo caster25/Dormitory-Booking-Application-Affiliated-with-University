@@ -51,6 +51,7 @@ class _LikeScreenState extends State<LikeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('หอพักที่ถูกใจ'),
       ),
       body: likedDorms.isEmpty
