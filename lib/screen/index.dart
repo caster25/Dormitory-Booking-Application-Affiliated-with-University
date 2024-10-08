@@ -81,7 +81,7 @@ class IndexScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () async {
                     // Predefined credentials for test user
-                    String testEmail = 'servicetest@gmail.com';
+                    String testEmail = 'service2@gmail.com';
                     String testPassword = 'test1234';
 
                     try {

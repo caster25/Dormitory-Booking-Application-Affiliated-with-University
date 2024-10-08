@@ -41,14 +41,16 @@ class ListOfTenants extends StatelessWidget {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(tenantId)
-        .update({'currentDormitoryId': null});
+        .update({'currentDormitoryId': null,
+        'isStaying': null});
 
     // ลบ tenantId ออกจาก tenants array ของ dormitory
     await FirebaseFirestore.instance
         .collection('dormitories')
         .doc(dormitoryId)
         .update({
-      'tenants': FieldValue.arrayRemove([tenantId])
+      'tenants': FieldValue.arrayRemove([tenantId],
+      )
     });
 
     DocumentSnapshot dormitoriesSnapshot = await FirebaseFirestore.instance

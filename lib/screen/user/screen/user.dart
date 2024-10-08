@@ -14,6 +14,9 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> {
   User? currentUser; // เก็บข้อมูลผู้ใช้ที่ล็อกอิน
   Map<String, dynamic>? userData; // เก็บข้อมูลเพิ่มเติมจาก Firestore
+  final TextEditingController _fullnameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _numphoneController = TextEditingController();
 
   @override
   void initState() {
@@ -22,19 +25,49 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Future<void> _loadUserData() async {
-    currentUser =
-        FirebaseAuth.instance.currentUser; // ดึงข้อมูลผู้ใช้จาก FirebaseAuth
+    try {
+      currentUser = FirebaseAuth.instance.currentUser;
 
-    if (currentUser != null) {
-      // ดึงข้อมูลผู้ใช้จาก Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      if (currentUser != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          userData =
+              userDoc.data() as Map<String, dynamic>; // Update userData here
+
+          // Set values to the TextEditingControllers
+          _fullnameController.text = userData?['fullname'] ?? '';
+          _emailController.text = userData?['email'] ?? '';
+          _numphoneController.text = userData?['numphone'] ?? '';
+          setState(() {}); // Trigger a rebuild to update UI
+        } else {
+          print('Document does not exist');
+        }
+      }
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
+  }
+
+  Future<void> _updateUserData() async {
+    try {
+      await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser!.uid)
-          .get();
-
-      setState(() {
-        userData = userDoc.data() as Map<String, dynamic>?;
+          .update({
+        'fullname': _fullnameController.text,
+        'email': _emailController.text,
+        'numphone': _numphoneController.text,
       });
+      Navigator.pop(context); // กลับไปหน้าก่อนหลังจากบันทึก
+    } catch (e) {
+      // แสดงข้อความข้อผิดพลาดถ้ามี
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
     }
   }
 
@@ -68,7 +101,7 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    userData?['username'] ?? 'ชื่อผู้ใช้',
+                    userData?['username'],
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -76,7 +109,7 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                   ProfileInfoRow(
                     icon: Icons.person,
-                    text: userData?['fullname'] ?? 'ไม่ทราบ',
+                    text: userData?['fullname'],
                   ),
                   ProfileInfoRow(
                     icon: Icons.email,
@@ -92,7 +125,8 @@ class _UserScreenState extends State<UserScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const EditUser()),
+                            builder: (context) =>
+                                EditUser(userId: currentUser!.uid)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -135,8 +169,7 @@ class ProfileInfoRow extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
         ],
       ),

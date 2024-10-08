@@ -92,6 +92,7 @@ class ListOfBookings extends StatelessWidget {
                         .update({
                       'isStaying': dormitoryId,
                       'currentDormitoryId': dormitoryId,
+                      'bookedDormitory': null
                     });
 
                     // ignore: use_build_context_synchronously

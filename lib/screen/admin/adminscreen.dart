@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/admin/admin_list_owner.dart';
 import 'package:dorm_app/screen/admin/admin_list_user.dart';
-import 'package:dorm_app/screen/login.dart';
+import 'package:dorm_app/screen/index.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatelessWidget {
@@ -48,8 +48,8 @@ class AdminScreen extends StatelessWidget {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const LoginScreen()),
-                          (Route<dynamic> route) => false, // remove all routes
+                              builder: (context) => const IndexScreen()),
+                          (Route<dynamic> route) => false, 
                         );
                       },
                       child: const Text('ยืนยัน'),

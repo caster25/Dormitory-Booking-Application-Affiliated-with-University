@@ -12,11 +12,13 @@ class AccountInfoScreen extends StatefulWidget {
 
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
   late Future<UserProfile> _userProfile;
+  bool _isPasswordVisible = false; // Control visibility of password
+  final _newPasswordController = TextEditingController(); // New password controller
 
   @override
   void initState() {
     super.initState();
-    _userProfile = getUserProfile(); // Initialize the Future
+    _userProfile = getUserProfile();
   }
 
   @override
@@ -49,7 +51,41 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   Text('ชื่อบัญชี: ${userProfile.username}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
                   Text('ชื่อ-นามสกุล: ${userProfile.fullname}', style: const TextStyle(fontSize: 16)),
-                  // Do not display password in the UI for security reasons
+                  const SizedBox(height: 8),
+
+                  // Password Field
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'password: ${_isPasswordVisible ? userProfile.password : '●●●●●●●●'}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Button to trigger password change
+                  ElevatedButton(
+                    onPressed: () {
+                      _showPasswordChangeDialog(context);
+                    },
+                    child: const Text('เปลี่ยนรหัสผ่าน'),
+                  ),
                 ],
               ),
             );
@@ -72,15 +108,63 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     }
 
     final userData = userDoc.data()!;
-    await Future.delayed(const Duration(seconds: 1));
 
+    // ตรวจสอบฟิลด์ password และกำหนดค่าเริ่มต้นหากเป็น null
     return UserProfile(
       email: userData['email'] ?? 'Unknown',
       numphone: userData['numphone'] ?? 'Unknown',
       username: userData['username'] ?? 'Unknown',
-      fullname: (userData['fullname'] ?? ''),
-      password: '********',
+      fullname: userData['fullname'] ?? '',
+      password: userData['password'] ?? '-',
     );
   }
-}
 
+  // Function to display dialog for password change
+  void _showPasswordChangeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('เปลี่ยนรหัสผ่าน'),
+          content: TextField(
+            controller: _newPasswordController,
+            obscureText: true,
+            decoration: const InputDecoration(labelText: 'รหัสผ่านใหม่'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                _changePassword(_newPasswordController.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text('เปลี่ยนรหัสผ่าน'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to change password
+  Future<void> _changePassword(String newPassword) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.updatePassword(newPassword);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('เปลี่ยนรหัสผ่านสำเร็จ')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
+    }
+  }
+}
