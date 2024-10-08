@@ -4,7 +4,6 @@ import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
-import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:flutter/material.dart';
 
 class Ownerhome extends StatefulWidget {
@@ -149,14 +148,14 @@ class NavigationDrawer extends StatelessWidget {
                     builder: (context) => const DormitoryListScreen()),
               ),
             ),
-            buildMenuItem(
-              context,
-              icon: Icons.settings,
-              text: 'การตั้งค่า',
-              onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              ),
-            ),
+            // buildMenuItem(
+            //   context,
+            //   icon: Icons.settings,
+            //   text: 'การตั้งค่า',
+            //   onTap: () => Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(builder: (context) => const SettingsScreen()),
+            //   ),
+            // ),
             buildMenuItem(
               context,
               icon: Icons.logout,

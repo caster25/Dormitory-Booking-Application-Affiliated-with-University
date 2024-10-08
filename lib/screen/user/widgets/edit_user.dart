@@ -14,7 +14,6 @@ class EditUser extends StatefulWidget {
 class _EditUserState extends State<EditUser> {
   late TextEditingController nameController;
   late TextEditingController fullNameController;
-  late TextEditingController emailController;
   late TextEditingController phoneController;
 
   @override
@@ -22,7 +21,6 @@ class _EditUserState extends State<EditUser> {
     super.initState();
     nameController = TextEditingController();
     fullNameController = TextEditingController();
-    emailController = TextEditingController();
     phoneController = TextEditingController();
     _loadUserData();
   }
@@ -33,7 +31,6 @@ class _EditUserState extends State<EditUser> {
 
     nameController.text = userData['username'] ?? '';
     fullNameController.text = userData['fullname'] ?? '';
-    emailController.text = userData['email'] ?? '';
     phoneController.text = userData['numphone'] ?? '';
   }
 
@@ -68,7 +65,6 @@ class _EditUserState extends State<EditUser> {
     await FirebaseFirestore.instance.collection('users').doc(widget.userId).update({
       'username': nameController.text,
       'fullname': fullNameController.text,
-      'email': emailController.text,
       'numphone': phoneController.text,
     }).then((_) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +86,6 @@ class _EditUserState extends State<EditUser> {
   void dispose() {
     nameController.dispose();
     fullNameController.dispose();
-    emailController.dispose();
     phoneController.dispose();
     super.dispose();
   }
@@ -133,26 +128,6 @@ class _EditUserState extends State<EditUser> {
                 controller: fullNameController,
                 decoration: InputDecoration(
                   hintText: "กรอกชื่อ-นามสกุล",
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text('อีเมล', style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  hintText: "กรอกอีเมลใหม่",
                   contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),

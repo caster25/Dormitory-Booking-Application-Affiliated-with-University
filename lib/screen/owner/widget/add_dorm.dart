@@ -40,7 +40,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   List<File> _dormImages = [];
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
-  List<String> _uploadedImageUrls = [];
+  late String _uploadedImageUrls;
 
   Future<void> _pickImages() async {
     final pickedFiles = await _picker.pickMultiImage();
@@ -60,8 +60,11 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       _isUploading = true;
     });
 
+    String uploadedImageUrls = ''; // Start with an empty string
+
     try {
-      for (var image in _dormImages) {
+      for (var i = 0; i < _dormImages.length; i++) {
+        var image = _dormImages[i];
         String fileName = path.basename(image.path);
         Reference firebaseStorageRef =
             FirebaseStorage.instance.ref().child('dormitory_images/$fileName');
@@ -70,8 +73,15 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         TaskSnapshot taskSnapshot = await uploadTask;
 
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-        _uploadedImageUrls.add(downloadUrl);
+
+        // Concatenate the URL to the string with a comma if it's not the first URL
+        if (uploadedImageUrls.isNotEmpty) {
+          uploadedImageUrls += ',';
+        }
+        uploadedImageUrls += downloadUrl;
       }
+
+      _uploadedImageUrls = uploadedImageUrls; // Set the final string of URLs
     } catch (e) {
       print('Error uploading image: $e');
     } finally {
@@ -127,7 +137,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
           _formKey.currentState!.reset();
           setState(() {
             _dormImages = [];
-            _uploadedImageUrls = [];
+            _uploadedImageUrls;
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

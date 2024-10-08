@@ -1,24 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/admin/admin_list_owner.dart';
 import 'package:dorm_app/screen/admin/admin_list_user.dart';
+import 'package:dorm_app/screen/admin/admin_issue_list.dart'; // Import the new issue list screen
 import 'package:dorm_app/screen/index.dart';
 import 'package:flutter/material.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
-
-  // ฟังก์ชันสำหรับดึงข้อมูลผู้ใช้ทั้งหมดจาก Firestore
-  Future<List<Map<String, dynamic>>> fetchUsers() async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance.collection('users').get();
-
-      return snapshot.docs.map((doc) => doc.data()).toList();
-    } catch (e) {
-      print('Error fetching users: $e');
-      return [];
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +16,7 @@ class AdminScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout), 
+            icon: const Icon(Icons.logout),
             onPressed: () {
               showDialog(
                 context: context,
@@ -38,7 +26,7 @@ class AdminScreen extends StatelessWidget {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
+                        Navigator.of(context).pop(); // Close dialog
                       },
                       child: const Text('ยกเลิก'),
                     ),
@@ -49,7 +37,7 @@ class AdminScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const IndexScreen()),
-                          (Route<dynamic> route) => false, 
+                          (Route<dynamic> route) => false,
                         );
                       },
                       child: const Text('ยืนยัน'),
@@ -90,6 +78,18 @@ class AdminScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to Issue List
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const AdminIssueListScreen()),
+          );
+        },
+        backgroundColor: const Color.fromARGB(255, 240, 43, 138),
+        child: const Icon(Icons.report), // Icon to represent reports
       ),
     );
   }

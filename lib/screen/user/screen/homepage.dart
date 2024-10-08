@@ -1,5 +1,5 @@
 import 'package:dorm_app/screen/user/widgets/chat.dart';
-import 'package:dorm_app/screen/setting/setting.dart';
+// import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -81,14 +81,14 @@ class NavigationDrawer extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const UserScreen()),
               ),
             ),
-            buildMenuItem(
-              context,
-              icon: Icons.settings,
-              text: 'การตั้งค่า',
-              onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              ),
-            ),
+            // buildMenuItem(
+            //   context,
+            //   icon: Icons.settings,
+            //   text: 'การตั้งค่า',
+            //   onTap: () => Navigator.of(context).pushReplacement(
+            //     MaterialPageRoute(builder: (context) => const SettingsScreen()),
+            //   ),
+            // ),
             buildMenuItem(
               context,
               icon: Icons.logout,

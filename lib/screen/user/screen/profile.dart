@@ -3,8 +3,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
+import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/setting/detaildromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
+import 'package:dorm_app/screen/setting/submitIssue.dart';
 import 'package:dorm_app/screen/user/screen/book_dorm.dart';
 import 'package:dorm_app/screen/user/widgets/like_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +14,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
-
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -163,13 +164,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.purple),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('ยืนยันการออกจากระบบ'),
+                  content: const Text('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close dialog
+                      },
+                      child: const Text('ยกเลิก'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to Login Screen and remove all previous routes
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const IndexScreen()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                      child: const Text('ยืนยัน'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
         automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: StreamBuilder<DocumentSnapshot>(
           stream: userId != null
-              ? FirebaseFirestore.instance.collection('users').doc(userId).snapshots()
+              ? FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .snapshots()
               : null,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -179,7 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             } else if (!snapshot.hasData) {
               return const Center(child: Text('No data available'));
             } else {
-              final userProfile = UserProfile.fromMap(snapshot.data!.data() as Map<String, dynamic>);
+              final userProfile = UserProfile.fromMap(
+                  snapshot.data!.data() as Map<String, dynamic>);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -193,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : _profileImageUrl != null
                                   ? NetworkImage(_profileImageUrl!)
                                   : const NetworkImage(
-                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s')
+                                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s')
                                       as ImageProvider,
                           radius: 40,
                         ),
@@ -236,7 +275,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DormitoryDetailsScreen(userId: userId!),
+                              builder: (context) =>
+                                  DormitoryDetailsScreen(userId: userId!),
                             ),
                           );
                         },
@@ -277,9 +317,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                       ),
-                      const MenuItem(
+                      MenuItem(
                         icon: Icons.notifications_none,
-                        text: 'แจ้งเตือน',
+                        text: 'แจ้งระบบต่างๆ',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SubmitIssueScreen()),
+                          );
+                        },
                       ),
                     ],
                   ),

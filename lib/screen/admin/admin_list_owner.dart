@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/admin/admin_list_detail.dart';
 import 'package:flutter/material.dart';
 
-
 class OwnerListScreen extends StatelessWidget {
   const OwnerListScreen({super.key});
 
@@ -11,6 +10,7 @@ class OwnerListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Owner List'),
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -28,23 +28,47 @@ class OwnerListScreen extends StatelessWidget {
 
           final owners = snapshot.data!.docs;
 
+          if (owners.isEmpty) {
+            return const Center(child: Text('No owners found.'));
+          }
+
           return ListView.builder(
             itemCount: owners.length,
             itemBuilder: (context, index) {
               var owner = owners[index];
-              return ListTile(
-                title: Text(owner['fullname'] ?? 'No Name'),
-                subtitle: Text(owner['email'] ?? 'No Email'),
-                trailing: const Icon(Icons.arrow_forward),
-                onTap: () {
-                  // Navigate to owner details screen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserDetailsScreen(userId: owner.id),
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16.0),
+                    leading: CircleAvatar(
+                      backgroundImage: owner['profilePictureURL'] != null && owner['profilePictureURL'] != ''
+                          ? NetworkImage(owner['profilePictureURL'])
+                          : const AssetImage('assets/images/default_avatar.png') as ImageProvider,
+                      radius: 30,
                     ),
-                  );
-                },
+                    title: Text(
+                      owner['fullname'] ?? 'No Name',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(owner['email'] ?? 'No Email'),
+                    trailing: const Icon(Icons.arrow_forward),
+                    onTap: () {
+                      // Navigate to owner details screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserDetailsScreen(userId: owner.id),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               );
             },
           );

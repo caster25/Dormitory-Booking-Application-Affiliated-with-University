@@ -2,20 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Dormitory.dart';
 import 'package:dorm_app/screen/owner/widget/details_dorm.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DormitoryListEditScreen extends StatelessWidget {
   const DormitoryListEditScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get the current owner's user ID
+    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายการหอพัก'),
         automaticallyImplyLeading: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream:
-            FirebaseFirestore.instance.collection('dormitories').snapshots(),
+        // Filter dormitories by the current owner's submittedBy ID
+        stream: FirebaseFirestore.instance
+            .collection('dormitories')
+            .where('submittedBy', isEqualTo: currentUserId) // Filter by submittedBy
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -76,7 +83,7 @@ class DormitoryListEditScreen extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ราคา: ${dormitory.price} บาท/เดือน'),
+                      Text('ราคา: ฿${dormitory.price.toStringAsFixed(2)} บาท/เดือน'),
                       Text('ห้องว่าง: ${dormitory.availableRooms} ห้อง'),
                     ],
                   ),

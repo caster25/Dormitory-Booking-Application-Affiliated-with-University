@@ -51,7 +51,7 @@ class _DormScreenState extends State<DormScreen> {
       ),
       child: TextField(
         controller: searchController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: 'ค้นหาหอพัก',
           border: InputBorder.none,
           prefixIcon: Icon(Icons.search, color: Colors.purple),
@@ -102,7 +102,7 @@ class _DormScreenState extends State<DormScreen> {
         }
 
         if (userSnapshot.hasError) {
-          return Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
+          return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
         }
 
         if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
@@ -121,7 +121,7 @@ class _DormScreenState extends State<DormScreen> {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return Center(child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
+              return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {

@@ -15,7 +15,6 @@ class _UserScreenState extends State<UserScreen> {
   User? currentUser; // เก็บข้อมูลผู้ใช้ที่ล็อกอิน
   Map<String, dynamic>? userData; // เก็บข้อมูลเพิ่มเติมจาก Firestore
   final TextEditingController _fullnameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
 
   @override
@@ -40,7 +39,6 @@ class _UserScreenState extends State<UserScreen> {
 
           // Set values to the TextEditingControllers
           _fullnameController.text = userData?['fullname'] ?? '';
-          _emailController.text = userData?['email'] ?? '';
           _numphoneController.text = userData?['numphone'] ?? '';
           setState(() {}); // Trigger a rebuild to update UI
         } else {
@@ -59,7 +57,6 @@ class _UserScreenState extends State<UserScreen> {
           .doc(currentUser!.uid)
           .update({
         'fullname': _fullnameController.text,
-        'email': _emailController.text,
         'numphone': _numphoneController.text,
       });
       Navigator.pop(context); // กลับไปหน้าก่อนหลังจากบันทึก
@@ -110,10 +107,6 @@ class _UserScreenState extends State<UserScreen> {
                   ProfileInfoRow(
                     icon: Icons.person,
                     text: userData?['fullname'],
-                  ),
-                  ProfileInfoRow(
-                    icon: Icons.email,
-                    text: currentUser?.email ?? 'ไม่มีอีเมล',
                   ),
                   ProfileInfoRow(
                     icon: Icons.phone,

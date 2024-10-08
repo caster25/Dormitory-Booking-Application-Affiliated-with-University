@@ -3,12 +3,16 @@ import 'package:dorm_app/screen/owner/screen/home_owner.dart';
 import 'package:dorm_app/screen/owner/widget/list_of_bookings.dart';
 import 'package:flutter/material.dart';
 import 'list_of_tenants.dart'; // หน้าที่แสดงรายชื่อผู้เช่า
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Ownerdormlistscreen extends StatelessWidget {
   const Ownerdormlistscreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get the current user's ID
+    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายการหอพัก'),
@@ -21,7 +25,11 @@ class Ownerdormlistscreen extends StatelessWidget {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('dormitories').snapshots(),
+        // Filter dormitories by the current owner's submittedBy ID
+        stream: FirebaseFirestore.instance
+            .collection('dormitories')
+            .where('submittedBy', isEqualTo: currentUserId) // Filter by submittedBy
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
