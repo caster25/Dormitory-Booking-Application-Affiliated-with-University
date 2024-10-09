@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/user/widgets/chat.dart';
 // import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
-import 'package:dorm_app/screen/user/screen/user.dart';
+import 'package:dorm_app/screen/user/widgets/user.dart';
 import 'package:dorm_app/screen/user/widgets/dorm_user.dart';
 import 'package:dorm_app/screen/user/widgets/feeds_user.dart';
 import 'package:dorm_app/screen/user/screen/profile.dart';
@@ -24,6 +25,14 @@ class NavigationDrawer extends StatelessWidget {
 
   final User user;
 
+  Future<DocumentSnapshot> getUserData() async {
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid) // ใช้ uid จาก Firebase Authentication
+        .get();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -40,32 +49,47 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context) => Container(
-        color: const Color.fromARGB(255, 153, 85, 240),
-        padding: EdgeInsets.only(
-          top: 24 + MediaQuery.of(context).padding.top,
-          bottom: 24,
-        ),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 52,
-              backgroundImage: user.photoURL != null
-                  ? NetworkImage(user.photoURL!)
-                  : const NetworkImage(
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              user.displayName ?? 'User Name',
-              style: const TextStyle(fontSize: 28, color: Colors.white),
-            ),
-            Text(
-              user.email ?? 'user@example.com',
-              style: const TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ],
-        ),
-      );
+      color: const Color.fromARGB(255, 153, 85, 240),
+      padding: EdgeInsets.only(
+        top: 24 + MediaQuery.of(context).padding.top,
+        bottom: 24,
+      ),
+      child: FutureBuilder<DocumentSnapshot>(
+        future: getUserData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error fetching user data'));
+          } else if (snapshot.hasData && snapshot.data!.exists) {
+            var userData = snapshot.data!.data() as Map<String, dynamic>;
+            return Column(
+              children: [
+                CircleAvatar(
+                  radius: 52,
+                  backgroundImage: userData['profilePictureURL'] != null
+                      ? NetworkImage(userData['profilePictureURL'])
+                      : const AssetImage('assets/images/default_avatar.png')
+                          as ImageProvider,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  userData['username'] ?? 'User Name',
+                  style: const TextStyle(fontSize: 28, color: Colors.white),
+                ),
+                Text(
+                  user.email ?? 'user@example.com',
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ],
+            );
+          } else {
+            return const Center(child: Text('No user data found'));
+          }
+        },
+      ),
+    );
+
 
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
@@ -143,10 +167,10 @@ class _HomepageState extends State<Homepage> {
   late User _currentUser;
 
   final List<Widget> _screens = [
-    const FeedsScreen(), // หน้าแรก
-    const DormScreen(), // หอพัก
-    const ChatScreen(), // รีวิวหอพัก
-    const ProfileScreen(), // โปรไฟล์
+    const FeedsScreen(),
+    const DormScreen(),
+    const ChatScreen(),
+    const ProfileScreen(),
   ];
 
   @override

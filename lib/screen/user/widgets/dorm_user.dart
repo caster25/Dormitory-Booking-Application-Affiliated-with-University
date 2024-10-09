@@ -119,13 +119,15 @@ class _DormScreenState extends State<DormScreen> {
               .where('name', isLessThanOrEqualTo: searchQuery.isNotEmpty ? '$searchQuery\uf8ff' : null)
               .orderBy(sortBy, descending: sortBy == 'price' ? !isPriceAscending : !isRatingAscending)
               .snapshots(),
+
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
             }
 
+
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('ไม่พบหอพักที่มีชื่อนี้'));
+              return const Center(child: Text('กำลังโหลด'));
             }
 
             return _buildDormitoryList(snapshot.data!.docs, favorites);
@@ -241,9 +243,11 @@ class _DormScreenState extends State<DormScreen> {
       // Toggle favorite status
       if (currentFavorites.contains(dormId)) {
         currentFavorites.remove(dormId);
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
       } else {
         currentFavorites.add(dormId);
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to favorites')));
       }
 
@@ -252,6 +256,7 @@ class _DormScreenState extends State<DormScreen> {
     } else {
       // Create user document with favorite dormitory
       await userFavoritesRef.set({'favorites': [dormId]});
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to favorites')));
     }
 

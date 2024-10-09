@@ -27,12 +27,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   final TextEditingController _roomTypeController = TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
   final TextEditingController _monthlyRentController = TextEditingController();
-  final TextEditingController _maintenanceFeeController =
-      TextEditingController();
   final TextEditingController _electricityRateController =
       TextEditingController();
   final TextEditingController _waterRateController = TextEditingController();
-  final TextEditingController _furnitureFeeController = TextEditingController();
   final TextEditingController _securityDepositController =
       TextEditingController();
   final TextEditingController _equipmentController = TextEditingController();
@@ -119,10 +116,8 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             'roomType': _roomTypeController.text,
             'occupants': int.parse(_occupantsController.text),
             'monthlyRent': double.parse(_monthlyRentController.text),
-            'maintenanceFee': double.parse(_maintenanceFeeController.text),
             'electricityRate': double.parse(_electricityRateController.text),
             'waterRate': double.parse(_waterRateController.text),
-            'furnitureFee': double.parse(_furnitureFeeController.text),
             'securityDeposit': double.parse(_securityDepositController.text),
             'equipment': _equipmentController.text,
             'imageUrl': _uploadedImageUrls,
@@ -165,7 +160,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
               children: [
                 _buildTextField(
                     'ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
-                _buildTextField('ราคาหอพัก (บาท/เดือน)', _dormPriceController,
+                _buildTextField('ราคาหอพัก (บาท/เทอม)', _dormPriceController,
                     'กรุณากรอกราคาหอพัก',
                     isNumber: true),
                 _buildTextField('จำนวนห้องว่าง', _availableRoomsController,
@@ -179,19 +174,11 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                 _buildTextField('อัตราค่าห้องพัก', _monthlyRentController,
                     'กรุณากรอกอัตราค่าห้องพัก',
                     isNumber: true),
-                _buildTextField('ค่าบำรุงหอ', _maintenanceFeeController,
-                    'กรุณากรอกค่าบำรุงหอ',
-                    isNumber: true),
                 _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController,
                     'กรุณากรอกค่าไฟ',
                     isNumber: true),
                 _buildTextField(
                     'ค่าน้ำ (หน่วยละ)', _waterRateController, 'กรุณากรอกค่าน้ำ',
-                    isNumber: true),
-                _buildTextField(
-                    'ค่าเฟอร์นิเจอร์เพิ่มเติม',
-                    _furnitureFeeController,
-                    'กรุณากรอกค่าเฟอร์นิเจอร์เพิ่มเติม',
                     isNumber: true),
                 _buildTextField('ค่าประกันความเสียหาย',
                     _securityDepositController, 'กรุณากรอกค่าประกันความเสียหาย',

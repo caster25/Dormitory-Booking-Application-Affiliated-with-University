@@ -3,14 +3,14 @@ class Dormitory {
   String name; 
   String roomType; 
   int occupants; 
-  double price; 
-  double maintenanceFee; 
-  double furnitureFee; 
-  double monthlyRent; 
-  double securityDeposit; 
+  int price; 
+  int maintenanceFee; 
+  int furnitureFee; 
+  int monthlyRent; 
+  int securityDeposit; 
   int availableRooms; 
-  double electricityRate; 
-  double waterRate; 
+  int electricityRate; 
+  int waterRate; 
   double rating; 
   String imageUrls; 
   List<String> tenants;
@@ -44,14 +44,14 @@ class Dormitory {
       name: data['name'] ?? '',
       roomType: data['roomType'] ?? '',
       occupants: data['occupants']?.toInt() ?? 0,
-      price: data['price']?.toDouble() ?? 0.0,
-      maintenanceFee: data['maintenanceFee']?.toDouble() ?? 0.0,
-      furnitureFee: data['furnitureFee']?.toDouble() ?? 0.0,
-      monthlyRent: data['monthlyRent']?.toDouble() ?? 0.0,
-      securityDeposit: data['securityDeposit']?.toDouble() ?? 0.0,
+      price: data['price']?.toInt() ?? 0,
+      maintenanceFee: data['maintenanceFee']?.toInt() ?? 0,
+      furnitureFee: data['furnitureFee']?.toInt() ?? 0,
+      monthlyRent: data['monthlyRent']?.toInt() ?? 0,
+      securityDeposit: data['securityDeposit']?.toInt() ?? 0,
       availableRooms: data['availableRooms']?.toInt() ?? 0,
-      electricityRate: data['electricityRate']?.toDouble() ?? 0.0,
-      waterRate: data['waterRate']?.toDouble() ?? 0.0,
+      electricityRate: data['electricityRate']?.toInt() ?? 0,
+      waterRate: data['waterRate']?.toInt() ?? 0,
       rating: data['rating']?.toDouble() ?? 0.0,
       imageUrls: data['imageUrl'] ?? [],
       tenants: List<String>.from(data['tenants'] ?? []),

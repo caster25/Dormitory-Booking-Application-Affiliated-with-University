@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
 import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Ownerhome extends StatefulWidget {
@@ -15,6 +17,17 @@ class Ownerhome extends StatefulWidget {
 
 class _OwnerhomeState extends State<Ownerhome> {
   int index = 0;
+  User? _currentUser; // Allow null value
+  Future<DocumentSnapshot>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser; // This can be null
+    if (_currentUser != null) {
+      userData = getUserData();
+    }
+  }
 
   final List<Widget> _screens = [
     const Profileowner(),
@@ -22,20 +35,31 @@ class _OwnerhomeState extends State<Ownerhome> {
     const DormitoryFormScreen(),
   ];
 
+  Future<DocumentSnapshot> getUserData() async {
+    if (_currentUser != null) {
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_currentUser!.uid)
+          .get();
+    } else {
+      throw Exception("User is not logged in");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: getAppBar(index),
-      drawer: const NavigationDrawer(),
-      body: IndexedStack(
-        index: index,
-        children: _screens,
-      ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          iconTheme: const IconThemeData(color: Colors.white),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: index != 3 ? getAppBar(index) : null,
+        drawer: index != 3
+            ? NavigationDrawer(user: _currentUser, userData: userData)
+            : null,
+        body: IndexedStack(
+          index: index,
+          children: _screens,
         ),
-        child: CurvedNavigationBar(
+        bottomNavigationBar: CurvedNavigationBar(
           index: index,
           height: 60.0,
           items: const [
@@ -53,7 +77,6 @@ class _OwnerhomeState extends State<Ownerhome> {
               this.index = index;
             });
           },
-          letIndexChange: (index) => true,
         ),
       ),
     );
@@ -88,7 +111,10 @@ class _OwnerhomeState extends State<Ownerhome> {
 }
 
 class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({super.key});
+  const NavigationDrawer({super.key, required this.user, required this.userData});
+
+  final User? user;
+  final Future<DocumentSnapshot>? userData;
 
   @override
   Widget build(BuildContext context) {
@@ -105,34 +131,48 @@ class NavigationDrawer extends StatelessWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างส่วนหัวของ Drawer
   Widget buildHeader(BuildContext context) => Container(
         color: const Color.fromARGB(255, 153, 85, 240),
         padding: EdgeInsets.only(
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
         ),
-        child: const Column(
-          children: [
-            CircleAvatar(
-              radius: 52,
-              backgroundImage: NetworkImage(
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'), // Update with actual URL
-            ),
-            SizedBox(height: 12),
-            Text(
-              'User Name', // Replace with actual user name
-              style: TextStyle(fontSize: 28, color: Colors.white),
-            ),
-            Text(
-              'user@example.com', // Replace with actual email
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ],
+        child: FutureBuilder<DocumentSnapshot>(
+          future: userData,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error fetching user data'));
+            } else if (snapshot.hasData && snapshot.data!.exists) {
+              var userData = snapshot.data!.data() as Map<String, dynamic>;
+              return Column(
+                children: [
+                  CircleAvatar(
+                    radius: 52,
+                    backgroundImage: userData['profilePictureURL'] != null
+                        ? NetworkImage(userData['profilePictureURL'])
+                        : const AssetImage('assets/images/default_avatar.png')
+                            as ImageProvider,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    userData['username'] ?? 'User Name',
+                    style: const TextStyle(fontSize: 28, color: Colors.white),
+                  ),
+                  Text(
+                    user?.email ?? 'user@example.com', // Update to use optional user
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No user data found'));
+            }
+          },
         ),
       );
 
-  // ฟังก์ชันสำหรับสร้างเมนูใน Drawer
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
         color: const Color.fromARGB(255, 252, 252, 252),
@@ -148,14 +188,6 @@ class NavigationDrawer extends StatelessWidget {
                     builder: (context) => const DormitoryListScreen()),
               ),
             ),
-            // buildMenuItem(
-            //   context,
-            //   icon: Icons.settings,
-            //   text: 'การตั้งค่า',
-            //   onTap: () => Navigator.of(context).pushReplacement(
-            //     MaterialPageRoute(builder: (context) => const SettingsScreen()),
-            //   ),
-            // ),
             buildMenuItem(
               context,
               icon: Icons.logout,

@@ -55,7 +55,7 @@ class DormitoryListScreen extends StatelessWidget {
                         snapshot.data!.docs[index].data() as Map<String, dynamic>;
                     String dormId = snapshot.data!.docs[index].id; 
                     String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
-                    double dormPrice = dormitory['price']?.toDouble() ?? 0;
+                    int dormPrice = dormitory['price']?.toInt() ?? 0;
                     int availableRooms = dormitory['availableRooms']?.toInt() ?? 0;
                     String imageUrl = dormitory['imageUrl'] ?? '';
 

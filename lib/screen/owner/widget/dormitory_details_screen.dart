@@ -25,9 +25,6 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
       TextEditingController();
   final TextEditingController _roomTypeController = TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
-  final TextEditingController _monthlyRentController = TextEditingController();
-  final TextEditingController _maintenanceFeeController =
-      TextEditingController();
   final TextEditingController _electricityRateController =
       TextEditingController();
   final TextEditingController _waterRateController = TextEditingController();
@@ -51,10 +48,6 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
     _roomTypeController.text = widget.dormitory['roomType'] ?? '';
     _occupantsController.text =
         widget.dormitory['occupants']?.toString() ?? '0';
-    _monthlyRentController.text =
-        widget.dormitory['monthlyRent']?.toString() ?? '0';
-    _maintenanceFeeController.text =
-        widget.dormitory['maintenanceFee']?.toString() ?? '0';
     _electricityRateController.text =
         widget.dormitory['electricityRate']?.toString() ?? '0';
     _waterRateController.text =
@@ -77,16 +70,14 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
           .doc(_dormitoryId);
       final dormitoryData = {
         'name': _nameController.text,
-        'price': double.parse(_priceController.text.trim()),
+        'price': int.parse(_priceController.text.trim()),
         'availableRooms': int.parse(_availableRoomsController.text.trim()),
         'roomType': _roomTypeController.text,
         'occupants': int.parse(_occupantsController.text.trim()),
-        'monthlyRent': double.parse(_monthlyRentController.text.trim()),
-        'maintenanceFee': double.parse(_maintenanceFeeController.text.trim()),
-        'electricityRate': double.parse(_electricityRateController.text.trim()),
-        'waterRate': double.parse(_waterRateController.text.trim()),
-        'furnitureFee': double.parse(_furnitureFeeController.text.trim()),
-        'securityDeposit': double.parse(_securityDepositController.text.trim()),
+        'electricityRate': int.parse(_electricityRateController.text.trim()),
+        'waterRate': int.parse(_waterRateController.text.trim()),
+        'furnitureFee': int.parse(_furnitureFeeController.text.trim()),
+        'securityDeposit': int.parse(_securityDepositController.text.trim()),
         'equipment': _equipmentController.text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList().join(', '), // Convert list back to string
         'latitude': _dormitoryLocation.latitude,
         'longitude': _dormitoryLocation.longitude,
@@ -149,82 +140,74 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'ชื่อหอพัก'),
-            ),
-            TextField(
-              controller: _priceController,
-              decoration: const InputDecoration(labelText: 'ราคา'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _availableRoomsController,
-              decoration: const InputDecoration(labelText: 'ห้องว่าง'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _roomTypeController,
-              decoration: const InputDecoration(labelText: 'ประเภทห้องพัก'),
-            ),
-            TextField(
-              controller: _occupantsController,
-              decoration: const InputDecoration(labelText: 'จำนวนคนพัก'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _monthlyRentController,
-              decoration: const InputDecoration(labelText: 'อัตราค่าห้องพัก'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _maintenanceFeeController,
-              decoration: const InputDecoration(labelText: 'ค่าบำรุงหอ'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _electricityRateController,
-              decoration: const InputDecoration(labelText: 'ค่าไฟ (หน่วยละ)'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _waterRateController,
-              decoration: const InputDecoration(labelText: 'ค่าน้ำ (หน่วยละ)'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _furnitureFeeController,
-              decoration:
-                  const InputDecoration(labelText: 'ค่าเฟอร์นิเจอร์เพิ่มเติม'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _securityDepositController,
-              decoration:
-                  const InputDecoration(labelText: 'ค่าประกันความเสียหาย'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _equipmentController,
-              decoration:
-                  const InputDecoration(labelText: 'อุปกรณ์ที่มีในห้องพัก'),
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-            ),
-            // Button to edit the location marker
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                print("Navigating to Edit Location");
-                _navigateToEditLocation();
-              },
-              child: const Text('แก้ไขตำแหน่งหมุด'),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'ชื่อหอพัก'),
+              ),
+              TextField(
+                controller: _priceController,
+                decoration: const InputDecoration(labelText: 'ราคา'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _availableRoomsController,
+                decoration: const InputDecoration(labelText: 'ห้องว่าง'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _roomTypeController,
+                decoration: const InputDecoration(labelText: 'ประเภทห้องพัก'),
+              ),
+              TextField(
+                controller: _occupantsController,
+                decoration: const InputDecoration(labelText: 'จำนวนคนพัก'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _electricityRateController,
+                decoration: const InputDecoration(labelText: 'ค่าไฟ (หน่วยละ)'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _waterRateController,
+                decoration: const InputDecoration(labelText: 'ค่าน้ำ (หน่วยละ)'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _furnitureFeeController,
+                decoration:
+                    const InputDecoration(labelText: 'ค่าเฟอร์นิเจอร์เพิ่มเติม'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _securityDepositController,
+                decoration:
+                    const InputDecoration(labelText: 'ค่าประกันความเสียหาย'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _equipmentController,
+                decoration:
+                    const InputDecoration(labelText: 'อุปกรณ์ที่มีในห้องพัก'),
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
+              ),
+              // Button to edit the location marker
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  print("Navigating to Edit Location");
+                  _navigateToEditLocation();
+                },
+                child: const Text('แก้ไขตำแหน่งหมุด'),
+              ),
+            ],
+          ),
         ),
       ),
     );

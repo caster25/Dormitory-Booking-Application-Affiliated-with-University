@@ -89,7 +89,7 @@ class Ownerdormlistscreen extends StatelessWidget {
                       Text('ห้องว่าง: $availableRooms ห้อง'),
                       // Display tenant names
                       Text(
-                        'ผู้เช่า:\n${tenants.isNotEmpty ? tenants.join('\n') : 'ไม่มีผู้เช่า'}', // Join names for display
+                        'ผู้เช่า:${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน', // Join names for display
                       ),
                     ],
                   ),
