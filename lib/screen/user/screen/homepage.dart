@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/user/widgets/chat.dart';
+//import 'package:dorm_app/screen/user/widgets/chat.dart';
 // import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -169,7 +169,6 @@ class _HomepageState extends State<Homepage> {
   final List<Widget> _screens = [
     const FeedsScreen(),
     const DormScreen(),
-    const ChatScreen(),
     const ProfileScreen(),
   ];
 

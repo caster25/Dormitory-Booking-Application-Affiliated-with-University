@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
+import 'package:dorm_app/screen/user/widgets/chat.dart';
 import 'package:flutter/material.dart';
 
 class BookDorm extends StatefulWidget {
@@ -11,7 +14,33 @@ class BookDorm extends StatefulWidget {
 }
 
 class _BookDormState extends State<BookDorm> {
-  bool _isBookingCanceled = false; // State variable to track booking cancellation
+  bool _isBookingCanceled =
+      false; // State variable to track booking cancellation
+
+  // Function to navigate to chat screen
+  void _navigateToChat(String dormitoryId, String ownerId) {
+    // Create chatRoomId using userId and ownerId
+    String chatRoomId = _createChatRoomId(widget.userId, ownerId);
+
+    // Replace this with your actual chat screen implementation
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreen(
+          userId: widget.userId,
+          ownerId: ownerId,
+          chatRoomId: chatRoomId, // Pass chatRoomId
+        ),
+      ),
+    );
+  }
+
+  // Function to create chatRoomId
+  String _createChatRoomId(String userId, String ownerId) {
+    var bytes = utf8.encode('$userId$ownerId');
+    var digest = sha256.convert(bytes);
+    return digest.toString(); // Return chatRoomId
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +96,8 @@ class _BookDormState extends State<BookDorm> {
               String dormName = dormData['name'] ?? 'ไม่มีชื่อ';
               double price = dormData['price']?.toDouble() ?? 0;
               String imageUrl = dormData['imageUrl'];
+              String ownerId =
+                  dormData['submittedBy'] ?? ''; // Get ownerId from dormData
 
               return Card(
                 margin:
@@ -114,7 +145,8 @@ class _BookDormState extends State<BookDorm> {
                                           .doc(widget.userId)
                                           .update({'bookedDormitory': null});
 
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         const SnackBar(
                                           content: Text(
                                               'ยกเลิกการจองหอพักเรียบร้อยแล้ว'),
@@ -136,6 +168,15 @@ class _BookDormState extends State<BookDorm> {
                           );
                         },
                         child: const Text('ยกเลิกการจองแล้ว'),
+                      ),
+                    // Button to navigate to chat screen
+                    if (!_isBookingCanceled)
+                      ElevatedButton(
+                        onPressed: () {
+                          _navigateToChat(
+                              bookedDormId, ownerId); // Navigate to chat screen
+                        },
+                        child: const Text('คุยกับเจ้าของหอพัก'),
                       ),
                   ],
                 ),

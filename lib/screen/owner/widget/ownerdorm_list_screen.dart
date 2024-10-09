@@ -28,7 +28,8 @@ class Ownerdormlistscreen extends StatelessWidget {
         // Filter dormitories by the current owner's submittedBy ID
         stream: FirebaseFirestore.instance
             .collection('dormitories')
-            .where('submittedBy', isEqualTo: currentUserId) // Filter by submittedBy
+            .where('submittedBy',
+                isEqualTo: currentUserId) // Filter by submittedBy
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -46,7 +47,8 @@ class Ownerdormlistscreen extends StatelessWidget {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              var dormitory = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              var dormitory =
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
               String dormId = snapshot.data!.docs[index].id;
               String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
               double dormPrice = dormitory['price']?.toDouble() ?? 0;
@@ -58,12 +60,15 @@ class Ownerdormlistscreen extends StatelessWidget {
               String? firstImageUrl;
               if (imageUrlField is String) {
                 firstImageUrl = imageUrlField;
-              } else if (imageUrlField is List<String> && imageUrlField.isNotEmpty) {
-                firstImageUrl = imageUrlField[0]; // Use the first image in the list
+              } else if (imageUrlField is List<String> &&
+                  imageUrlField.isNotEmpty) {
+                firstImageUrl =
+                    imageUrlField[0]; // Use the first image in the list
               }
 
               // Handle tenants
-              List<String> tenants = List<String>.from(dormitory['tenants'] ?? []);
+              List<String> tenants =
+                  List<String>.from(dormitory['tenants'] ?? []);
 
               return Card(
                 margin: const EdgeInsets.all(10),
@@ -104,7 +109,8 @@ class Ownerdormlistscreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ListOfTenants(dormitoryId: dormId),
+                              builder: (context) =>
+                                  ListOfTenants(dormitoryId: dormId),
                             ),
                           );
                         },
@@ -114,12 +120,24 @@ class Ownerdormlistscreen extends StatelessWidget {
                         icon: const Icon(Icons.book_online),
                         tooltip: 'ผู้จอง',
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ListOfBookings(dormitoryId: dormId),
-                            ),
-                          );
+                          if (currentUserId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ListOfBookings(
+                                  dormitoryId: dormId,
+                                  ownerId:
+                                      currentUserId, // Use the non-null assertion operator
+                                ),
+                              ),
+                            );
+                          } else {
+                            // Handle the null case, e.g., show an error message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('ไม่สามารถดึงข้อมูลผู้ใช้ได้')),
+                            );
+                          }
                         },
                       ),
                     ],

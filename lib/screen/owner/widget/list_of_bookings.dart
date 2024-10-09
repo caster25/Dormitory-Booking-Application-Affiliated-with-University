@@ -1,10 +1,12 @@
+import 'package:dorm_app/screen/user/widgets/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ListOfBookings extends StatelessWidget {
   final String dormitoryId;
+  final String ownerId;
 
-  const ListOfBookings({Key? key, required this.dormitoryId}) : super(key: key);
+  const ListOfBookings({Key? key, required this.dormitoryId, required this.ownerId}) : super(key: key);
 
   Future<List<Map<String, dynamic>>> _fetchBookings() async {
     final dormitorySnapshot = await FirebaseFirestore.instance
@@ -233,101 +235,126 @@ class ListOfBookings extends StatelessWidget {
           } else {
             final bookings = snapshot.data!;
             return ListView.builder(
-              itemCount: bookings.length,
-              itemBuilder: (context, index) {
-                final booking = bookings[index];
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                    side: const BorderSide(color: Colors.grey, width: 1),
-                  ),
-                  elevation: 3, // เพิ่มเงาเพื่อให้การ์ดมีมิติมากขึ้น
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.blueAccent,
-                          child:
-                              Icon(Icons.person, size: 30, color: Colors.white),
-                        ),
-                        const SizedBox(width: 15),
-                        // ข้อมูลผู้จอง
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                booking['username'] ?? 'ไม่มีชื่อ',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'อีเมล: ${booking['email'] ?? 'ไม่มีอีเมล'}',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'เบอร์โทรศัพท์: ${booking['numphone'] ?? 'ไม่มีเบอร์'}',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  // ปุ่มยืนยันการจอง
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      await _confirmBooking(context,
-                                          dormitoryId, booking['userId']);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.green, // สีพื้นหลังปุ่ม
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                    ),
-                                    child: const Text('ยืนยัน'),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  // ปุ่มไม่อนุมัติการจอง
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      await _rejectBooking(context, dormitoryId,
-                                          booking['userId']);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Colors.red, // สีพื้นหลังปุ่ม
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                    ),
-                                    child: const Text('ไม่อนุมัติ'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                itemCount: bookings.length,
+                itemBuilder: (context, index) {
+                  final booking = bookings[index];
+                  final String chatRoomId =
+                      '${booking['userId']}_$ownerId'; // Define chatRoomId here
+                  return Card(
+                    margin: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0),
+                      side: const BorderSide(color: Colors.grey, width: 1),
                     ),
-                  ),
-                );
-              },
-            );
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.blueAccent,
+                            child: Icon(Icons.person,
+                                size: 30, color: Colors.white),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  booking['username'] ?? 'ไม่มีชื่อ',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'อีเมล: ${booking['email'] ?? 'ไม่มีอีเมล'}',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'เบอร์โทรศัพท์: ${booking['numphone'] ?? 'ไม่มีเบอร์'}',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        _openChat(context, booking['userId'],
+                                            ownerId, chatRoomId);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                      child: const Text('แชท'),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await _confirmBooking(context,
+                                            dormitoryId, booking['userId']);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                      child: const Text('ยืนยัน'),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await _rejectBooking(context,
+                                            dormitoryId, booking['userId']);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                      child: const Text('ไม่อนุมัติ'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
           }
         },
       ),
     );
   }
+}
+
+void _openChat(
+    BuildContext context, String userId, String ownerId, String chatRoomId) {
+  // เปิดหน้าจอแชท (ตัวอย่างนี้ใช้ Navigator เพื่อไปยังหน้า Chat)
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ChatScreen(
+          userId: userId,
+          ownerId: ownerId,
+          chatRoomId: chatRoomId), // ส่ง userId, ownerId, และ chatRoomId
+    ),
+  );
 }

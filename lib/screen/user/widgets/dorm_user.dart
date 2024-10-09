@@ -113,21 +113,18 @@ class _DormScreenState extends State<DormScreen> {
         final favorites = List<String>.from(userData['favorites'] ?? []);
 
         return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('dormitories')
-              .where('name', isGreaterThanOrEqualTo: searchQuery.isNotEmpty ? searchQuery : null)
-              .where('name', isLessThanOrEqualTo: searchQuery.isNotEmpty ? '$searchQuery\uf8ff' : null)
-              .orderBy(sortBy, descending: sortBy == 'price' ? !isPriceAscending : !isRatingAscending)
-              .snapshots(),
-
+          stream: _getDormitoryStream(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
             }
 
-
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('กำลังโหลด'));
+              if (searchQuery.isEmpty) {
+                return const Center(child: Text('กรุณากรอกข้อมูลค้นหา'));
+              } else {
+                return const Center(child: Text('ไม่พบหอพักที่ตรงตามเงื่อนไข'));
+              }
             }
 
             return _buildDormitoryList(snapshot.data!.docs, favorites);
@@ -137,7 +134,23 @@ class _DormScreenState extends State<DormScreen> {
     );
   }
 
-  Widget _buildDormitoryList(List<QueryDocumentSnapshot> dorms, List<String> favorites) {
+  Stream<QuerySnapshot> _getDormitoryStream() {
+    CollectionReference dormitoryCollection =
+        FirebaseFirestore.instance.collection('dormitories');
+
+    Query query = dormitoryCollection;
+
+    if (searchQuery.isNotEmpty) {
+      query = query
+          .where('name', isGreaterThanOrEqualTo: searchQuery)
+          .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff');
+    }
+
+    return query.snapshots();
+  }
+
+  Widget _buildDormitoryList(
+      List<QueryDocumentSnapshot> dorms, List<String> favorites) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -154,7 +167,8 @@ class _DormScreenState extends State<DormScreen> {
     );
   }
 
-  Widget _buildDormitoryCard(QueryDocumentSnapshot dorm, String dormId, List<String> favorites) {
+  Widget _buildDormitoryCard(
+      QueryDocumentSnapshot dorm, String dormId, List<String> favorites) {
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 241, 229, 255),
@@ -167,7 +181,8 @@ class _DormScreenState extends State<DormScreen> {
           Container(
             height: 180,
             decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(10)),
               image: DecorationImage(
                 image: NetworkImage(dorm['imageUrl']),
                 fit: BoxFit.cover,
@@ -179,11 +194,14 @@ class _DormScreenState extends State<DormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(dorm['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(dorm['name'],
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('ราคา ${dorm['price']} บาท', style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('ราคา ${dorm['price']} บาท',
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('คะแนน ${dorm['rating']}/5', style: const TextStyle(color: Colors.red)),
+                Text('คะแนน ${dorm['rating']}/5',
+                    style: const TextStyle(color: Colors.red)),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,7 +212,8 @@ class _DormScreenState extends State<DormScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DormallDetailScreen(dormId: dormId),
+                            builder: (context) =>
+                                DormallDetailScreen(dormId: dormId),
                           ),
                         );
                       },
@@ -203,7 +222,9 @@ class _DormScreenState extends State<DormScreen> {
                     // Favorite heart icon
                     IconButton(
                       icon: Icon(
-                        favorites.contains(dormId) ? Icons.favorite : Icons.favorite_border,
+                        favorites.contains(dormId)
+                            ? Icons.favorite
+                            : Icons.favorite_border,
                         color: Colors.pink,
                       ),
                       onPressed: () async {
@@ -223,7 +244,10 @@ class _DormScreenState extends State<DormScreen> {
   Future<DocumentSnapshot> _getUserFavorites() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      return await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      return await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
     }
     throw Exception("User not signed in");
   }
@@ -233,35 +257,28 @@ class _DormScreenState extends State<DormScreen> {
 
     if (user == null) return;
 
-    final userFavoritesRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userFavoritesRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
     DocumentSnapshot userDoc = await userFavoritesRef.get();
 
     if (userDoc.exists) {
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      List<dynamic> currentFavorites = List.from(userData['favorites'] ?? []);
+      List<dynamic> currentFavorites = userData['favorites'] ?? [];
 
-      // Toggle favorite status
       if (currentFavorites.contains(dormId)) {
-        currentFavorites.remove(dormId);
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Removed from favorites')));
+        currentFavorites.remove(dormId); // Remove from favorites
       } else {
-        currentFavorites.add(dormId);
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to favorites')));
+        currentFavorites.add(dormId); // Add to favorites
       }
 
-      // Update favorites in Firestore
       await userFavoritesRef.update({'favorites': currentFavorites});
-    } else {
-      // Create user document with favorite dormitory
-      await userFavoritesRef.set({'favorites': [dormId]});
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to favorites')));
     }
+  }
 
-    // Rebuild to reflect changes
-    setState(() {});
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 }
 
@@ -271,11 +288,11 @@ class FilterButton extends StatelessWidget {
   final bool isSelected;
 
   const FilterButton({
-    super.key,
+    Key? key,
     required this.text,
     required this.onPressed,
     required this.isSelected,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -283,9 +300,11 @@ class FilterButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? Colors.purple : Colors.grey,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
-      child: Text(text, style: const TextStyle(color: Colors.white)),
+      child: Text(text),
     );
   }
 }

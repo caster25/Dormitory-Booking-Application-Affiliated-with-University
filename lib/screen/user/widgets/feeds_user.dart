@@ -21,8 +21,9 @@ class FeedsScreen extends StatelessWidget {
                 stream: FirebaseFirestore.instance
                     .collection('dormitories')
                     .where('rating',
-                        isGreaterThan: 4.5) // กรองหอพักที่มีคะแนนมากกว่า 4.5
-                    .limit(8) // ดึงข้อมูลไม่เกิน 8 รายการ
+                        isGreaterThan:
+                            4.5) // Filter dormitories with rating greater than 4.5
+                    .limit(8) // Limit to 8 items
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -31,76 +32,196 @@ class FeedsScreen extends StatelessWidget {
 
                   final dorms = snapshot.data!.docs;
 
-                  return CarouselSlider.builder(
-                    options: CarouselOptions(
-                      height: 300,
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      viewportFraction: 0.8,
-                      aspectRatio: 2.0,
-                      onPageChanged: (index, reason) {},
-                    ),
-                    itemCount: dorms.length,
-                    itemBuilder: (context, index, realIndex) {
-                      var dorm = dorms[index];
-                      String dormId = dorm.id; // ดึง dormId จาก Document ID
+                  // Check if there is more than one dormitory
+                  if (dorms.length > 1) {
+                    return CarouselSlider.builder(
+                      options: CarouselOptions(
+                        height: 350, // Set height for the carousel
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        viewportFraction: 0.8,
+                        aspectRatio: 2.0,
+                        onPageChanged: (index, reason) {},
+                      ),
+                      itemCount: dorms.length,
+                      itemBuilder: (context, index, realIndex) {
+                        var dorm = dorms[index];
+                        String dormId = dorm.id; // Get dormId from Document ID
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return DormallDetailScreen(
-                              dormId: dormId, // ส่ง dormId ไปยังหน้ารายละเอียด
-                            );
-                          }));
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black26,
-                                    blurRadius: 6,
-                                    offset: Offset(0, 2),
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return DormallDetailScreen(
+                                dormId:
+                                    dormId, // Pass dormId to the detail screen
+                              );
+                            }));
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Image.network(
+                                    dorm['imageUrl'],
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 350, // Set height for the image
                                   ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(
-                                  dorm['imageUrl'],
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              bottom: 16,
-                              left: 16,
-                              child: Text(
-                                dorm['name'],
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 10.0,
-                                      color: Colors.black,
-                                      offset: Offset(2.0, 2.0),
+                              Positioned(
+                                bottom: 16,
+                                left: 16,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      dorm['name'],
+                                      style: const TextStyle(
+                                        fontSize: 14, // Font size for name
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 10.0,
+                                            color: Colors.black,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        height:
+                                            4), // Space between name and price
+                                    Text(
+                                      'Price: ${dorm['price']} THB', // Show price
+                                      style: const TextStyle(
+                                        fontSize: 12, // Font size for price
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        height:
+                                            2), // Space between price and rating
+                                    Text(
+                                      'Rating: ${dorm['rating']}', // Show rating
+                                      style: const TextStyle(
+                                        fontSize: 12, // Font size for rating
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  } else if (dorms.length == 1) {
+                    // Display the single dormitory without carousel
+                    var dorm = dorms[0];
+                    String dormId = dorm.id; // Get dormId from Document ID
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return DormallDetailScreen(
+                            dormId: dormId, // Pass dormId to the detail screen
+                          );
+                        }));
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
-                      );
-                    },
-                  );
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Stack(
+                            children: [
+                              Image.network(
+                                dorm['imageUrl'],
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 350, // Set height for the image
+                              ),
+                              Positioned(
+                                bottom: 16,
+                                left: 16,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      dorm['name'],
+                                      style: const TextStyle(
+                                        fontSize: 14, // Font size for name
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 10.0,
+                                            color: Colors.black,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        height:
+                                            4), // Space between name and price
+                                    Text(
+                                      'Price: ${dorm['price']} THB', // Show price
+                                      style: const TextStyle(
+                                        fontSize: 12, // Font size for price
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        height:
+                                            2), // Space between price and rating
+                                    Text(
+                                      'Rating: ${dorm['rating']}', // Show rating
+                                      style: const TextStyle(
+                                        fontSize: 12, // Font size for rating
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                        child: Text(
+                            "No dormitories available.")); // Handle no dormitories case
+                  }
                 },
               ),
 
