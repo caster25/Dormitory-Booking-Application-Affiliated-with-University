@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -39,10 +40,30 @@ class DormitoryListScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween, // จัดวางให้ปุ่มอยู่ข้างข้อความ
+                  children: [
+                    Text(
+                      'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DormitoryFormScreen(), // หน้าจอสำหรับเพิ่มหอพักใหม่
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -88,7 +109,7 @@ class DormitoryListScreen extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => DormitoryDetailsScreen(
                                   dormitory: dormitory,
-                                  dormitoryId: dormId, // ส่ง ID ของหอพัก
+                                  dormitoryId: dormId,
                                 ),
                               ),
                             );

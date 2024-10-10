@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/user/widgets/chat.dart';
+import 'package:dorm_app/screen/user/widgets/chat_user.dart';
 import 'package:flutter/material.dart';
 
 class BookDorm extends StatefulWidget {

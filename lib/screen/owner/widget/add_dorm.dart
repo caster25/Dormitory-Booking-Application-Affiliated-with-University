@@ -141,6 +141,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('เพิ่มหอพัก'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

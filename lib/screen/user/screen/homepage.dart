@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
-import 'package:dorm_app/screen/user/widgets/user.dart';
+import 'package:dorm_app/screen/user/widgets/porfile_user.dart';
 import 'package:dorm_app/screen/user/widgets/dorm_user.dart';
 import 'package:dorm_app/screen/user/widgets/feeds_user.dart';
 import 'package:dorm_app/screen/user/screen/profile.dart';

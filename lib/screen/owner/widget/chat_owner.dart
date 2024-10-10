@@ -91,6 +91,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   Future<void> _pickImages() async {
     final picker = ImagePicker();
     final pickedImages = await picker.pickMultiImage();
+    // ignore: unnecessary_null_comparison
     if (pickedImages != null && pickedImages.isNotEmpty) {
       List<String> imageUrls = [];
       for (var pickedImage in pickedImages) {

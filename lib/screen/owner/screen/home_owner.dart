@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
-import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
+import 'package:dorm_app/screen/owner/widget/profile_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +32,6 @@ class _OwnerhomeState extends State<Ownerhome> {
   final List<Widget> _screens = [
     const Profileowner(),
     const DormitoryListScreen(),
-    const DormitoryFormScreen(),
   ];
 
   Future<DocumentSnapshot> getUserData() async {
@@ -48,11 +47,12 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: index != 3 ? getAppBar(index) : null,
-        drawer: index != 3
+        appBar: index != 2 ? getAppBar(index) : null,
+        drawer: index != 2
             ? NavigationDrawer(user: _currentUser, userData: userData)
             : null,
         body: IndexedStack(
@@ -65,7 +65,6 @@ class _OwnerhomeState extends State<Ownerhome> {
           items: const [
             Icon(Icons.home, size: 30),
             Icon(Icons.domain_rounded, size: 30),
-            Icon(Icons.star_sharp, size: 30),
           ],
           color: const Color.fromARGB(255, 153, 85, 240),
           buttonBackgroundColor: const Color.fromARGB(255, 153, 85, 240),
@@ -187,7 +186,7 @@ class NavigationDrawer extends StatelessWidget {
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                    builder: (context) => const DormitoryListScreen()),
+                    builder: (context) => const ProfileOwner()),
               ),
             ),
             buildMenuItem(

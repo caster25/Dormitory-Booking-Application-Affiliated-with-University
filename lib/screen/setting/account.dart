@@ -12,6 +12,7 @@ class AccountInfoScreen extends StatefulWidget {
 
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
   late Future<UserProfile> _userProfile;
+  // ignore: unused_field
   bool _isPasswordVisible = false; // Control visibility of password
   final _newPasswordController = TextEditingController(); // New password controller
 
@@ -27,6 +28,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
       appBar: AppBar(
         title: const Text('ข้อมูลบัญชี'),
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        automaticallyImplyLeading: true,
       ),
       body: FutureBuilder<UserProfile>(
         future: _userProfile,
@@ -53,33 +55,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                   Text('ชื่อ-นามสกุล: ${userProfile.fullname}', style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 8),
 
-                  // Password Field
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'password: ${_isPasswordVisible ? userProfile.password : '●●●●●●●●'}',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 16),
 
-                  // Button to trigger password change
                   ElevatedButton(
                     onPressed: () {
                       _showPasswordChangeDialog(context);
