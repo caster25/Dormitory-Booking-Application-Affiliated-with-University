@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -155,6 +157,12 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     }
   }
 
+  String _createChatRoomId(String userId, String ownerId) {
+    var bytes = utf8.encode('$userId$ownerId');
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
   Future<void> _bookDormitory(
       BuildContext context, String userId, String dormitoryId) async {
     try {
@@ -208,7 +216,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   Navigator.of(context).pop();
                 },
                 child: const Text('ตกลง'),
-              ),
+              )
             ],
           ),
         );
@@ -233,24 +241,39 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 Navigator.of(context).pop(); // ปิด Dialog ถ้ากดยืนยัน
 
                 // เริ่มบันทึกข้อมูลการจอง
+                String chatRoomIds = _createChatRoomId(userId, dormitoryId);
                 await FirebaseFirestore.instance
                     .collection('users')
                     .doc(userId)
                     .update({
                   'bookedDormitory':
                       dormitoryId, // บันทึกหอพักที่จองในฟิลด์ของผู้ใช้
+                  'chatRoomIds': FieldValue.arrayUnion(
+                      [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array
                 });
 
-                // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
+// ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
                 DocumentReference dormitoryRef = FirebaseFirestore.instance
                     .collection('dormitories')
                     .doc(dormitoryId);
 
-                // ลดจำนวนห้องว่างลง 1
+// ลดจำนวนห้องว่างลง 1
                 await dormitoryRef.update({
                   'availableRooms': availableRooms - 1,
-                  'usersBooked': FieldValue.arrayUnion(
-                      [userId]), // เพิ่ม userId ไปยังลิสต์ผู้ใช้ที่จองหอพัก
+                  'usersBooked': FieldValue.arrayUnion([userId]),
+                  'chatRoomIds': FieldValue.arrayUnion(
+                      [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array ของหอพัก
+                });
+
+// สร้างเอกสารใหม่ในคอลเล็กชัน messages
+                String chatRoomId = _createChatRoomId(
+                    userId, dormitoryId); // สร้าง chatRoomId ตามที่คุณต้องการ
+                await FirebaseFirestore.instance
+                    .collection('messages')
+                    .doc(chatRoomId)
+                    .set({
+                  'participants': [userId, dormitoryId],
+                  'createdAt': FieldValue.serverTimestamp(),
                 });
 
                 // แสดงข้อความแจ้งเตือนสำเร็จ

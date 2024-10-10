@@ -92,7 +92,6 @@ class Ownerdormlistscreen extends StatelessWidget {
                     children: [
                       Text('ราคา: ฿${dormPrice.toStringAsFixed(2)} บาท/เดือน'),
                       Text('ห้องว่าง: $availableRooms ห้อง'),
-                      // Display tenant names
                       Text(
                         'ผู้เช่า:${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน', // Join names for display
                       ),
@@ -121,13 +120,15 @@ class Ownerdormlistscreen extends StatelessWidget {
                         tooltip: 'ผู้จอง',
                         onPressed: () {
                           if (currentUserId != null) {
+                            String chatRoomIds = ''; // กำหนดค่าของ chatRoomIds ที่ต้องการส่ง
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ListOfBookings(
                                   dormitoryId: dormId,
-                                  ownerId:
-                                      currentUserId, // Use the non-null assertion operator
+                                  ownerId: currentUserId,
+                                  chatRoomIds: chatRoomIds, // ส่ง chatRoomIds
                                 ),
                               ),
                             );

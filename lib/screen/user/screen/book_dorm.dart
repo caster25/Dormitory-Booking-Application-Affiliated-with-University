@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:crypto/crypto.dart';
 import 'package:dorm_app/screen/user/widgets/chat.dart';
 import 'package:flutter/material.dart';
 
@@ -18,28 +16,86 @@ class _BookDormState extends State<BookDorm> {
       false; // State variable to track booking cancellation
 
   // Function to navigate to chat screen
-  void _navigateToChat(String dormitoryId, String ownerId) {
-    // Create chatRoomId using userId and ownerId
-    String chatRoomId = _createChatRoomId(widget.userId, ownerId);
+  void _navigateToChat(String dormitoryId, String ownerId) async {
+    // Get user data from Firestore
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .get();
 
-    // Replace this with your actual chat screen implementation
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatScreen(
-          userId: widget.userId,
-          ownerId: ownerId,
-          chatRoomId: chatRoomId, // Pass chatRoomId
-        ),
-      ),
-    );
-  }
+    if (userSnapshot.exists) {
+      // Cast the data to a Map<String, dynamic>
+      Map<String, dynamic>? userData =
+          userSnapshot.data() as Map<String, dynamic>?;
 
-  // Function to create chatRoomId
-  String _createChatRoomId(String userId, String ownerId) {
-    var bytes = utf8.encode('$userId$ownerId');
-    var digest = sha256.convert(bytes);
-    return digest.toString(); // Return chatRoomId
+      // Get the chatRoomIds list from userData
+      List<dynamic>? userChatRoomIds = userData?['chatRoomIds'];
+
+      if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
+        // Get dormitory data to check its chatRoomIds
+        DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+            .collection('dormitories')
+            .doc(dormitoryId)
+            .get();
+
+        if (dormitorySnapshot.exists) {
+          // Cast the data to a Map<String, dynamic>
+          Map<String, dynamic>? dormitoryData =
+              dormitorySnapshot.data() as Map<String, dynamic>?;
+
+          // Get the chatRoomIds from dormitory data
+          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomIds'];
+
+          if (dormitoryChatRoomIds != null && dormitoryChatRoomIds.isNotEmpty) {
+            // Find the matching chatRoomId that belongs to the current dormitory owner
+            String? matchingChatRoomId;
+            for (var chatRoomId in userChatRoomIds) {
+              if (dormitoryChatRoomIds.contains(chatRoomId)) {
+                matchingChatRoomId = chatRoomId;
+                break;
+              }
+            }
+
+            if (matchingChatRoomId != null) {
+              // Navigate to the chat screen with the existing chatRoomId
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    userId: widget.userId,
+                    ownerId: ownerId,
+                    chatRoomId: matchingChatRoomId!, // Pass the found chatRoomId
+                  ),
+                ),
+              );
+            } else {
+              // If no matching chatRoomId found, show a message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+              );
+            }
+          } else {
+            // If dormitory chatRoomIds is empty, show a message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
+          );
+        }
+      } else {
+        // If user chatRoomIds is empty, show a message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่พบข้อมูลผู้ใช้')),
+      );
+    }
   }
 
   @override
