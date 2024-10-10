@@ -103,15 +103,16 @@ class _OwnerhomeState extends State<Ownerhome> {
       case 0:
         return const Text('หน้าแรก');
       case 1:
-        return const Text('หอพัก');
+        return const Text('รายการหอพัก');
       default:
-        return const Text('รายละเอียด');
+        return const Text('เพิ่มข้อมูลหอพัก');
     }
   }
 }
 
 class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({super.key, required this.user, required this.userData});
+  const NavigationDrawer(
+      {super.key, required this.user, required this.userData});
 
   final User? user;
   final Future<DocumentSnapshot>? userData;
@@ -161,7 +162,8 @@ class NavigationDrawer extends StatelessWidget {
                     style: const TextStyle(fontSize: 28, color: Colors.white),
                   ),
                   Text(
-                    user?.email ?? 'user@example.com', // Update to use optional user
+                    user?.email ??
+                        'user@example.com', // Update to use optional user
                     style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ],

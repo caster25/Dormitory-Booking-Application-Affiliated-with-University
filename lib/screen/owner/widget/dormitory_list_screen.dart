@@ -12,15 +12,12 @@ class DormitoryListScreen extends StatelessWidget {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการหอพัก'),
-        automaticallyImplyLeading: true,
-      ),
       body: StreamBuilder<QuerySnapshot>(
         // Filter dormitories by the current owner's submittedBy ID
         stream: FirebaseFirestore.instance
             .collection('dormitories')
-            .where('submittedBy', isEqualTo: currentUserId) // Filter by submittedBy
+            .where('submittedBy',
+                isEqualTo: currentUserId) // Filter by submittedBy
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -44,19 +41,21 @@ class DormitoryListScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
                 child: ListView.builder(
                   itemCount: dormitoryCount,
                   itemBuilder: (context, index) {
-                    var dormitory =
-                        snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                    String dormId = snapshot.data!.docs[index].id; 
+                    var dormitory = snapshot.data!.docs[index].data()
+                        as Map<String, dynamic>;
+                    String dormId = snapshot.data!.docs[index].id;
                     String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
                     int dormPrice = dormitory['price']?.toInt() ?? 0;
-                    int availableRooms = dormitory['availableRooms']?.toInt() ?? 0;
+                    int availableRooms =
+                        dormitory['availableRooms']?.toInt() ?? 0;
                     String imageUrl = dormitory['imageUrl'] ?? '';
 
                     return Card(

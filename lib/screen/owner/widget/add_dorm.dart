@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison, unused_field
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,7 +24,6 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   final TextEditingController _dormPriceController = TextEditingController();
   final TextEditingController _availableRoomsController =
       TextEditingController();
-  final TextEditingController _roomTypeController = TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
   final TextEditingController _monthlyRentController = TextEditingController();
   final TextEditingController _electricityRateController =
@@ -39,9 +38,10 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   bool _isUploading = false;
   late String _uploadedImageUrls;
 
+  String? _selectedRoomType;
+
   Future<void> _pickImages() async {
     final pickedFiles = await _picker.pickMultiImage();
-    // ignore: unnecessary_null_comparison
     if (pickedFiles != null) {
       setState(() {
         _dormImages
@@ -57,7 +57,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       _isUploading = true;
     });
 
-    String uploadedImageUrls = ''; // Start with an empty string
+    String uploadedImageUrls = '';
 
     try {
       for (var i = 0; i < _dormImages.length; i++) {
@@ -71,14 +71,13 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
 
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
-        // Concatenate the URL to the string with a comma if it's not the first URL
         if (uploadedImageUrls.isNotEmpty) {
           uploadedImageUrls += ',';
         }
         uploadedImageUrls += downloadUrl;
       }
 
-      _uploadedImageUrls = uploadedImageUrls; // Set the final string of URLs
+      _uploadedImageUrls = uploadedImageUrls;
     } catch (e) {
       print('Error uploading image: $e');
     } finally {
@@ -100,20 +99,16 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       await _uploadImagesToFirebase();
 
       if (_uploadedImageUrls.isNotEmpty) {
-        // Get the current user
         final User? currentUser = FirebaseAuth.instance.currentUser;
 
-        // Make sure user is logged in
         if (currentUser != null) {
-          // Get the user's ID
           String userId = currentUser.uid;
 
-          // Add dormitory data along with user ID
           await FirebaseFirestore.instance.collection('dormitories').add({
             'name': _dormNameController.text,
             'price': double.parse(_dormPriceController.text),
             'availableRooms': int.parse(_availableRoomsController.text),
-            'roomType': _roomTypeController.text,
+            'roomType': _selectedRoomType, // Change here
             'occupants': int.parse(_occupantsController.text),
             'monthlyRent': double.parse(_monthlyRentController.text),
             'electricityRate': double.parse(_electricityRateController.text),
@@ -122,7 +117,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             'equipment': _equipmentController.text,
             'imageUrl': _uploadedImageUrls,
             'rating': 0,
-            'submittedBy': userId, // Store user ID
+            'submittedBy': userId,
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -132,7 +127,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
           _formKey.currentState!.reset();
           setState(() {
             _dormImages = [];
-            _uploadedImageUrls;
+            _uploadedImageUrls = '';
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -146,10 +141,6 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('เพิ่มข้อมูลหอพัก'),
-        automaticallyImplyLeading: false,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -160,37 +151,46 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
               children: [
                 _buildTextField(
                     'ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
+
                 _buildTextField('ราคาหอพัก (บาท/เทอม)', _dormPriceController,
                     'กรุณากรอกราคาหอพัก',
                     isNumber: true),
+
                 _buildTextField('จำนวนห้องว่าง', _availableRoomsController,
                     'กรุณากรอกจำนวนห้องว่าง',
                     isNumber: true),
-                _buildTextField('ประเภทห้องพัก', _roomTypeController,
-                    'กรุณากรอกประเภทห้องพัก'),
+
+                // Dropdown for room type
+                _buildRoomTypeDropdown(),
+                const SizedBox(height: 32), // เพิ่มระยะห่างเฉพาะที่นี่
+
                 _buildTextField(
                     'จำนวนคนพัก', _occupantsController, 'กรุณากรอกจำนวนคนพัก',
                     isNumber: true),
+
                 _buildTextField('อัตราค่าห้องพัก', _monthlyRentController,
                     'กรุณากรอกอัตราค่าห้องพัก',
                     isNumber: true),
+
                 _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController,
                     'กรุณากรอกค่าไฟ',
                     isNumber: true),
+
                 _buildTextField(
                     'ค่าน้ำ (หน่วยละ)', _waterRateController, 'กรุณากรอกค่าน้ำ',
                     isNumber: true),
+
                 _buildTextField('ค่าประกันความเสียหาย',
                     _securityDepositController, 'กรุณากรอกค่าประกันความเสียหาย',
                     isNumber: true),
+
                 _buildTextField('อุปกรณ์ที่มีในห้องพัก', _equipmentController,
                     'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
 
-                // Add image picker and submit button
-                const SizedBox(height: 16),
                 _buildImagePicker(),
+
                 if (_isUploading) const CircularProgressIndicator(),
-                const SizedBox(height: 16),
+
                 _buildSubmitButton(),
               ],
             ),
@@ -224,6 +224,37 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         ),
         const SizedBox(height: 16),
       ],
+    );
+  }
+
+  Widget _buildRoomTypeDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedRoomType,
+      decoration: const InputDecoration(
+        labelText: 'ประเภทห้องพัก',
+        border: OutlineInputBorder(),
+      ),
+      items: const [
+        DropdownMenuItem(
+          value: 'ห้องพัดลม',
+          child: Text('ห้องพัดลม'),
+        ),
+        DropdownMenuItem(
+          value: 'ห้องแอร์',
+          child: Text('ห้องแอร์'),
+        ),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedRoomType = value!;
+        });
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'กรุณาเลือกประเภทห้องพัก';
+        }
+        return null;
+      },
     );
   }
 
