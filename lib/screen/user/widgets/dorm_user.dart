@@ -11,11 +11,23 @@ class DormScreen extends StatefulWidget {
 }
 
 class _DormScreenState extends State<DormScreen> {
-  bool isPriceAscending = true;
-  bool isRatingAscending = true;
-  String sortBy = 'price';
+  int priceFilterState =
+      0; // 0: ไม่มีการกรอง, 1: กรองจากน้อยไปมาก, 2: กรองจากมากไปน้อย
+  int ratingFilterState =
+      0; // 0: ไม่มีการกรอง, 1: กรองจากน้อยไปมาก, 2: กรองจากมากไปน้อย
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
+  List<String> favorites = [];
+  late String userId;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      userId = user.uid; // กำหนด userId ที่นี่
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +43,38 @@ class _DormScreenState extends State<DormScreen> {
               _buildSearchBar(),
               const SizedBox(height: 16),
               // Filter buttons
-              _buildFilterButtons(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  FilterButton(
+                    text: _getPriceFilterText(),
+                    icon: _getPriceFilterIcon(),
+                    onPressed: () {
+                      setState(() {
+                        priceFilterState =
+                            (priceFilterState + 1) % 3; // เปลี่ยนสถานะ
+                      });
+                    },
+                  ),
+                  FilterButton(
+                    text: _getRatingFilterText(),
+                    icon: _getRatingFilterIcon(),
+                    onPressed: () {
+                      setState(() {
+                        ratingFilterState =
+                            (ratingFilterState + 1) % 3; // เปลี่ยนสถานะ
+                      });
+                    },
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 16),
-              // FutureBuilder to fetch user favorites
-              _buildUserFavoritesFutureBuilder(),
+              // StreamBuilder to fetch user favorites
+              _buildUserFavorites(),
+              const SizedBox(height: 16),
+              // StreamBuilder to fetch dormitories
+              _buildDormitoryStream(),
             ],
           ),
         ),
@@ -65,42 +105,10 @@ class _DormScreenState extends State<DormScreen> {
     );
   }
 
-  Widget _buildFilterButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        FilterButton(
-          text: 'ราคา/เทอม',
-          onPressed: () {
-            setState(() {
-              sortBy = 'price';
-              isPriceAscending = !isPriceAscending;
-            });
-          },
-          isSelected: sortBy == 'price',
-        ),
-        FilterButton(
-          text: 'ให้คะแนน',
-          onPressed: () {
-            setState(() {
-              sortBy = 'rating';
-              isRatingAscending = !isRatingAscending;
-            });
-          },
-          isSelected: sortBy == 'rating',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildUserFavoritesFutureBuilder() {
-    return FutureBuilder<DocumentSnapshot>(
-      future: _getUserFavorites(),
+  Widget _buildUserFavorites() {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: _getUserFavoritesStream(),
       builder: (context, userSnapshot) {
-        if (userSnapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
         if (userSnapshot.hasError) {
           return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดข้อมูล'));
         }
@@ -110,26 +118,45 @@ class _DormScreenState extends State<DormScreen> {
         }
 
         final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-        final favorites = List<String>.from(userData['favorites'] ?? []);
+        favorites = List<String>.from(userData['favorites'] ?? []);
 
-        return StreamBuilder<QuerySnapshot>(
-          stream: _getDormitoryStream(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
-            }
+        return SizedBox.shrink(); // ไม่ต้องแสดงอะไรที่นี่
+      },
+    );
+  }
 
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              if (searchQuery.isEmpty) {
-                return const Center(child: Text('กรุณากรอกข้อมูลค้นหา'));
-              } else {
-                return const Center(child: Text('ไม่พบหอพักที่ตรงตามเงื่อนไข'));
-              }
-            }
+  Stream<DocumentSnapshot> _getUserFavoritesStream() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots();
+    }
+    throw Exception("User not signed in");
+  }
 
-            return _buildDormitoryList(snapshot.data!.docs, favorites);
-          },
-        );
+  Widget _buildDormitoryStream() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _getDormitoryStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Center(child: Text('เกิดข้อผิดพลาดในการโหลดหอพัก'));
+        }
+
+        if (!snapshot.hasData) {
+          return const Center(child: Text('กำลังโหลด...'));
+        }
+
+        if (snapshot.data!.docs.isEmpty) {
+          if (searchQuery.isEmpty) {
+            return const Center(child: Text('กรุณากรอกข้อมูลค้นหา'));
+          } else {
+            return const Center(child: Text('ไม่พบหอพักที่ตรงตามเงื่อนไข'));
+          }
+        }
+
+        return _buildDormitoryList(snapshot.data!.docs, favorites);
       },
     );
   }
@@ -140,10 +167,24 @@ class _DormScreenState extends State<DormScreen> {
 
     Query query = dormitoryCollection;
 
+    // กรองตามคำค้นหา
     if (searchQuery.isNotEmpty) {
       query = query
           .where('name', isGreaterThanOrEqualTo: searchQuery)
           .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff');
+    }
+
+    // เรียงตามราคา หรือ คะแนน ตามที่เลือก
+    if (priceFilterState == 1) {
+      query = query.orderBy('price', descending: false); // กรองจากน้อยไปมาก
+    } else if (priceFilterState == 2) {
+      query = query.orderBy('price', descending: true); // กรองจากมากไปน้อย
+    }
+
+    if (ratingFilterState == 1) {
+      query = query.orderBy('rating', descending: false); // กรองจากน้อยไปมาก
+    } else if (ratingFilterState == 2) {
+      query = query.orderBy('rating', descending: true); // กรองจากมากไปน้อย
     }
 
     return query.snapshots();
@@ -241,57 +282,83 @@ class _DormScreenState extends State<DormScreen> {
     );
   }
 
-  Future<DocumentSnapshot> _getUserFavorites() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      return await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-    }
-    throw Exception("User not signed in");
-  }
-
   Future<void> _toggleFavorite(String dormId) async {
     final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc =
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-    if (user == null) return;
-
-    final userFavoritesRef =
-        FirebaseFirestore.instance.collection('users').doc(user.uid);
-    DocumentSnapshot userDoc = await userFavoritesRef.get();
-
-    if (userDoc.exists) {
-      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-      List<dynamic> currentFavorites = userData['favorites'] ?? [];
-
-      if (currentFavorites.contains(dormId)) {
-        currentFavorites.remove(dormId); // Remove from favorites
-      } else {
-        currentFavorites.add(dormId); // Add to favorites
+      final userData = await userDoc.get();
+      if (userData.exists) {
+        List<String> favorites =
+            List<String>.from(userData.data()!['favorites'] ?? []);
+        if (favorites.contains(dormId)) {
+          favorites.remove(dormId);
+        } else {
+          favorites.add(dormId);
+        }
+        await userDoc.update({'favorites': favorites});
       }
-
-      await userFavoritesRef.update({'favorites': currentFavorites});
     }
   }
 
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
+  String _getPriceFilterText() {
+    switch (priceFilterState) {
+      case 1:
+        return 'กรองจากน้อยไปมาก'; // สถานะกรองน้อยไปมาก
+      case 2:
+        return 'กรองจากมากไปน้อย'; // สถานะกรองมากไปน้อย
+      default:
+        return 'กรองราคา'; // สถานะเริ่มต้น
+    }
+  }
+
+// ฟังก์ชันเพื่อคืนค่าข้อความสำหรับกรองคะแนน
+  String _getRatingFilterText() {
+    switch (ratingFilterState) {
+      case 1:
+        return 'กรองจากน้อยไปมาก'; // สถานะกรองน้อยไปมาก
+      case 2:
+        return 'กรองจากมากไปน้อย'; // สถานะกรองมากไปน้อย
+      default:
+        return 'กรองคะแนน'; // สถานะเริ่มต้น
+    }
+  }
+
+  Icon _getPriceFilterIcon() {
+    switch (priceFilterState) {
+      case 1:
+        return const Icon(Icons.arrow_upward); // น้อยไปมาก
+      case 2:
+        return const Icon(Icons.arrow_downward); // มากไปน้อย
+      default:
+        return const Icon(Icons.filter_list); // สถานะเริ่มต้น
+    }
+  }
+
+  // ฟังก์ชันเพื่อคืนค่า Icon สำหรับกรองคะแนน
+  Icon _getRatingFilterIcon() {
+    switch (ratingFilterState) {
+      case 1:
+        return const Icon(Icons.arrow_upward); // น้อยไปมาก
+      case 2:
+        return const Icon(Icons.arrow_downward); // มากไปน้อย
+      default:
+        return const Icon(Icons.filter_list); // สถานะเริ่มต้น
+    }
   }
 }
 
 class FilterButton extends StatelessWidget {
   final String text;
+  final Icon icon;
   final VoidCallback onPressed;
-  final bool isSelected;
 
   const FilterButton({
     Key? key,
     required this.text,
+    required this.icon,
     required this.onPressed,
-    required this.isSelected,
   }) : super(key: key);
 
   @override
@@ -299,12 +366,16 @@ class FilterButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.purple : Colors.grey,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
-      child: Text(text),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          icon,
+          const SizedBox(width: 8), // เพิ่มระยะห่างระหว่างไอคอนและข้อความ
+          Text(text),
+        ],
+      ),
     );
   }
 }

@@ -22,8 +22,8 @@ class FeedsScreen extends StatelessWidget {
                     .collection('dormitories')
                     .where('rating',
                         isGreaterThan:
-                            4.5) // Filter dormitories with rating greater than 4.5
-                    .limit(8) // Limit to 8 items
+                            4.5)
+                    .limit(8) 
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -31,12 +31,10 @@ class FeedsScreen extends StatelessWidget {
                   }
 
                   final dorms = snapshot.data!.docs;
-
-                  // Check if there is more than one dormitory
                   if (dorms.length > 1) {
                     return CarouselSlider.builder(
                       options: CarouselOptions(
-                        height: 350, // Set height for the carousel
+                        height: 350,
                         autoPlay: true,
                         enlargeCenterPage: true,
                         viewportFraction: 0.8,
@@ -79,7 +77,7 @@ class FeedsScreen extends StatelessWidget {
                                     dorm['imageUrl'],
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    height: 350, // Set height for the image
+                                    height: 350,
                                   ),
                                 ),
                               ),
@@ -92,7 +90,7 @@ class FeedsScreen extends StatelessWidget {
                                     Text(
                                       dorm['name'],
                                       style: const TextStyle(
-                                        fontSize: 14, // Font size for name
+                                        fontSize: 14, 
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                         shadows: [
@@ -106,21 +104,21 @@ class FeedsScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(
                                         height:
-                                            4), // Space between name and price
+                                            4), 
                                     Text(
-                                      'Price: ${dorm['price']} THB', // Show price
+                                      'Price: ${dorm['price']} THB',
                                       style: const TextStyle(
-                                        fontSize: 12, // Font size for price
+                                        fontSize: 12, 
                                         color: Colors.white,
                                       ),
                                     ),
                                     const SizedBox(
                                         height:
-                                            2), // Space between price and rating
+                                            2), 
                                     Text(
-                                      'Rating: ${dorm['rating']}', // Show rating
+                                      'Rating: ${dorm['rating']}', 
                                       style: const TextStyle(
-                                        fontSize: 12, // Font size for rating
+                                        fontSize: 12, 
                                         color: Colors.white,
                                       ),
                                     ),
@@ -133,16 +131,15 @@ class FeedsScreen extends StatelessWidget {
                       },
                     );
                   } else if (dorms.length == 1) {
-                    // Display the single dormitory without carousel
                     var dorm = dorms[0];
-                    String dormId = dorm.id; // Get dormId from Document ID
+                    String dormId = dorm.id;
 
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return DormallDetailScreen(
-                            dormId: dormId, // Pass dormId to the detail screen
+                            dormId: dormId, 
                           );
                         }));
                       },
@@ -166,7 +163,7 @@ class FeedsScreen extends StatelessWidget {
                                 dorm['imageUrl'],
                                 fit: BoxFit.cover,
                                 width: double.infinity,
-                                height: 350, // Set height for the image
+                                height: 350,
                               ),
                               Positioned(
                                 bottom: 16,
@@ -177,7 +174,7 @@ class FeedsScreen extends StatelessWidget {
                                     Text(
                                       dorm['name'],
                                       style: const TextStyle(
-                                        fontSize: 14, // Font size for name
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                         shadows: [
@@ -191,21 +188,21 @@ class FeedsScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(
                                         height:
-                                            4), // Space between name and price
+                                            4), 
                                     Text(
-                                      'Price: ${dorm['price']} THB', // Show price
+                                      'Price: ${dorm['price']} THB', 
                                       style: const TextStyle(
-                                        fontSize: 12, // Font size for price
+                                        fontSize: 12, 
                                         color: Colors.white,
                                       ),
                                     ),
                                     const SizedBox(
                                         height:
-                                            2), // Space between price and rating
+                                            2), 
                                     Text(
-                                      'Rating: ${dorm['rating']}', // Show rating
+                                      'Rating: ${dorm['rating']}', 
                                       style: const TextStyle(
-                                        fontSize: 12, // Font size for rating
+                                        fontSize: 12, 
                                         color: Colors.white,
                                       ),
                                     ),
@@ -220,7 +217,7 @@ class FeedsScreen extends StatelessWidget {
                   } else {
                     return const Center(
                         child: Text(
-                            "No dormitories available.")); // Handle no dormitories case
+                            "No dormitories available.")); 
                   }
                 },
               ),
@@ -292,20 +289,18 @@ class FeedsScreen extends StatelessWidget {
                         .collection('dormitories')
                         .where('rating',
                             isGreaterThanOrEqualTo:
-                                4.0) // กรองหอพักที่มีคะแนนรีวิวตั้งแต่ 4.0 ขึ้นไป
-                        .limit(10) // ดึงข้อมูลไม่เกิน 10 รายการ
+                                4.0)
+                        .limit(10)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(child: CircularProgressIndicator());
                       }
-
                       final dorms = snapshot.data!.docs;
-
                       return Row(
                         children: List.generate(dorms.length, (index) {
                           var dorm = dorms[index];
-                          String dormId = dorm.id; // ดึง dormId จาก Document ID
+                          String dormId = dorm.id;
 
                           return Container(
                             margin: const EdgeInsets.only(right: 16),

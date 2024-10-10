@@ -1,7 +1,6 @@
 import 'package:dorm_app/screen/owner/widget/chat_owner.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart';
 
 class ListOfBookings extends StatelessWidget {
   final String dormitoryId;
