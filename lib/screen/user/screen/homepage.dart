@@ -194,11 +194,11 @@ class _HomepageState extends State<Homepage> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar:
-            index != 3 ? getAppBar(index) : null, // Hide AppBar in Profile tab
+            index != 2 ? getAppBar(index) : null,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        drawer: index != 3
+        drawer: index != 2
             ? NavigationDrawer(user: _currentUser)
-            : null, // Hide NavigationDrawer in Profile tab
+            : null,
         body: IndexedStack(
           index: index,
           children: _screens,
@@ -213,7 +213,6 @@ class _HomepageState extends State<Homepage> {
             items: const [
               Icon(Icons.home, size: 30),
               Icon(Icons.domain_rounded, size: 30),
-              Icon(Icons.chat_bubble_outlined, size: 30),
               Icon(Icons.person, size: 30),
             ],
             color: const Color.fromARGB(255, 153, 85, 240),
@@ -257,8 +256,6 @@ class _HomepageState extends State<Homepage> {
         return const Text('หน้าแรก');
       case 1:
         return const Text('หอพัก');
-      case 2:
-        return const Text('CHAT');
       default:
         return const Text('ข้อมูลส่วนตัว');
     }

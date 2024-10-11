@@ -92,18 +92,23 @@ class ListOfBookings extends StatelessWidget {
                 ),
               );
             } else {
+              // ignore: use_build_context_synchronously
               _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
             }
           } else {
+            // ignore: use_build_context_synchronously
             _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
           }
         } else {
+          // ignore: use_build_context_synchronously
           _showSnackBar(context, 'ไม่พบข้อมูลหอพัก');
         }
       } else {
+        // ignore: use_build_context_synchronously
         _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
       }
     } else {
+      // ignore: use_build_context_synchronously
       _showSnackBar(context, 'ไม่พบข้อมูลผู้ใช้');
     }
   }
@@ -155,7 +160,7 @@ class ListOfBookings extends StatelessWidget {
                       await dormitoryRef.update({
                         'tenants': FieldValue.arrayUnion(usersBooked),
                         'usersBooked':
-                            FieldValue.delete(), // ลบฟิลด์ usersBooked
+                            FieldValue.delete(),
                       });
                     }
 
@@ -169,7 +174,7 @@ class ListOfBookings extends StatelessWidget {
                         .update({
                       'isStaying': dormitoryId,
                       'currentDormitoryId': dormitoryId,
-                      'bookedDormitory': null
+                      'bookedDormitory': ''
                     });
 
                     // ignore: use_build_context_synchronously

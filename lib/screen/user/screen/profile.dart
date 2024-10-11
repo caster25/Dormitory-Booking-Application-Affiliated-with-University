@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/index.dart';
-import 'package:dorm_app/screen/setting/detaildromuser.dart';
+import 'package:dorm_app/screen/setting/detail_dromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:dorm_app/screen/setting/submitIssue.dart';
 import 'package:dorm_app/screen/user/screen/book_dorm.dart';
@@ -28,7 +28,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? _tempImage; // Temporary image to be saved
   String _userName = 'Unknown User';
   String? _profileImageUrl;
-
   @override
   void initState() {
     super.initState();

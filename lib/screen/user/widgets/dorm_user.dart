@@ -68,7 +68,6 @@ class _DormScreenState extends State<DormScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
               // StreamBuilder to fetch user favorites
               _buildUserFavorites(),
@@ -120,7 +119,7 @@ class _DormScreenState extends State<DormScreen> {
         final userData = userSnapshot.data!.data() as Map<String, dynamic>;
         favorites = List<String>.from(userData['favorites'] ?? []);
 
-        return SizedBox.shrink(); // ไม่ต้องแสดงอะไรที่นี่
+        return SizedBox.shrink();
       },
     );
   }
@@ -145,7 +144,9 @@ class _DormScreenState extends State<DormScreen> {
         }
 
         if (!snapshot.hasData) {
-          return const Center(child: Text('กำลังโหลด...'));
+          return const Center(
+              child:
+                  CircularProgressIndicator()); // เปลี่ยนเป็น CircularProgressIndicator
         }
 
         if (snapshot.data!.docs.isEmpty) {
@@ -210,6 +211,8 @@ class _DormScreenState extends State<DormScreen> {
 
   Widget _buildDormitoryCard(
       QueryDocumentSnapshot dorm, String dormId, List<String> favorites) {
+    bool isFavorite = favorites.contains(dormId); // ตรวจสอบสถานะของหัวใจ
+
     return Container(
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 241, 229, 255),
@@ -263,13 +266,13 @@ class _DormScreenState extends State<DormScreen> {
                     // Favorite heart icon
                     IconButton(
                       icon: Icon(
-                        favorites.contains(dormId)
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: Colors.pink,
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.pink : Colors.grey,
                       ),
                       onPressed: () async {
+                        // เปลี่ยนสถานะของหัวใจที่ UI และฐานข้อมูล
                         await _toggleFavorite(dormId);
+                        setState(() {}); // อัปเดต UI
                       },
                     ),
                   ],
@@ -288,16 +291,16 @@ class _DormScreenState extends State<DormScreen> {
       final userDoc =
           FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-      final userData = await userDoc.get();
-      if (userData.exists) {
-        List<String> favorites =
-            List<String>.from(userData.data()!['favorites'] ?? []);
-        if (favorites.contains(dormId)) {
-          favorites.remove(dormId);
+      final userSnapshot = await userDoc.get();
+      if (userSnapshot.exists) {
+        List<dynamic> favoritesList = userSnapshot['favorites'] ?? [];
+        if (favoritesList.contains(dormId)) {
+          favoritesList.remove(dormId); // ลบหอพักออกจากรายการโปรด
         } else {
-          favorites.add(dormId);
+          favoritesList.add(dormId); // เพิ่มหอพักเข้ารายการโปรด
         }
-        await userDoc.update({'favorites': favorites});
+
+        await userDoc.update({'favorites': favoritesList});
       }
     }
   }
@@ -305,53 +308,51 @@ class _DormScreenState extends State<DormScreen> {
   String _getPriceFilterText() {
     switch (priceFilterState) {
       case 1:
-        return 'กรองจากน้อยไปมาก'; // สถานะกรองน้อยไปมาก
+        return 'กรองจากน้อยไปมาก';
       case 2:
-        return 'กรองจากมากไปน้อย'; // สถานะกรองมากไปน้อย
+        return 'กรองจากมากไปน้อย';
       default:
-        return 'กรองราคา'; // สถานะเริ่มต้น
+        return 'กรองราคา';
     }
   }
 
-// ฟังก์ชันเพื่อคืนค่าข้อความสำหรับกรองคะแนน
+  IconData _getPriceFilterIcon() {
+    switch (priceFilterState) {
+      case 1:
+        return Icons.arrow_downward;
+      case 2:
+        return Icons.arrow_upward;
+      default:
+        return Icons.filter_alt;
+    }
+  }
+
   String _getRatingFilterText() {
     switch (ratingFilterState) {
       case 1:
-        return 'กรองจากน้อยไปมาก'; // สถานะกรองน้อยไปมาก
+        return 'กรองจากน้อยไปมาก';
       case 2:
-        return 'กรองจากมากไปน้อย'; // สถานะกรองมากไปน้อย
+        return 'กรองจากมากไปน้อย';
       default:
-        return 'กรองคะแนน'; // สถานะเริ่มต้น
+        return 'กรองคะแนน';
     }
   }
 
-  Icon _getPriceFilterIcon() {
-    switch (priceFilterState) {
-      case 1:
-        return const Icon(Icons.arrow_upward); // น้อยไปมาก
-      case 2:
-        return const Icon(Icons.arrow_downward); // มากไปน้อย
-      default:
-        return const Icon(Icons.filter_list); // สถานะเริ่มต้น
-    }
-  }
-
-  // ฟังก์ชันเพื่อคืนค่า Icon สำหรับกรองคะแนน
-  Icon _getRatingFilterIcon() {
+  IconData _getRatingFilterIcon() {
     switch (ratingFilterState) {
       case 1:
-        return const Icon(Icons.arrow_upward); // น้อยไปมาก
+        return Icons.arrow_downward;
       case 2:
-        return const Icon(Icons.arrow_downward); // มากไปน้อย
+        return Icons.arrow_upward;
       default:
-        return const Icon(Icons.filter_list); // สถานะเริ่มต้น
+        return Icons.filter_alt;
     }
   }
 }
 
 class FilterButton extends StatelessWidget {
   final String text;
-  final Icon icon;
+  final IconData icon;
   final VoidCallback onPressed;
 
   const FilterButton({
@@ -363,18 +364,13 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return ElevatedButton.icon(
       onPressed: onPressed,
+      icon: Icon(icon),
+      label: Text(text),
       style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          icon,
-          const SizedBox(width: 8), // เพิ่มระยะห่างระหว่างไอคอนและข้อความ
-          Text(text),
-        ],
+        foregroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 224, 224, 224),
       ),
     );
   }

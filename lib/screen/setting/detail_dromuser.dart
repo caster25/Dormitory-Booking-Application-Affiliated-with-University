@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/user/widgets/chat_user.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -72,26 +73,85 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     }
   }
 
-  Future<void> _saveDormitoryDetails() async {
-    String currentDorm = _currentDormController.text;
-    String previousDorm = _previousDormController.text;
+  void _navigateToChat(String dormitoryId, String ownerId) async {
+    // Get user data from Firestore
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .get();
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .update({
-        'currentDormitoryId': currentDorm, // บันทึก currentDormitoryId ใหม่
-        'previousDormitory': previousDorm, // บันทึก previousDormitory
-      });
+    if (userSnapshot.exists) {
+      // Cast the data to a Map<String, dynamic>
+      Map<String, dynamic>? userData =
+          userSnapshot.data() as Map<String, dynamic>?;
 
+      // Get the chatRoomIds list from userData
+      List<dynamic>? userChatRoomIds = userData?['chatRoomIds'];
+
+      if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
+        // Get dormitory data to check its chatRoomIds
+        DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+            .collection('dormitories')
+            .doc(dormitoryId)
+            .get();
+
+        if (dormitorySnapshot.exists) {
+          // Cast the data to a Map<String, dynamic>
+          Map<String, dynamic>? dormitoryData =
+              dormitorySnapshot.data() as Map<String, dynamic>?;
+
+          // Get the chatRoomIds from dormitory data
+          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomIds'];
+
+          if (dormitoryChatRoomIds != null && dormitoryChatRoomIds.isNotEmpty) {
+            // Find the matching chatRoomId that belongs to the current dormitory owner
+            String? matchingChatRoomId;
+            for (var chatRoomId in userChatRoomIds) {
+              if (dormitoryChatRoomIds.contains(chatRoomId)) {
+                matchingChatRoomId = chatRoomId;
+                break;
+              }
+            }
+
+            if (matchingChatRoomId != null) {
+              // Navigate to the chat screen with the existing chatRoomId
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatScreen(
+                    userId: widget.userId,
+                    ownerId: ownerId,
+                    chatRoomId:
+                        matchingChatRoomId!, // Pass the found chatRoomId
+                  ),
+                ),
+              );
+            } else {
+              // If no matching chatRoomId found, show a message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+              );
+            }
+          } else {
+            // If dormitory chatRoomIds is empty, show a message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
+          );
+        }
+      } else {
+        // If user chatRoomIds is empty, show a message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+        );
+      }
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('บันทึกข้อมูลสำเร็จ')),
-      );
-    } catch (e) {
-      print('Error saving dormitory details: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกข้อมูล')),
+        const SnackBar(content: Text('ไม่พบข้อมูลผู้ใช้')),
       );
     }
   }
@@ -133,30 +193,20 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                           ),
                         ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'หอพักที่เคยพัก',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  previousDormitoryName != null // ถ้ามีข้อมูลหอพักที่เคยพัก
-                      ? Card(
-                          child: ListTile(
-                            title: Text(
-                                'ชื่อหอพัก: ${_previousDormController.text}'),
-                            subtitle: const Text('ข้อมูลหอพักที่เคยพัก'),
-                          ),
-                        )
-                      : TextField(
-                          controller: _previousDormController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'ชื่อหอพักที่เคยพัก',
-                          ),
-                        ),
-                  const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: _saveDormitoryDetails,
-                    child: const Text('บันทึก'),
+                    onPressed: () {
+                      if (currentDormitoryId != null) {
+                        // Assuming you have a way to get the ownerId from the current dormitory data
+                        String ownerId =
+                            "owner_id_here"; // Replace with the actual ownerId
+                        _navigateToChat(currentDormitoryId!, ownerId);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('ไม่มีหอพักปัจจุบัน')),
+                        );
+                      }
+                    },
+                    child: const Text('เข้าสู่การสนทนา'),
                   ),
                 ],
               ),
