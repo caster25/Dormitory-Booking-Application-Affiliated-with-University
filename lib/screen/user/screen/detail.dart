@@ -24,6 +24,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   late Future<Map<String, dynamic>> dormitoryData;
   late Future<List<Map<String, dynamic>>> reviewsData;
   final TextEditingController reviewController = TextEditingController();
+  // ignore: unused_field
   double _rating = 0;
   User? currentUser;
   Map<String, dynamic>? userData;
@@ -35,7 +36,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   void initState() {
     super.initState();
     dormitoryData = _fetchDormitoryData();
-    // reviewsData = _fetchReviewsData();
+    reviewsData = _fetchReviewsData();
     _loadUserData();
     selectedDormitory = {
       'id': widget.dormId,
@@ -64,15 +65,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return doc.data() as Map<String, dynamic>;
   }
 
-  // Future<List<Map<String, dynamic>>> _fetchReviewsData() async {
-  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-  //       .collection('reviews')
-  //       .where('dormId', isEqualTo: widget.dormId)
-  //       .get();
-  //   return querySnapshot.docs
-  //       .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
-  //       .toList();
-  // }
+  Future<List<Map<String, dynamic>>> _fetchReviewsData() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('dormId', isEqualTo: widget.dormId)
+        .get();
+    return querySnapshot.docs
+        .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
+        .toList();
+  }
 
   // ignore: unused_element
   Future<Position> _determinePosition() async {
