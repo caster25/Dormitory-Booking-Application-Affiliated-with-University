@@ -35,7 +35,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   void initState() {
     super.initState();
     dormitoryData = _fetchDormitoryData();
-    reviewsData = _fetchReviewsData();
+    // reviewsData = _fetchReviewsData();
     _loadUserData();
     selectedDormitory = {
       'id': widget.dormId,
@@ -64,15 +64,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return doc.data() as Map<String, dynamic>;
   }
 
-  Future<List<Map<String, dynamic>>> _fetchReviewsData() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('reviews')
-        .where('dormId', isEqualTo: widget.dormId)
-        .get();
-    return querySnapshot.docs
-        .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
-        .toList();
-  }
+  // Future<List<Map<String, dynamic>>> _fetchReviewsData() async {
+  //   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+  //       .collection('reviews')
+  //       .where('dormId', isEqualTo: widget.dormId)
+  //       .get();
+  //   return querySnapshot.docs
+  //       .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
+  //       .toList();
+  // }
 
   // ignore: unused_element
   Future<Position> _determinePosition() async {
@@ -100,33 +100,33 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-  Future<void> _addReview() async {
-    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
-      return;
-    }
+  // Future<void> _addReview() async {
+  //   if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
+  //     return;
+  //   }
 
-    try {
-      await FirebaseFirestore.instance.collection('reviews').add({
-        'dormId': widget.dormId,
-        'user': currentUser!.email,
-        'date': DateTime.now().toString(),
-        'text': reviewController.text,
-        'rating': _rating,
-        'likes': 0,
-        'comments': 0
-      });
+  //   try {
+  //     await FirebaseFirestore.instance.collection('reviews').add({
+  //       'dormId': widget.dormId,
+  //       'user': currentUser!.email,
+  //       'date': DateTime.now().toString(),
+  //       'text': reviewController.text,
+  //       'rating': _rating,
+  //       'likes': 0,
+  //       'comments': 0
+  //     });
 
-      await _updateDormitoryReviews();
+  //     await _updateDormitoryReviews();
 
-      reviewController.clear();
-      setState(() {
-        _rating = 0;
-        reviewsData = _fetchReviewsData();
-      });
-    } catch (e) {
-      print('Error adding review: $e');
-    }
-  }
+  //     reviewController.clear();
+  //     setState(() {
+  //       _rating = 0;
+  //       reviewsData = _fetchReviewsData();
+  //     });
+  //   } catch (e) {
+  //     print('Error adding review: $e');
+  //   }
+  // }
 
   Future<void> _updateDormitoryReviews() async {
     try {
@@ -252,12 +252,12 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array
                 });
 
-                        // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
+                // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
                 DocumentReference dormitoryRef = FirebaseFirestore.instance
                     .collection('dormitories')
                     .doc(dormitoryId);
 
-                    // ลดจำนวนห้องว่างลง 1
+                // ลดจำนวนห้องว่างลง 1
                 await dormitoryRef.update({
                   'availableRooms': availableRooms - 1,
                   'usersBooked': FieldValue.arrayUnion([userId]),
@@ -265,7 +265,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array ของหอพัก
                 });
 
-                  // สร้างเอกสารใหม่ในคอลเล็กชัน messages
+                // สร้างเอกสารใหม่ในคอลเล็กชัน messages
                 String chatRoomId = _createChatRoomId(
                     userId, dormitoryId); // สร้าง chatRoomId ตามที่คุณต้องการ
                 await FirebaseFirestore.instance
@@ -350,7 +350,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
                           // Type of tenant
                           Text(
-                              'ประเภทผู้พัก: ${dormitory['residentType'] ?? 'ไม่มีข้อมูล'}'),
+                              'ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}'),
                           const SizedBox(height: 8),
 
                           // Room type
@@ -360,12 +360,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
                           // Number of occupants
                           Text(
-                              'จำนวนคนพัก: ${dormitory['occupancy'] ?? 'ไม่มีข้อมูล'}'),
-                          const SizedBox(height: 8),
-
-                          // Maintenance fee
-                          Text(
-                              'ค่าบำรุงหอ: ${dormitory['maintenanceFee'] ?? 'ไม่มีข้อมูล'} บาท'),
+                              'จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน'),
                           const SizedBox(height: 8),
 
                           // Electricity charge per unit
@@ -378,17 +373,17 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                               'ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
-                          // Additional furniture charge
-                          Text(
-                              'ค่าเฟอร์นิเจอร์เพิ่มเติม: ${dormitory['furnitureFee'] ?? 'ไม่มีข้อมูล'} บาท'),
-                          const SizedBox(height: 8),
-
                           // Damage deposit
                           Text(
-                              'ค่าประกันความเสียหาย: ${dormitory['damageDeposit'] ?? 'ไม่มีข้อมูล'} บาท'),
-                          const SizedBox(height: 16),
+                              'ค่าประกันความเสียหาย: ${dormitory['securityDeposit'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          const SizedBox(height: 8),
+
+                          Text(
+                            'กฎของหอพัก: ${dormitory['rule']}',style: Theme.of(context).textTheme.headlineSmall,),
 
                           // Equipment available in the room
+
+                          const SizedBox(height: 8),
                           Text(
                             'อุปกรณ์ที่มีในห้องพัก:',
                             style: Theme.of(context).textTheme.headlineSmall,
@@ -507,44 +502,44 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 );
               },
             ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: reviewController,
-                decoration: const InputDecoration(
-                  labelText: 'แสดงความคิดเห็น',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: RatingBar.builder(
-                initialRating: _rating,
-                minRating: 1,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                onRatingUpdate: (rating) {
-                  setState(() {
-                    _rating = rating;
-                  });
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _addReview,
-                child: const Text('เพิ่มรีวิว'),
-              ),
-            ),
+            // const SizedBox(height: 16),
+            // Padding(
+            //   padding: const EdgeInsets.all(16.0),
+            //   child: TextField(
+            //     controller: reviewController,
+            //     decoration: const InputDecoration(
+            //       labelText: 'แสดงความคิดเห็น',
+            //       border: OutlineInputBorder(),
+            //     ),
+            //     maxLines: 3,
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            //   child: RatingBar.builder(
+            //     initialRating: _rating,
+            //     minRating: 1,
+            //     direction: Axis.horizontal,
+            //     allowHalfRating: true,
+            //     itemCount: 5,
+            //     itemBuilder: (context, _) => const Icon(
+            //       Icons.star,
+            //       color: Colors.amber,
+            //     ),
+            //     onRatingUpdate: (rating) {
+            //       setState(() {
+            //         _rating = rating;
+            //       });
+            //     },
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(16.0),
+            //   child: ElevatedButton(
+            //     onPressed: _addReview,
+            //     child: const Text('เพิ่มรีวิว'),
+            //   ),
+            // ),
           ],
         ),
       ),

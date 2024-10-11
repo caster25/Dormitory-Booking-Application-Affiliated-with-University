@@ -21,7 +21,8 @@ class DormitoryListEditScreen extends StatelessWidget {
         // Filter dormitories by the current owner's submittedBy ID
         stream: FirebaseFirestore.instance
             .collection('dormitories')
-            .where('submittedBy', isEqualTo: currentUserId) // Filter by submittedBy
+            .where('submittedBy',
+                isEqualTo: currentUserId) // Filter by submittedBy
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -45,30 +46,34 @@ class DormitoryListEditScreen extends StatelessWidget {
 
               // สร้างอ็อบเจ็กต์ Dormitory
               var dormitory = Dormitory(
-                id: dormId,
-                name: dormitoryData['name'] ?? 'ไม่มีชื่อ',
-                roomType: dormitoryData['roomType'] ?? '',
-                occupants: dormitoryData['occupants']?.toInt() ?? 0,
-                price: dormitoryData['price']?.toInt() ?? 0,
-                maintenanceFee: dormitoryData['maintenanceFee']?.toInt() ?? 0,
-                furnitureFee: dormitoryData['furnitureFee']?.toInt() ?? 0,
-                monthlyRent: dormitoryData['monthlyRent']?.toInt() ?? 0,
-                securityDeposit: dormitoryData['securityDeposit']?.toInt() ?? 0,
-                availableRooms: dormitoryData['availableRooms']?.toInt() ?? 0,
-                electricityRate: dormitoryData['electricityRate']?.toInt() ?? 0,
-                waterRate: dormitoryData['waterRate']?.toInt() ?? 0,
-                rating: dormitoryData['rating']?.toDouble() ?? 0,
-                imageUrls: dormitoryData['imageUrl'] ?? [],
-                tenants: List<String>.from(dormitoryData['tenants'] ?? []),
-                equipment: dormitoryData['equipment'] ?? '-',
-                address: dormitoryData['address'] ?? ''
-              );
+                  id: dormId,
+                  name: dormitoryData['name'] ?? 'ไม่มีชื่อ',
+                  roomType: dormitoryData['roomType'] ?? '',
+                  occupants: dormitoryData['occupants'] ?? '',
+                  price: dormitoryData['price']?.toInt() ?? 0,
+                  maintenanceFee: dormitoryData['maintenanceFee']?.toInt() ?? 0,
+                  furnitureFee: dormitoryData['furnitureFee']?.toInt() ?? 0,
+                  monthlyRent: dormitoryData['monthlyRent']?.toInt() ?? 0,
+                  securityDeposit:
+                      dormitoryData['securityDeposit']?.toInt() ?? 0,
+                  availableRooms: dormitoryData['availableRooms']?.toInt() ?? 0,
+                  electricityRate:
+                      dormitoryData['electricityRate']?.toInt() ?? 0,
+                  waterRate: dormitoryData['waterRate']?.toInt() ?? 0,
+                  rating: dormitoryData['rating']?.toDouble() ?? 0,
+                  imageUrl: dormitoryData['imageUrl'] ?? [],
+                  tenants: List<String>.from(dormitoryData['tenants'] ?? []),
+                  equipment: dormitoryData['equipment'] ?? '-',
+                  address: dormitoryData['address'] ?? '',
+                  dormType: dormitoryData['dormType'],
+                  rule: dormitoryData['rule'],
+                  submittedBy: dormitoryData['submittedBy']);
 
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
-                  leading: (dormitoryData['imageUrl'] != null && 
-                             dormitoryData['imageUrl'].isNotEmpty)
+                  leading: (dormitoryData['imageUrl'] != null &&
+                          dormitoryData['imageUrl'].isNotEmpty)
                       ? Image.network(
                           dormitoryData['imageUrl'],
                           width: 50,
@@ -83,7 +88,8 @@ class DormitoryListEditScreen extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ราคา: ฿${dormitory.price.toStringAsFixed(0)} บาท/เดือน'),
+                      Text(
+                          'ราคา: ฿${dormitory.price.toStringAsFixed(0)} บาท/เดือน'),
                       Text('ห้องว่าง: ${dormitory.availableRooms} ห้อง'),
                     ],
                   ),

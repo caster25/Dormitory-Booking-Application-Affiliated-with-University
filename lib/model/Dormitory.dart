@@ -1,21 +1,24 @@
 class Dormitory {
-  String id; 
-  String name; 
-  String roomType; 
-  int occupants; 
-  int price; 
-  int maintenanceFee; 
-  int furnitureFee; 
-  int monthlyRent; 
-  int securityDeposit; 
-  int availableRooms; 
-  int electricityRate; 
-  int waterRate; 
-  double rating; 
-  String imageUrls; 
+  String id;
+  String name;
+  String roomType;
+  String occupants;
+  int price;
+  int maintenanceFee;
+  int furnitureFee;
+  int monthlyRent;
+  int securityDeposit;
+  int availableRooms;
+  int electricityRate;
+  int waterRate;
+  double rating;
+  String imageUrl; // แก้ไขจาก imageUrls ให้ตรงกับข้อมูล
   List<String> tenants;
   String equipment;
   String address;
+  String dormType; // เพิ่มฟิลด์ dormType
+  String rule; // เพิ่มฟิลด์ rule
+  String submittedBy; // เพิ่มฟิลด์ submittedBy
 
   Dormitory({
     required this.id,
@@ -31,10 +34,13 @@ class Dormitory {
     required this.electricityRate,
     required this.waterRate,
     required this.rating,
-    required this.imageUrls,
+    required this.imageUrl,
     required this.tenants,
     required this.equipment,
-    required this.address
+    required this.address,
+    required this.dormType, // เพิ่มฟิลด์ dormType
+    required this.rule, // เพิ่มฟิลด์ rule
+    required this.submittedBy, // เพิ่มฟิลด์ submittedBy
   });
 
   // Method to create a Dormitory instance from Firestore data
@@ -43,7 +49,7 @@ class Dormitory {
       id: id,
       name: data['name'] ?? '',
       roomType: data['roomType'] ?? '',
-      occupants: data['occupants']?.toInt() ?? 0,
+      occupants: data['occupants'] ?? '',
       price: data['price']?.toInt() ?? 0,
       maintenanceFee: data['maintenanceFee']?.toInt() ?? 0,
       furnitureFee: data['furnitureFee']?.toInt() ?? 0,
@@ -53,10 +59,13 @@ class Dormitory {
       electricityRate: data['electricityRate']?.toInt() ?? 0,
       waterRate: data['waterRate']?.toInt() ?? 0,
       rating: data['rating']?.toDouble() ?? 0.0,
-      imageUrls: data['imageUrl'] ?? [],
+      imageUrl: data['imageUrl'] ?? '',
       tenants: List<String>.from(data['tenants'] ?? []),
       equipment: data['equipment'] ?? '-',
-      address: data['address']
+      address: data['address'] ?? '',
+      dormType: data['dormType'] ?? '', // เพิ่ม dormType
+      rule: data['rule'] ?? '-', // เพิ่ม rule
+      submittedBy: data['submittedBy'] ?? '', // เพิ่ม submittedBy
     );
   }
 
@@ -75,10 +84,13 @@ class Dormitory {
       'electricityRate': electricityRate,
       'waterRate': waterRate,
       'rating': rating,
-      'imageUrl': imageUrls,
+      'imageUrl': imageUrl,
       'tenants': tenants,
       'equipment': equipment,
-      'address' : address
+      'address': address,
+      'dormType': dormType, // เพิ่ม dormType
+      'rule': rule, // เพิ่ม rule
+      'submittedBy': submittedBy, // เพิ่ม submittedBy
     };
   }
 }

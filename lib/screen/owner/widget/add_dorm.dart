@@ -2,10 +2,12 @@
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/screen/owner/widget/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 
@@ -25,13 +27,15 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   final TextEditingController _availableRoomsController =
       TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
-  final TextEditingController _monthlyRentController = TextEditingController();
+  final TextEditingController _ruleController = TextEditingController();
   final TextEditingController _electricityRateController =
       TextEditingController();
   final TextEditingController _waterRateController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _securityDepositController =
       TextEditingController();
   final TextEditingController _equipmentController = TextEditingController();
+  LatLng _dormitoryLocation = const LatLng(0, 0); // Default location
 
   List<File> _dormImages = [];
   final ImagePicker _picker = ImagePicker();
@@ -39,6 +43,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   late String _uploadedImageUrls;
 
   String? _selectedRoomType;
+  String? _selectedDormType;
 
   Future<void> _pickImages() async {
     final pickedFiles = await _picker.pickMultiImage();
@@ -106,18 +111,22 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
 
           await FirebaseFirestore.instance.collection('dormitories').add({
             'name': _dormNameController.text,
-            'price': double.parse(_dormPriceController.text),
+            'price': int.parse(_dormPriceController.text),
             'availableRooms': int.parse(_availableRoomsController.text),
-            'roomType': _selectedRoomType, // Change here
-            'occupants': int.parse(_occupantsController.text),
-            'monthlyRent': double.parse(_monthlyRentController.text),
-            'electricityRate': double.parse(_electricityRateController.text),
-            'waterRate': double.parse(_waterRateController.text),
-            'securityDeposit': double.parse(_securityDepositController.text),
+            'roomType': _selectedRoomType,
+            'dormType': _selectedDormType,
+            'occupants': _occupantsController.text,
+            'electricityRate': int.parse(_electricityRateController.text),
+            'waterRate': int.parse(_waterRateController.text),
+            'securityDeposit': int.parse(_securityDepositController.text),
             'equipment': _equipmentController.text,
+            'rule': _ruleController.text,
             'imageUrl': _uploadedImageUrls,
             'rating': 0,
             'submittedBy': userId,
+            'latitude': _dormitoryLocation.latitude,
+            'longitude': _dormitoryLocation.longitude,
+            'address': _addressController.text
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -143,6 +152,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('เพิ่มหอพัก'),
+        actions: [
+          IconButton(onPressed: _submitForm, icon: const Icon(Icons.save))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -155,6 +167,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                 _buildTextField(
                     'ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
 
+                _buildTextField('ที่อยู่หอพัก', _addressController,
+                    'กรุณากรอกที่อยู่หอพัก'),
+
                 _buildTextField('ราคาหอพัก (บาท/เทอม)', _dormPriceController,
                     'กรุณากรอกราคาหอพัก',
                     isNumber: true),
@@ -163,17 +178,14 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                     'กรุณากรอกจำนวนห้องว่าง',
                     isNumber: true),
 
-                // Dropdown for room type
                 _buildRoomTypeDropdown(),
-                const SizedBox(height: 32), // เพิ่มระยะห่างเฉพาะที่นี่
+                const SizedBox(height: 32),
 
-                _buildTextField(
-                    'จำนวนคนพัก', _occupantsController, 'กรุณากรอกจำนวนคนพัก',
-                    isNumber: true),
+                _buildDormTypeDropdown(),
+                const SizedBox(height: 32),
 
-                _buildTextField('อัตราค่าห้องพัก', _monthlyRentController,
-                    'กรุณากรอกอัตราค่าห้องพัก',
-                    isNumber: true),
+                _buildTextField('จำนวนคนพัก/ห้อง', _occupantsController,
+                    'กรุณากรอกจำนวนคนพัก'),
 
                 _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController,
                     'กรุณากรอกค่าไฟ',
@@ -190,11 +202,12 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                 _buildTextField('อุปกรณ์ที่มีในห้องพัก', _equipmentController,
                     'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
 
+                _buildTextField('กฎของหอพัก', _ruleController,
+                    'กรุณาลงรายละเอียดกฎของหอพัก'),
+
                 _buildImagePicker(),
 
                 if (_isUploading) const CircularProgressIndicator(),
-
-                _buildSubmitButton(),
               ],
             ),
           ),
@@ -254,6 +267,41 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       },
       validator: (value) {
         if (value == null || value.isEmpty) {
+          return 'กรุณาเลือกประเภทหอพัก';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDormTypeDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedDormType,
+      decoration: const InputDecoration(
+        labelText: 'ประเภทหอพัก',
+        border: OutlineInputBorder(),
+      ),
+      items: const [
+        DropdownMenuItem(
+          value: 'หอชาย',
+          child: Text('หอชาย'),
+        ),
+        DropdownMenuItem(
+          value: 'หอหญิง',
+          child: Text('หอหญิง'),
+        ),
+        DropdownMenuItem(
+          value: 'หอรวม',
+          child: Text('หอรวม'),
+        ),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedDormType = value!;
+        });
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
           return 'กรุณาเลือกประเภทห้องพัก';
         }
         return null;
@@ -261,11 +309,33 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     );
   }
 
+  Future<void> _navigateToEditLocation() async {
+    final newLocation = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            EditLocationScreen(initialLocation: _dormitoryLocation),
+      ),
+    );
+    if (newLocation != null) {
+      setState(() {
+        _dormitoryLocation = newLocation;
+      });
+    }
+  }
+
   Widget _buildImagePicker() {
     return Row(children: [
       ElevatedButton(
         onPressed: _pickImages,
         child: const Text('เลือกรูปภาพ'),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          print("Navigating to Edit Location");
+          _navigateToEditLocation();
+        },
+        child: const Text('แก้ไขตำแหน่งหมุด'),
       ),
       const SizedBox(width: 16),
       Expanded(
@@ -287,12 +357,5 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         ),
       ),
     ]);
-  }
-
-  Widget _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: _submitForm,
-      child: const Text('บันทึกข้อมูล'),
-    );
   }
 }

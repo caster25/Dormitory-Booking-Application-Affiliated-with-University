@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/owner/screen/home_owner.dart';
 import 'package:dorm_app/screen/owner/widget/list_of_bookings.dart';
+import 'package:dorm_app/screen/owner/widget/list_of_tenants.dart';
 import 'package:flutter/material.dart';
-import 'list_of_tenants.dart'; // หน้าที่แสดงรายชื่อผู้เช่า
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Ownerdormlistscreen extends StatelessWidget {
@@ -75,7 +75,7 @@ class Ownerdormlistscreen extends StatelessWidget {
                 child: ListTile(
                   leading: firstImageUrl != null
                       ? Image.network(
-                          firstImageUrl, // Use the first image if available
+                          firstImageUrl,
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,

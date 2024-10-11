@@ -20,10 +20,10 @@ class DormitoryDetailsScreen extends StatefulWidget {
 
 class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _availableRoomsController =
       TextEditingController();
-  final TextEditingController _roomTypeController = TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
   final TextEditingController _electricityRateController =
       TextEditingController();
@@ -33,6 +33,9 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
       TextEditingController();
   final TextEditingController _equipmentController = TextEditingController();
   final Completer<GoogleMapController> _mapController = Completer();
+  final TextEditingController _ruleController = TextEditingController();
+  String? _selectedRoomType;
+  String? _selectedDormType;
 
   LatLng _dormitoryLocation = const LatLng(0, 0); // Default location
   late final String _dormitoryId;
@@ -45,9 +48,9 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
     _priceController.text = widget.dormitory['price']?.toString() ?? '0';
     _availableRoomsController.text =
         widget.dormitory['availableRooms']?.toString() ?? '0';
-    _roomTypeController.text = widget.dormitory['roomType'] ?? '';
-    _occupantsController.text =
-        widget.dormitory['occupants']?.toString() ?? '0';
+    _selectedRoomType = widget.dormitory['roomType'];
+    _selectedDormType = widget.dormitory['dormType'];
+    _occupantsController.text = widget.dormitory['occupants'] ?? '';
     _electricityRateController.text =
         widget.dormitory['electricityRate']?.toString() ?? '0';
     _waterRateController.text =
@@ -61,6 +64,8 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
       widget.dormitory['latitude'] ?? 0,
       widget.dormitory['longitude'] ?? 0,
     );
+    _addressController.text = widget.dormitory['address'] ?? '';
+    _ruleController.text = widget.dormitory['rule'] ?? '';
   }
 
   Future<void> _saveDormitory() async {
@@ -72,23 +77,34 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
         'name': _nameController.text,
         'price': int.parse(_priceController.text.trim()),
         'availableRooms': int.parse(_availableRoomsController.text.trim()),
-        'roomType': _roomTypeController.text,
-        'occupants': int.parse(_occupantsController.text.trim()),
+        'roomType': _selectedRoomType,
+        'dormType': _selectedDormType,
+        'occupants': _occupantsController.text,
         'electricityRate': int.parse(_electricityRateController.text.trim()),
         'waterRate': int.parse(_waterRateController.text.trim()),
         'furnitureFee': int.parse(_furnitureFeeController.text.trim()),
         'securityDeposit': int.parse(_securityDepositController.text.trim()),
-        'equipment': _equipmentController.text.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList().join(', '), // Convert list back to string
+        'equipment': _equipmentController.text
+            .split('\n')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList()
+            .join(', '), // Convert list back to string
         'latitude': _dormitoryLocation.latitude,
         'longitude': _dormitoryLocation.longitude,
+        'address': _addressController.text,
+        'rule': _ruleController.text
       };
 
       await docRef.update(dormitoryData);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('ข้อมูลหอพักได้รับการอัปเดต')),
       );
+      // ignore: use_build_context_synchronously
       Navigator.pop(context); // Go back to the previous screen
     } catch (e) {
+      print('Error: $e'); // แสดงข้อผิดพลาดใน console
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกข้อมูล')),
       );
@@ -128,6 +144,74 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
     }
   }
 
+  Widget _buildRoomTypeDropdown() {
+    const EdgeInsets.all(20);
+    return DropdownButtonFormField<String>(
+      value: _selectedRoomType,
+      decoration: const InputDecoration(
+        labelText: 'ประเภทห้องพัก',
+        border: OutlineInputBorder(),
+      ),
+      items: const [
+        DropdownMenuItem(
+          value: 'ห้องพัดลม',
+          child: Text('ห้องพัดลม'),
+        ),
+        DropdownMenuItem(
+          value: 'ห้องแอร์',
+          child: Text('ห้องแอร์'),
+        ),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedRoomType = value;
+        });
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'กรุณาเลือกประเภทห้องพัก';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDormTypeDropdown() {
+    const EdgeInsets.all(20);
+    return DropdownButtonFormField<String>(
+      value: _selectedDormType,
+      decoration: const InputDecoration(
+        labelText: 'ประเภทหอพัก',
+        border: OutlineInputBorder(),
+      ),
+      items: const [
+        DropdownMenuItem(
+          value: 'หอชาย',
+          child: Text('หอชาย'),
+        ),
+        DropdownMenuItem(
+          value: 'หอหญิง',
+          child: Text('หอหญิง'),
+        ),
+        DropdownMenuItem(
+          value: 'หอรวม',
+          child: Text('หอรวม'),
+        ),
+      ],
+      onChanged: (value) {
+        setState(() {
+          _selectedDormType = value;
+        });
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'กรุณาเลือกประเภทห้องพัก';
+        }
+        return null;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,6 +234,10 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                 decoration: const InputDecoration(labelText: 'ชื่อหอพัก'),
               ),
               TextField(
+                controller: _addressController,
+                decoration: const InputDecoration(labelText: 'ที่อยู่หอพัก'),
+              ),
+              TextField(
                 controller: _priceController,
                 decoration: const InputDecoration(labelText: 'ราคา'),
                 keyboardType: TextInputType.number,
@@ -159,15 +247,15 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                 decoration: const InputDecoration(labelText: 'ห้องว่าง'),
                 keyboardType: TextInputType.number,
               ),
+              SizedBox(height: 10),
+              _buildRoomTypeDropdown(),
+              SizedBox(height: 10),
+              SizedBox(height: 10),
+              _buildDormTypeDropdown(),
+              SizedBox(height: 10),
               TextField(
-                controller: _roomTypeController,
-                decoration: const InputDecoration(labelText: 'ประเภทห้องพัก'),
-              ),
-              TextField(
-                controller: _occupantsController,
-                decoration: const InputDecoration(labelText: 'จำนวนคนพัก'),
-                keyboardType: TextInputType.number,
-              ),
+                  controller: _occupantsController,
+                  decoration: const InputDecoration(labelText: 'จำนวนคนพัก')),
               TextField(
                 controller: _electricityRateController,
                 decoration: const InputDecoration(labelText: 'ค่าไฟ (หน่วยละ)'),
@@ -175,13 +263,14 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
               ),
               TextField(
                 controller: _waterRateController,
-                decoration: const InputDecoration(labelText: 'ค่าน้ำ (หน่วยละ)'),
+                decoration:
+                    const InputDecoration(labelText: 'ค่าน้ำ (หน่วยละ)'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: _furnitureFeeController,
-                decoration:
-                    const InputDecoration(labelText: 'ค่าเฟอร์นิเจอร์เพิ่มเติม'),
+                decoration: const InputDecoration(
+                    labelText: 'ค่าเฟอร์นิเจอร์เพิ่มเติม'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
@@ -189,6 +278,10 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                 decoration:
                     const InputDecoration(labelText: 'ค่าประกันความเสียหาย'),
                 keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: _ruleController,
+                decoration: const InputDecoration(labelText: 'กฎขอหอพัก'),
               ),
               TextField(
                 controller: _equipmentController,

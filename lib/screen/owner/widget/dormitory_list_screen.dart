@@ -9,63 +9,77 @@ class DormitoryListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current user's ID
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        // Filter dormitories by the current owner's submittedBy ID
-        stream: FirebaseFirestore.instance
-            .collection('dormitories')
-            .where('submittedBy',
-                isEqualTo: currentUserId) // Filter by submittedBy
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  body: StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance
+        .collection('dormitories')
+        .where('submittedBy', isEqualTo: currentUserId)
+        .snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-          if (snapshot.hasError) {
-            return const Center(child: Text('เกิดข้อผิดพลาดในการดึงข้อมูล'));
-          }
+      if (snapshot.hasError) {
+        return const Center(child: Text('เกิดข้อผิดพลาดในการดึงข้อมูล'));
+      }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('ยังไม่มีข้อมูลหอพัก'));
-          }
-
-          // Count the number of dormitories
-          final int dormitoryCount = snapshot.data!.docs.length;
-
-          return Column(
+      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment
-                      .spaceBetween, // จัดวางให้ปุ่มอยู่ข้างข้อความ
-                  children: [
-                    Text(
-                      'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+              const Text('ยังไม่มีข้อมูลหอพัก'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  // ไปยังหน้าสำหรับเพิ่มหอพัก
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DormitoryFormScreen(),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DormitoryFormScreen(), // หน้าจอสำหรับเพิ่มหอพักใหม่
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                  );
+                },
+                child: const Text('เพิ่มหอพัก +'),
               ),
+            ],
+          ),
+        );
+      }
+
+      final int dormitoryCount = snapshot.data!.docs.length;
+
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DormitoryFormScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
               Expanded(
                 child: ListView.builder(
                   itemCount: dormitoryCount,
