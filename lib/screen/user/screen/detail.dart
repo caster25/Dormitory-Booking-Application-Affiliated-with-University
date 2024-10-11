@@ -252,12 +252,12 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array
                 });
 
-// ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
+                        // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
                 DocumentReference dormitoryRef = FirebaseFirestore.instance
                     .collection('dormitories')
                     .doc(dormitoryId);
 
-// ลดจำนวนห้องว่างลง 1
+                    // ลดจำนวนห้องว่างลง 1
                 await dormitoryRef.update({
                   'availableRooms': availableRooms - 1,
                   'usersBooked': FieldValue.arrayUnion([userId]),
@@ -265,7 +265,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array ของหอพัก
                 });
 
-// สร้างเอกสารใหม่ในคอลเล็กชัน messages
+                  // สร้างเอกสารใหม่ในคอลเล็กชัน messages
                 String chatRoomId = _createChatRoomId(
                     userId, dormitoryId); // สร้าง chatRoomId ตามที่คุณต้องการ
                 await FirebaseFirestore.instance

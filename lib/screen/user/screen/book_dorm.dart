@@ -64,7 +64,8 @@ class _BookDormState extends State<BookDorm> {
                   builder: (context) => ChatScreen(
                     userId: widget.userId,
                     ownerId: ownerId,
-                    chatRoomId: matchingChatRoomId!, // Pass the found chatRoomId
+                    chatRoomId:
+                        matchingChatRoomId!, // Pass the found chatRoomId
                   ),
                 ),
               );
@@ -190,17 +191,41 @@ class _BookDormState extends State<BookDorm> {
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(content).pop();
+                                      Navigator.of(context)
+                                          .pop(); // ปิด Dialog เมื่อเลือกยกเลิก
                                     },
                                     child: const Text('ยกเลิก'),
                                   ),
                                   TextButton(
                                     onPressed: () async {
+                                      Navigator.of(context)
+                                          .pop(); // ปิด Dialog หลังจากการกดยืนยัน
+                                      // ดึงข้อมูลหอพักที่ถูกจอง
+                                      DocumentSnapshot userDoc =
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(widget.userId)
+                                              .get();
+
+                                      String bookedDormitoryId =
+                                          userDoc['bookedDormitory'];
+
+                                      // อัปเดตข้อมูลใน Firestore
                                       await FirebaseFirestore.instance
                                           .collection('users')
                                           .doc(widget.userId)
                                           .update({'bookedDormitory': null});
 
+                                      // เพิ่ม availableRooms ในหอพัก
+                                      await FirebaseFirestore.instance
+                                          .collection('dormitories')
+                                          .doc(bookedDormitoryId)
+                                          .update({
+                                        'availableRooms': FieldValue.increment(
+                                            1), // เพิ่มจำนวนห้องว่างขึ้น 1
+                                      });
+
+                                      // แสดง SnackBar แจ้งการยกเลิกสำเร็จ
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
@@ -209,12 +234,11 @@ class _BookDormState extends State<BookDorm> {
                                         ),
                                       );
 
-                                      // Set the state to indicate the booking has been canceled
                                       setState(() {
                                         _isBookingCanceled = true;
                                       });
 
-                                      Navigator.of(content).pop();
+                                      
                                     },
                                     child: const Text('ยืนยัน'),
                                   ),
@@ -225,6 +249,7 @@ class _BookDormState extends State<BookDorm> {
                         },
                         child: const Text('ยกเลิกการจองแล้ว'),
                       ),
+
                     // Button to navigate to chat screen
                     if (!_isBookingCanceled)
                       ElevatedButton(

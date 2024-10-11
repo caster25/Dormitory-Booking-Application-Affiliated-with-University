@@ -248,7 +248,6 @@ class ListOfBookings extends StatelessWidget {
                   'currentDormitoryId': null,
                 });
 
-                // ดึงข้อมูล dormitory จาก Firestore และเพิ่มค่า availableRooms ขึ้น 1
                 DocumentSnapshot dormitorySnapshot = await FirebaseFirestore
                     .instance
                     .collection('dormitories')

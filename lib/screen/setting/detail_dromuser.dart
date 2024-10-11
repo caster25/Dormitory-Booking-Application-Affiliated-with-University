@@ -177,37 +177,42 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  currentDormitoryId != null // ถ้ามีข้อมูลหอพักปัจจุบัน
+                  currentDormitoryId != null &&
+                          _currentDormController
+                              .text.isNotEmpty // เช็คว่ามีข้อมูลหอพักปัจจุบัน
                       ? Card(
-                          child: ListTile(
-                            title: Text(
-                                'ชื่อหอพัก: ${_currentDormController.text}'),
-                            subtitle: const Text('ข้อมูลหอพักปัจจุบัน'),
+                          child: Padding(
+                            padding: const EdgeInsets.all(
+                                16.0), // เพิ่ม Padding ให้กับ Card
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                      'ชื่อหอพัก: ${_currentDormController.text}'),
+                                  subtitle: const Text('ข้อมูลหอพักปัจจุบัน'),
+                                ),
+                                const SizedBox(
+                                    height:
+                                        8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
+                                ElevatedButton(
+                                  onPressed: () {
+                                    String ownerId =
+                                        "owner_id_here"; // เปลี่ยนเป็น ownerId ที่แท้จริง
+                                    _navigateToChat(
+                                        currentDormitoryId!, ownerId);
+                                  },
+                                  child: const Text('เข้าสู่การสนทนา'),
+                                ),
+                              ],
+                            ),
                           ),
                         )
-                      : TextField(
-                          controller: _currentDormController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'ชื่อหอพักปัจจุบัน',
-                          ),
+                      : const Text(
+                          'ตอนนี้คุณไม่มีหอพัก',
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.red), // ข้อความเตือน
                         ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (currentDormitoryId != null) {
-                        // Assuming you have a way to get the ownerId from the current dormitory data
-                        String ownerId =
-                            "owner_id_here"; // Replace with the actual ownerId
-                        _navigateToChat(currentDormitoryId!, ownerId);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('ไม่มีหอพักปัจจุบัน')),
-                        );
-                      }
-                    },
-                    child: const Text('เข้าสู่การสนทนา'),
-                  ),
                 ],
               ),
             ),

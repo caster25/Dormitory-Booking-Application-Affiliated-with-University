@@ -11,10 +11,9 @@ class DormScreen extends StatefulWidget {
 }
 
 class _DormScreenState extends State<DormScreen> {
-  int priceFilterState =
-      0; // 0: ไม่มีการกรอง, 1: กรองจากน้อยไปมาก, 2: กรองจากมากไปน้อย
-  int ratingFilterState =
-      0; // 0: ไม่มีการกรอง, 1: กรองจากน้อยไปมาก, 2: กรองจากมากไปน้อย
+  String selectedFilterType = '';
+  int filterState =
+      0;
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
   List<String> favorites = [];
@@ -25,7 +24,7 @@ class _DormScreenState extends State<DormScreen> {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      userId = user.uid; // กำหนด userId ที่นี่
+      userId = user.uid;
     }
   }
 
@@ -39,46 +38,104 @@ class _DormScreenState extends State<DormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Search bar
               _buildSearchBar(),
               const SizedBox(height: 16),
-              // Filter buttons
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  FilterButton(
-                    text: _getPriceFilterText(),
-                    icon: _getPriceFilterIcon(),
-                    onPressed: () {
-                      setState(() {
-                        priceFilterState =
-                            (priceFilterState + 1) % 3; // เปลี่ยนสถานะ
-                      });
-                    },
+                  Expanded(
+                    child: DropdownButton<String>(
+                      value: selectedFilterType.isEmpty
+                          ? null
+                          : selectedFilterType,
+                      hint: const Text('เลือกประเภทการกรอง'),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'price',
+                          child: Text('กรองตามราคา'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'rating',
+                          child: Text('กรองตามคะแนน'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedFilterType = value!;
+                          filterState =
+                              0; 
+                        });
+                      },
+                    ),
                   ),
-                  FilterButton(
-                    text: _getRatingFilterText(),
-                    icon: _getRatingFilterIcon(),
-                    onPressed: () {
-                      setState(() {
-                        ratingFilterState =
-                            (ratingFilterState + 1) % 3; // เปลี่ยนสถานะ
-                      });
-                    },
-                  ),
+
+                  if (selectedFilterType.isNotEmpty) ...[
+                    const SizedBox(
+                        width: 8), 
+                    FilterButton(
+                      text: _getFilterText(),
+                      icon: _getFilterIcon().icon!,
+                      onPressed: () {
+                        setState(() {
+                          filterState =
+                              (filterState + 1) % 3; 
+                        });
+                      },
+                    ),
+                  ],
                 ],
               ),
+
+              const SizedBox(height: 8),
+
+              if (selectedFilterType.isNotEmpty)
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedFilterType = '';
+                      filterState = 0; 
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text('ยกเลิกการกรอง'),
+                ),
+
               const SizedBox(height: 16),
-              // StreamBuilder to fetch user favorites
               _buildUserFavorites(),
               const SizedBox(height: 16),
-              // StreamBuilder to fetch dormitories
               _buildDormitoryStream(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _getFilterText() {
+    switch (filterState) {
+      case 1:
+        return selectedFilterType == 'price'
+            ? 'เรียงตามราคา: สูงไปต่ำ'
+            : 'เรียงตามคะแนน: สูงไปต่ำ';
+      case 2:
+        return selectedFilterType == 'price'
+            ? 'เรียงตามราคา: ต่ำไปสูง'
+            : 'เรียงตามคะแนน: ต่ำไปสูง';
+      default:
+        return selectedFilterType == 'price' ? 'กรองตามราคา' : 'กรองตามคะแนน';
+    }
+  }
+
+  Icon _getFilterIcon() {
+    switch (filterState) {
+      case 1:
+        return const Icon(Icons.arrow_downward);
+      case 2:
+        return const Icon(Icons.arrow_upward);
+      default:
+        return const Icon(Icons.filter_list);
+    }
   }
 
   Widget _buildSearchBar() {
@@ -104,6 +161,29 @@ class _DormScreenState extends State<DormScreen> {
     );
   }
 
+  Stream<QuerySnapshot> _getDormitoryStream() {
+    CollectionReference dormitoryCollection =
+        FirebaseFirestore.instance.collection('dormitories');
+
+    Query query = dormitoryCollection;
+
+    // กรองตามคำค้นหา
+    if (searchQuery.isNotEmpty) {
+      query = query
+          .where('name', isGreaterThanOrEqualTo: searchQuery)
+          .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff');
+    }
+
+    // เรียงตามราคา หรือ คะแนน ตามที่เลือก
+    if (selectedFilterType == 'price') {
+      query = query.orderBy('price', descending: filterState == 1);
+    } else if (selectedFilterType == 'rating') {
+      query = query.orderBy('rating', descending: filterState == 1);
+    }
+
+    return query.snapshots();
+  }
+
   Widget _buildUserFavorites() {
     return StreamBuilder<DocumentSnapshot>(
       stream: _getUserFavoritesStream(),
@@ -119,7 +199,7 @@ class _DormScreenState extends State<DormScreen> {
         final userData = userSnapshot.data!.data() as Map<String, dynamic>;
         favorites = List<String>.from(userData['favorites'] ?? []);
 
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       },
     );
   }
@@ -160,35 +240,6 @@ class _DormScreenState extends State<DormScreen> {
         return _buildDormitoryList(snapshot.data!.docs, favorites);
       },
     );
-  }
-
-  Stream<QuerySnapshot> _getDormitoryStream() {
-    CollectionReference dormitoryCollection =
-        FirebaseFirestore.instance.collection('dormitories');
-
-    Query query = dormitoryCollection;
-
-    // กรองตามคำค้นหา
-    if (searchQuery.isNotEmpty) {
-      query = query
-          .where('name', isGreaterThanOrEqualTo: searchQuery)
-          .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff');
-    }
-
-    // เรียงตามราคา หรือ คะแนน ตามที่เลือก
-    if (priceFilterState == 1) {
-      query = query.orderBy('price', descending: false); // กรองจากน้อยไปมาก
-    } else if (priceFilterState == 2) {
-      query = query.orderBy('price', descending: true); // กรองจากมากไปน้อย
-    }
-
-    if (ratingFilterState == 1) {
-      query = query.orderBy('rating', descending: false); // กรองจากน้อยไปมาก
-    } else if (ratingFilterState == 2) {
-      query = query.orderBy('rating', descending: true); // กรองจากมากไปน้อย
-    }
-
-    return query.snapshots();
   }
 
   Widget _buildDormitoryList(
@@ -302,50 +353,6 @@ class _DormScreenState extends State<DormScreen> {
 
         await userDoc.update({'favorites': favoritesList});
       }
-    }
-  }
-
-  String _getPriceFilterText() {
-    switch (priceFilterState) {
-      case 1:
-        return 'กรองจากน้อยไปมาก';
-      case 2:
-        return 'กรองจากมากไปน้อย';
-      default:
-        return 'กรองราคา';
-    }
-  }
-
-  IconData _getPriceFilterIcon() {
-    switch (priceFilterState) {
-      case 1:
-        return Icons.arrow_downward;
-      case 2:
-        return Icons.arrow_upward;
-      default:
-        return Icons.filter_alt;
-    }
-  }
-
-  String _getRatingFilterText() {
-    switch (ratingFilterState) {
-      case 1:
-        return 'กรองจากน้อยไปมาก';
-      case 2:
-        return 'กรองจากมากไปน้อย';
-      default:
-        return 'กรองคะแนน';
-    }
-  }
-
-  IconData _getRatingFilterIcon() {
-    switch (ratingFilterState) {
-      case 1:
-        return Icons.arrow_downward;
-      case 2:
-        return Icons.arrow_upward;
-      default:
-        return Icons.filter_alt;
     }
   }
 }
