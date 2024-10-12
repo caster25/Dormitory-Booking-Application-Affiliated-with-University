@@ -207,13 +207,13 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   }
 
   String _createChatRoomId(String userId, String ownerId) {
-    var bytes = utf8.encode('$userId$ownerId');
+    var bytes = utf8.encode('$userId$ownerId-room');
     var digest = sha256.convert(bytes);
     return digest.toString();
   }
 
   String _createChatGroupId(String userId, String ownerId) {
-    var bytes = utf8.encode('$userId$ownerId');
+    var bytes = utf8.encode('$userId$ownerId-group');
     var digest = sha256.convert(bytes);
     return digest.toString();
   }
