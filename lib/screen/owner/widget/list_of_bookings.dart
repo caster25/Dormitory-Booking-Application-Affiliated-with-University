@@ -10,7 +10,7 @@ class ListOfBookings extends StatelessWidget {
     Key? key,
     required this.dormitoryId,
     required this.ownerId,
-    required String chatRoomIds,
+    required String chatRoomId,
   }) : super(key: key);
 
   Future<List<Map<String, dynamic>>> _fetchBookings() async {

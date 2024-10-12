@@ -71,7 +71,7 @@ class Profileowner extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const Ownerdormlistscreen(),
+                        builder: (context) => const OwnerDormListScreen(),
                       ),
                     );
                   },

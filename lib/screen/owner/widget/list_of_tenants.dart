@@ -1,3 +1,4 @@
+import 'package:dorm_app/screen/owner/widget/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,34 +37,35 @@ class ListOfTenants extends StatelessWidget {
     return tenantsList;
   }
 
-   Future<void> _cancelBooking(String tenantId) async {
+  Future<void> _cancelBooking(String tenantId) async {
     // อัปเดต currentDormitoryId ของผู้เช่าเป็น null
     await FirebaseFirestore.instance
         .collection('users')
         .doc(tenantId)
-        .update({'currentDormitoryId': null,
-        'isStaying': null});
+        .update({'currentDormitoryId': null, 'isStaying': null});
 
     // ลบ tenantId ออกจาก tenants array ของ dormitory
     await FirebaseFirestore.instance
         .collection('dormitories')
         .doc(dormitoryId)
         .update({
-      'tenants': FieldValue.arrayRemove([tenantId],
+      'tenants': FieldValue.arrayRemove(
+        [tenantId],
       )
     });
 
     DocumentSnapshot dormitoriesSnapshot = await FirebaseFirestore.instance
-    .collection('dormitories')
-    .doc(dormitoryId)
-    .get();
+        .collection('dormitories')
+        .doc(dormitoryId)
+        .get();
 
-    Dormitory dormitory = Dormitory.fromFirestore(dormitoriesSnapshot.data() as Map<String, dynamic> , dormitoryId);
+    Dormitory dormitory = Dormitory.fromFirestore(
+        dormitoriesSnapshot.data() as Map<String, dynamic>, dormitoryId);
 
     await FirebaseFirestore.instance
-    .collection('dormitories')
-    .doc(dormitoryId)
-    .update({'availableRooms': dormitory.availableRooms +1 });
+        .collection('dormitories')
+        .doc(dormitoryId)
+        .update({'availableRooms': dormitory.availableRooms + 1});
   }
 
   Future<bool> _verifyPassword(String password) async {
@@ -76,9 +78,9 @@ class ListOfTenants extends StatelessWidget {
       );
 
       await currentUser.reauthenticateWithCredential(credential);
-      return true; 
+      return true;
     } catch (e) {
-      return false; 
+      return false;
     }
   }
 
@@ -114,7 +116,9 @@ class ListOfTenants extends StatelessWidget {
                 if (isPasswordCorrect) {
                   // รหัสผ่านถูกต้อง ทำการยกเลิกการเช่า
                   await _cancelBooking(tenantId);
-                  Navigator.of(context).pop(); // ปิด Dialog
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop();
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('การยกเลิกเสร็จสมบูรณ์')),
                   );
@@ -131,6 +135,79 @@ class ListOfTenants extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _openChat(BuildContext context, String userId) async {
+    // Get user data from Firestore
+    DocumentSnapshot userSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (!userSnapshot.exists) {
+      _showSnackBar(context, 'ไม่พบข้อมูลผู้ใช้');
+      return;
+    }
+
+    Map<String, dynamic>? userData =
+        userSnapshot.data() as Map<String, dynamic>?;
+
+    // Get chatRoomIds list from userData
+    List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
+
+    if (userChatRoomIds == null || userChatRoomIds.isEmpty) {
+      _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
+      return;
+    }
+
+    // Get dormitory data to check its chatRoomIds
+    DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc(dormitoryId)
+        .get();
+
+    if (!dormitorySnapshot.exists) {
+      _showSnackBar(context, 'ไม่พบข้อมูลหอพัก');
+      return;
+    }
+
+    Map<String, dynamic>? dormitoryData =
+        dormitorySnapshot.data() as Map<String, dynamic>?;
+
+    List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomId'];
+
+    if (dormitoryChatRoomIds == null || dormitoryChatRoomIds.isEmpty) {
+      _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
+      return;
+    }
+
+    // Find the matching chatRoomId that belongs to the current dormitory owner
+    String? matchingChatRoomId;
+    for (var chatRoomId in userChatRoomIds) {
+      if (dormitoryChatRoomIds.contains(chatRoomId)) {
+        matchingChatRoomId = chatRoomId;
+        break;
+      }
+    }
+
+    if (matchingChatRoomId != null) {
+      // Navigate to the chat screen with the existing chatRoomId
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OwnerChatScreen(
+            userId: userId,
+            ownerId: 'ownerId', // เปลี่ยนเป็น ID ของเจ้าของหอพักที่เหมาะสม
+            chatRoomId: matchingChatRoomId!,
+          ),
+        ),
+      );
+    } else {
+      _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -189,23 +266,21 @@ class ListOfTenants extends StatelessWidget {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'อีเมล: ${tenant['email'] ?? 'ไม่มีอีเมล'}',
-                                style: const TextStyle(fontSize: 14),
+                                'อีเมล: ${tenant['email'] ?? 'ไม่มีข้อมูล'}',
+                                style: const TextStyle(fontSize: 16),
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'เบอร์โทรศัพท์: ${tenant['numphone'] ?? 'ไม่มีเบอร์'}',
-                                style: const TextStyle(fontSize: 14),
+                                'เบอร์โทร: ${tenant['numphone'] ?? 'ไม่มีข้อมูล'}',
+                                style: const TextStyle(fontSize: 16),
                               ),
                             ],
                           ),
                         ),
+                        // ปุ่มแชท
                         IconButton(
-                          icon: const Icon(Icons.cancel, color: Colors.red),
-                          onPressed: () {
-                            // แสดง Dialog ให้ผู้ใช้กรอกรหัสผ่านเพื่อยืนยันการยกเลิก
-                            _showPasswordDialog(context, tenantId);
-                          },
+                          icon: const Icon(Icons.chat),
+                          onPressed: () => _openChat(context, tenantId),
                         ),
                       ],
                     ),

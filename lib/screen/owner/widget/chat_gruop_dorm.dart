@@ -9,14 +9,14 @@ import 'package:intl/intl.dart';
 class OwnerAllChatScreen extends StatefulWidget {
   final String ownerId;
   final String userId;
-  final String chatRoomId;
+  final String chatGroupId;
 
   const OwnerAllChatScreen({
     required this.ownerId,
     required this.userId,
-    super.key,
-    required this.chatRoomId,
-  });
+    required this.chatGroupId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _OwnerAllChatScreenState createState() => _OwnerAllChatScreenState();
@@ -34,7 +34,6 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
   void initState() {
     super.initState();
     _getCurrentUser();
-
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -66,14 +65,13 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
         (imageUrls != null && imageUrls.isNotEmpty)) {
       try {
         await _messagesCollection
-            .doc(widget.chatRoomId)
+            .doc(widget.chatGroupId)
             .collection('messages')
             .add({
           'text': text ?? '',
           'createdAt': Timestamp.now(),
           'senderId': currentUserId,
           'imageUrls': imageUrls ?? [],
-          'chatRoomId': widget.chatRoomId,
         });
 
         _scrollToBottom();
@@ -129,14 +127,11 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: _messagesCollection
-                  .doc(widget.chatRoomId)
+                  .doc(widget.chatGroupId)
                   .collection('messages')
                   .orderBy('createdAt')
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                print('Snapshot Data: ${snapshot.data}');
-                print('Snapshot Docs: ${snapshot.data?.docs.length}');
-
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -200,16 +195,6 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
                                     color: Colors.black87, fontSize: 16.0),
                               ),
                             const SizedBox(height: 5),
-                            FutureBuilder<String>(
-                              future: _getUsername(message['senderId']),
-                              builder: (context, snapshot) {
-                                return Text(
-                                  snapshot.data ?? 'Unknown User',
-                                  style: const TextStyle(
-                                      color: Colors.black45, fontSize: 12.0),
-                                );
-                              },
-                            ),
                             Text(
                               _formatTimestamp(message['createdAt']),
                               style: const TextStyle(
@@ -257,22 +242,6 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
         ],
       ),
     );
-  }
-
-  Future<String> _getUsername(String senderId) async {
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(senderId)
-          .get();
-
-      return userDoc.exists
-          ? userDoc['username'] ?? 'Unknown User'
-          : 'Unknown User';
-    } catch (e) {
-      print('Error getting username: $e');
-      return 'Unknown User'; // Default value if user does not exist
-    }
   }
 
   void _showFullScreenImage(String imageUrl) {

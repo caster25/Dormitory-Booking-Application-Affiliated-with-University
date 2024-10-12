@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/notification.dart';
+import 'package:dorm_app/screen/owner/widget/widgetchat/chat_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
 import 'package:dorm_app/screen/owner/widget/profile_owner.dart';
@@ -19,6 +20,7 @@ class _OwnerhomeState extends State<Ownerhome> {
   int index = 0;
   User? _currentUser; // Allow null value
   Future<DocumentSnapshot>? userData;
+  String? chatGroupId; // เพิ่มตัวแปรสำหรับ chatGroupId
 
   @override
   void initState() {
@@ -29,25 +31,41 @@ class _OwnerhomeState extends State<Ownerhome> {
     }
   }
 
-  final List<Widget> _screens = [
-    const Profileowner(),
-    const DormitoryListScreen(),
-  ];
-
   Future<DocumentSnapshot> getUserData() async {
     if (_currentUser != null) {
-      return await FirebaseFirestore.instance
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(_currentUser!.uid)
           .get();
+      // ดึง chatGroupId จาก Firestore (ปรับโค้ดตามโครงสร้างข้อมูลของคุณ)
+      chatGroupId = userSnapshot['chatGroupId']; // หรือวิธีอื่นตามที่จัดเก็บ
+      return userSnapshot;
     } else {
       throw Exception("User is not logged in");
     }
   }
 
+  final List<Widget> _screens = [];
+
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
+    // เพิ่มการสร้าง _screens ใหม่ใน build
+    _screens.clear(); // เคลียร์ค่าเดิม
+    if (chatGroupId != null) {
+      _screens.addAll([
+        const Profileowner(),
+        const DormitoryListScreen(),
+        ChatSelectionScreen(chatGroupId: chatGroupId!), // ส่ง chatGroupId
+      ]);
+    } else {
+      // แสดงหน้าจออื่นๆ หากยังไม่ดึง chatGroupId ได้
+      _screens.addAll([
+        const Profileowner(),
+        const DormitoryListScreen(),
+        Center(child: CircularProgressIndicator()), // หรือหน้าจอแสดงสถานะ
+      ]);
+    }
+
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -64,6 +82,7 @@ class _OwnerhomeState extends State<Ownerhome> {
           height: 60.0,
           items: const [
             Icon(Icons.home, size: 30),
+            Icon(Icons.domain_rounded, size: 30),
             Icon(Icons.domain_rounded, size: 30),
           ],
           color: const Color.fromARGB(255, 153, 85, 240),
@@ -103,8 +122,10 @@ class _OwnerhomeState extends State<Ownerhome> {
         return const Text('หน้าแรก');
       case 1:
         return const Text('รายการหอพัก');
-      default:
+      case 2:
         return const Text('เพิ่มข้อมูลหอพัก');
+      default:
+        return const Text('chat');
     }
   }
 }
@@ -185,8 +206,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.person,
               text: 'ข้อมูลส่วนตัว',
               onTap: () => Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (context) => const ProfileOwner()),
+                MaterialPageRoute(builder: (context) => const ProfileOwner()),
               ),
             ),
             buildMenuItem(

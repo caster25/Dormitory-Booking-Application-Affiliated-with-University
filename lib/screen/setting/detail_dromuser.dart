@@ -37,11 +37,9 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
             userDoc.data() as Map<String, dynamic>?;
 
         if (userData != null) {
-          // ตรวจสอบว่ามี currentDormitoryId หรือไม่
           currentDormitoryId = userData['currentDormitoryId'];
           previousDormitoryName = userData['previousDormitory'];
 
-          // ถ้ามี currentDormitoryId ให้ดึงชื่อหอพัก
           if (currentDormitoryId != null) {
             DocumentSnapshot dormitoryDoc = await FirebaseFirestore.instance
                 .collection('dormitories')
@@ -51,6 +49,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
             if (dormitoryDoc.exists) {
               Map<String, dynamic>? dormitoryData =
                   dormitoryDoc.data() as Map<String, dynamic>?;
+
               if (dormitoryData != null) {
                 _currentDormController.text =
                     dormitoryData['name'] ?? 'ไม่พบชื่อหอพัก';
@@ -58,7 +57,6 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
             }
           }
 
-          // ตั้งค่าชื่อหอพักที่เคยพัก
           if (previousDormitoryName != null) {
             _previousDormController.text = previousDormitoryName!;
           }
@@ -73,7 +71,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     }
   }
 
-  void _navigateToChat(String dormitoryId, String ownerId) async {
+  void _navigateToChat(String dormitoryId, String ownerId, {bool isGroupChat = false}) async {
     // Get user data from Firestore
     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -81,59 +79,50 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         .get();
 
     if (userSnapshot.exists) {
-      // Cast the data to a Map<String, dynamic>
       Map<String, dynamic>? userData =
           userSnapshot.data() as Map<String, dynamic>?;
 
-      // Get the chatRoomIds list from userData
-      List<dynamic>? userChatRoomIds = userData?['chatRoomIds'];
+      List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
 
       if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
-        // Get dormitory data to check its chatRoomIds
         DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
             .collection('dormitories')
             .doc(dormitoryId)
             .get();
 
         if (dormitorySnapshot.exists) {
-          // Cast the data to a Map<String, dynamic>
           Map<String, dynamic>? dormitoryData =
               dormitorySnapshot.data() as Map<String, dynamic>?;
 
-          // Get the chatRoomIds from dormitory data
-          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomIds'];
+          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomId'];
+          String? chatId;
 
-          if (dormitoryChatRoomIds != null && dormitoryChatRoomIds.isNotEmpty) {
-            // Find the matching chatRoomId that belongs to the current dormitory owner
-            String? matchingChatRoomId;
+          if (isGroupChat) {
+            chatId = dormitoryData?['chatGroupId']; // Assuming chatGroupId exists in the dormitory data
+          } else {
+            // Find the matching chatRoomId
             for (var chatRoomId in userChatRoomIds) {
-              if (dormitoryChatRoomIds.contains(chatRoomId)) {
-                matchingChatRoomId = chatRoomId;
+              if (dormitoryChatRoomIds?.contains(chatRoomId) == true) {
+                chatId = chatRoomId;
                 break;
               }
             }
+          }
 
-            if (matchingChatRoomId != null) {
-              // Navigate to the chat screen with the existing chatRoomId
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                    userId: widget.userId,
-                    ownerId: ownerId,
-                    chatRoomId:
-                        matchingChatRoomId!, dormitoryId: dormitoryId, // Pass the found chatRoomId
-                  ),
+          if (chatId != null) {
+            // Navigate to the chat screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  userId: widget.userId,
+                  ownerId: ownerId,
+                  chatRoomId: chatId!,
+                  dormitoryId: dormitoryId,
                 ),
-              );
-            } else {
-              // If no matching chatRoomId found, show a message
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
-              );
-            }
+              ),
+            );
           } else {
-            // If dormitory chatRoomIds is empty, show a message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
             );
@@ -144,7 +133,6 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
           );
         }
       } else {
-        // If user chatRoomIds is empty, show a message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
         );
@@ -164,9 +152,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: isLoading
-          ? const Center(
-              child:
-                  CircularProgressIndicator()) // แสดง Loading เมื่อยังโหลดอยู่
+          ? const Center(child: CircularProgressIndicator()) // แสดง Loading เมื่อยังโหลดอยู่
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -178,31 +164,35 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   ),
                   const SizedBox(height: 8),
                   currentDormitoryId != null &&
-                          _currentDormController
-                              .text.isNotEmpty // เช็คว่ามีข้อมูลหอพักปัจจุบัน
+                          _currentDormController.text.isNotEmpty // เช็คว่ามีข้อมูลหอพักปัจจุบัน
                       ? Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(
-                                16.0), // เพิ่ม Padding ให้กับ Card
+                            padding: const EdgeInsets.all(16.0), // เพิ่ม Padding ให้กับ Card
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ListTile(
-                                  title: Text(
-                                      'ชื่อหอพัก: ${_currentDormController.text}'),
+                                  title: Text('ชื่อหอพัก: ${_currentDormController.text}'),
                                   subtitle: const Text('ข้อมูลหอพักปัจจุบัน'),
                                 ),
-                                const SizedBox(
-                                    height:
-                                        8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
-                                ElevatedButton(
-                                  onPressed: () {
-                                    String ownerId =
-                                        "owner_id_here"; // เปลี่ยนเป็น ownerId ที่แท้จริง
-                                    _navigateToChat(
-                                        currentDormitoryId!, ownerId);
-                                  },
-                                  child: const Text('เข้าสู่การสนทนา'),
+                                const SizedBox(height: 8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        String ownerId = "owner_id_here"; // เปลี่ยนเป็น ownerId ที่แท้จริง
+                                        _navigateToChat(currentDormitoryId!, ownerId, isGroupChat: false);
+                                      },
+                                      child: const Text('เข้าสู่การสนทนาเจ้าของหอพัก'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        _navigateToChat(currentDormitoryId!, "", isGroupChat: true); // ปรับให้ไม่มี ownerId สำหรับแชทกลุ่ม
+                                      },
+                                      child: const Text('เข้าสู่แชทกลุ่ม'),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -210,8 +200,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                         )
                       : const Text(
                           'ตอนนี้คุณไม่มีหอพัก',
-                          style: TextStyle(
-                              fontSize: 16, color: Colors.red), // ข้อความเตือน
+                          style: TextStyle(fontSize: 16, color: Colors.red), // ข้อความเตือน
                         ),
                 ],
               ),
