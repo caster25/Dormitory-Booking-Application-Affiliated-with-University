@@ -6,26 +6,27 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 
-class OwnerChatScreen extends StatefulWidget {
+class OwnerAllChatScreen extends StatefulWidget {
   final String ownerId;
   final String userId;
   final String chatRoomId;
 
-  const OwnerChatScreen({
+  const OwnerAllChatScreen({
     required this.ownerId,
     required this.userId,
+    super.key,
     required this.chatRoomId,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
-  _OwnerChatScreenState createState() => _OwnerChatScreenState();
+  _OwnerAllChatScreenState createState() => _OwnerAllChatScreenState();
 }
 
-class _OwnerChatScreenState extends State<OwnerChatScreen> {
+class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final CollectionReference _messagesCollection =
       FirebaseFirestore.instance.collection('messages');
+  FocusNode _focusNode = FocusNode();
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
 
@@ -33,6 +34,14 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   void initState() {
     super.initState();
     _getCurrentUser();
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+        });
+      }
+    });
   }
 
   Future<void> _getCurrentUser() async {
@@ -40,6 +49,16 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
     setState(() {
       currentUserId = user?.uid;
     });
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   void _sendMessage({String? text, List<String>? imageUrls}) async {
@@ -54,12 +73,16 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
           'createdAt': Timestamp.now(),
           'senderId': currentUserId,
           'imageUrls': imageUrls ?? [],
+          'chatRoomId': widget.chatRoomId,
         });
 
+        _scrollToBottom();
         _messageController.clear();
       } catch (e) {
+        // เพิ่มการล็อกข้อผิดพลาด
+        print('Error sending message: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('ส่งข้อความล้มเหลว: $e')),
+          SnackBar(content: Text('Failed to send message: $e')),
         );
       }
     }
@@ -68,6 +91,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   Future<void> _pickImages() async {
     final picker = ImagePicker();
     final pickedImages = await picker.pickMultiImage();
+    // ignore: unnecessary_null_comparison
     if (pickedImages != null && pickedImages.isNotEmpty) {
       List<String> imageUrls = [];
       for (var pickedImage in pickedImages) {
@@ -109,16 +133,18 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
                   .collection('messages')
                   .orderBy('createdAt')
                   .snapshots(),
-              builder: (context, snapshot) {
+              builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                print('Snapshot Data: ${snapshot.data}');
+                print('Snapshot Docs: ${snapshot.data?.docs.length}');
+
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Center(
-                      child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
+                  return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('ยังไม่มีข้อความ.'));
+                  return Center(child: Text('No messages yet.'));
                 }
 
                 final messages = snapshot.data!.docs;
@@ -174,6 +200,16 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
                                     color: Colors.black87, fontSize: 16.0),
                               ),
                             const SizedBox(height: 5),
+                            FutureBuilder<String>(
+                              future: _getUsername(message['senderId']),
+                              builder: (context, snapshot) {
+                                return Text(
+                                  snapshot.data ?? 'Unknown User',
+                                  style: const TextStyle(
+                                      color: Colors.black45, fontSize: 12.0),
+                                );
+                              },
+                            ),
                             Text(
                               _formatTimestamp(message['createdAt']),
                               style: const TextStyle(
@@ -199,6 +235,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: _messageController,
+                    focusNode: _focusNode,
                     decoration: InputDecoration(
                       labelText: 'ส่งข้อความ...',
                       filled: true,
@@ -220,6 +257,22 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
         ],
       ),
     );
+  }
+
+  Future<String> _getUsername(String senderId) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(senderId)
+          .get();
+
+      return userDoc.exists
+          ? userDoc['username'] ?? 'Unknown User'
+          : 'Unknown User';
+    } catch (e) {
+      print('Error getting username: $e');
+      return 'Unknown User'; // Default value if user does not exist
+    }
   }
 
   void _showFullScreenImage(String imageUrl) {

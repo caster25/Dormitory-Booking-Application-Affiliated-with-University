@@ -164,136 +164,163 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return digest.toString();
   }
 
-  Future<void> _bookDormitory(
-      BuildContext context, String userId, String dormitoryId) async {
-    try {
-      // ดึงข้อมูลของหอพักเพื่อตรวจสอบจำนวนห้องว่างก่อน
-      DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-          .collection('dormitories')
-          .doc(dormitoryId)
-          .get();
+  String _createChatGroupId(String userId, String ownerId) {
+    var bytes = utf8.encode('$userId$ownerId');
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
 
-      int availableRooms = dormitorySnapshot.get('availableRooms');
+  Future<void> _bookDormitory(BuildContext context, String userId, String dormitoryId) async {
+  try {
+    // ดึงข้อมูลของหอพักเพื่อตรวจสอบจำนวนห้องว่างก่อน
+    DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance.collection('dormitories').doc(dormitoryId).get();
 
-      // ถ้าห้องเต็ม (availableRooms == 0) ให้แสดงการแจ้งเตือนและไม่ให้จอง
-      if (availableRooms == 0) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('ห้องพักเต็ม'),
-            content: const Text('หอพักนี้ไม่มีห้องว่างแล้ว'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('ตกลง'),
-              ),
-            ],
-          ),
-        );
-        return; // ออกจากฟังก์ชันถ้าห้องเต็ม
-      }
+    if (!dormitorySnapshot.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('หอพักไม่พบในระบบ')),
+      );
+      return;
+    }
 
-      // ดึงข้อมูลผู้ใช้เพื่อตรวจสอบว่ามีหอพักที่จองไว้หรือไม่
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
+    int availableRooms = dormitorySnapshot.get('availableRooms');
 
-      // ตรวจสอบว่ามีการจองหอพักอยู่แล้วหรือไม่
-      String? bookedDormitory =
-          (userSnapshot.data() as Map<String, dynamic>)['bookedDormitory'];
-
-      if (bookedDormitory != null && bookedDormitory.isNotEmpty) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('แจ้งเตือน'),
-            content: const Text('คุณมีการจองหอพักไว้แล้วไม่สามารถจองเพิ่มได้'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('ตกลง'),
-              )
-            ],
-          ),
-        );
-        return;
-      }
-
-      // แสดง AlertDialog เพื่อยืนยันการจอง
+    // ถ้าห้องเต็ม (availableRooms == 0) ให้แสดงการแจ้งเตือนและไม่ให้จอง
+    if (availableRooms <= 0) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('จองหอพัก'),
-          content: const Text('คุณต้องการจองหอพักนี้หรือไม่?'),
+          title: const Text('ห้องพักเต็ม'),
+          content: const Text('หอพักนี้ไม่มีห้องว่างแล้ว'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
+                Navigator.of(context).pop();
               },
-              child: const Text('ยกเลิก'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop(); // ปิด Dialog ถ้ากดยืนยัน
-
-                // เริ่มบันทึกข้อมูลการจอง
-                String chatRoomIds = _createChatRoomId(userId, dormitoryId);
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(userId)
-                    .update({
-                  'bookedDormitory':
-                      dormitoryId, // บันทึกหอพักที่จองในฟิลด์ของผู้ใช้
-                  'chatRoomIds': FieldValue.arrayUnion(
-                      [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array
-                });
-
-                // ลดจำนวนห้องว่างในคอลเล็กชั่นของหอพัก
-                DocumentReference dormitoryRef = FirebaseFirestore.instance
-                    .collection('dormitories')
-                    .doc(dormitoryId);
-
-                // ลดจำนวนห้องว่างลง 1
-                await dormitoryRef.update({
-                  'availableRooms': availableRooms - 1,
-                  'usersBooked': FieldValue.arrayUnion([userId]),
-                  'chatRoomIds': FieldValue.arrayUnion(
-                      [chatRoomIds]), // เพิ่ม chatRoomId ลงใน array ของหอพัก
-                });
-
-                // สร้างเอกสารใหม่ในคอลเล็กชัน messages
-                String chatRoomId = _createChatRoomId(
-                    userId, dormitoryId); // สร้าง chatRoomId ตามที่คุณต้องการ
-                await FirebaseFirestore.instance
-                    .collection('messages')
-                    .doc(chatRoomId)
-                    .set({
-                  'participants': [userId, dormitoryId],
-                  'createdAt': FieldValue.serverTimestamp(),
-                });
-
-                // แสดงข้อความแจ้งเตือนสำเร็จ
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('จองหอพักสำเร็จ')),
-                );
-              },
-              child: const Text('ยืนยัน'),
+              child: const Text('ตกลง'),
             ),
           ],
         ),
       );
-    } catch (e) {
-      // จัดการข้อผิดพลาดถ้ามี
-      print('Error booking dormitory: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('เกิดข้อผิดพลาดในการจองหอพัก')),
-      );
+      return;
     }
+
+    // ดึงข้อมูลผู้ใช้เพื่อตรวจสอบว่ามีหอพักที่จองไว้หรือไม่
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (!userSnapshot.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ผู้ใช้นี้ไม่พบในระบบ')),
+      );
+      return;
+    }
+
+    // ตรวจสอบว่ามีการจองหอพักอยู่แล้วหรือไม่
+    String? bookedDormitory = (userSnapshot.data() as Map<String, dynamic>)['bookedDormitory'];
+
+    if (bookedDormitory != null && bookedDormitory.isNotEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('แจ้งเตือน'),
+          content: const Text('คุณมีการจองหอพักไว้แล้วไม่สามารถจองเพิ่มได้'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('ตกลง'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('จองหอพัก'),
+        content: const Text('คุณต้องการจองหอพักนี้หรือไม่?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // ปิด Dialog ถ้ายกเลิก
+            },
+            child: const Text('ยกเลิก'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // ปิด Dialog ถ้ากดยืนยัน
+
+              // สร้าง chatGroupId และ chatRoomId ใหม่
+              String chatGroupId = _createChatGroupId(userId, dormitoryId);
+              String chatRoomId = _createChatRoomId(userId, dormitoryId);
+
+              // อัปเดตหอพัก
+              await FirebaseFirestore.instance.collection('dormitories').doc(dormitoryId).update({
+                'availableRooms': availableRooms - 1,
+                'usersBooked': FieldValue.arrayUnion([userId]),
+                'chatGroupId': FieldValue.arrayUnion([chatGroupId]),
+                'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
+              });
+
+              // บันทึกข้อมูลการจองในผู้ใช้
+              await FirebaseFirestore.instance.collection('users').doc(userId).update({
+                'bookedDormitory': dormitoryId,
+                'chatGroupId': FieldValue.arrayUnion([chatGroupId]),
+                'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
+              });
+
+              // เพิ่มข้อมูลใน chatGroups
+              await FirebaseFirestore.instance.collection('chatGroups').doc(chatGroupId).set({
+                'participants': [userId, dormitoryId],
+                'createdAt': FieldValue.serverTimestamp(),
+              });
+
+              // เพิ่มข้อมูลใน chatRooms
+              await FirebaseFirestore.instance.collection('chatRooms').doc(chatRoomId).set({
+                'participants': [userId, dormitoryId],
+                'createdAt': FieldValue.serverTimestamp(),
+                'lastMessage': '', // สามารถอัพเดทได้เมื่อมีข้อความแรก
+                'lastMessageAt': FieldValue.serverTimestamp(),
+              });
+
+              // แสดงข้อความแจ้งเตือนสำเร็จ
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('จองหอพักสำเร็จ')),
+              );
+            },
+            child: const Text('ยืนยัน'),
+          ),
+        ],
+      ),
+    );
+  } catch (e) {
+    // จัดการข้อผิดพลาดถ้ามี
+    print('Error booking dormitory: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('เกิดข้อผิดพลาดในการจองหอพัก')),
+    );
+  }
+}
+
+
+  void _showDialog(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('ตกลง'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -380,7 +407,9 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           const SizedBox(height: 8),
 
                           Text(
-                            'กฎของหอพัก: ${dormitory['rule']}',style: Theme.of(context).textTheme.headlineSmall,),
+                            'กฎของหอพัก: ${dormitory['rule']}',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
 
                           // Equipment available in the room
 

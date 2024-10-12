@@ -49,67 +49,66 @@ class ListOfBookings extends StatelessWidget {
     DocumentSnapshot userSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
-    if (userSnapshot.exists) {
-      Map<String, dynamic>? userData =
-          userSnapshot.data() as Map<String, dynamic>?;
-
-      // Get chatRoomIds list from userData
-      List<dynamic>? userChatRoomIds = userData?['chatRoomIds'];
-
-      if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
-        // Get dormitory data to check its chatRoomIds
-        DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-            .collection('dormitories')
-            .doc(dormitoryId)
-            .get();
-
-        if (dormitorySnapshot.exists) {
-          Map<String, dynamic>? dormitoryData =
-              dormitorySnapshot.data() as Map<String, dynamic>?;
-
-          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomIds'];
-
-          if (dormitoryChatRoomIds != null && dormitoryChatRoomIds.isNotEmpty) {
-            // Find matching chatRoomId for the current dormitory owner
-            String? matchingChatRoomId;
-            for (var chatRoomId in userChatRoomIds) {
-              if (dormitoryChatRoomIds.contains(chatRoomId)) {
-                matchingChatRoomId = chatRoomId;
-                break;
-              }
-            }
-
-            if (matchingChatRoomId != null) {
-              // Navigate to the chat screen with the existing chatRoomId
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OwnerChatScreen(
-                    userId: userId,
-                    ownerId: ownerId,
-                    chatRoomId: matchingChatRoomId!,
-                  ),
-                ),
-              );
-            } else {
-              // ignore: use_build_context_synchronously
-              _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
-            }
-          } else {
-            // ignore: use_build_context_synchronously
-            _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
-          }
-        } else {
-          // ignore: use_build_context_synchronously
-          _showSnackBar(context, 'ไม่พบข้อมูลหอพัก');
-        }
-      } else {
-        // ignore: use_build_context_synchronously
-        _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
-      }
-    } else {
-      // ignore: use_build_context_synchronously
+    if (!userSnapshot.exists) {
       _showSnackBar(context, 'ไม่พบข้อมูลผู้ใช้');
+      return;
+    }
+
+    Map<String, dynamic>? userData =
+        userSnapshot.data() as Map<String, dynamic>?;
+
+    // Get chatRoomIds list from userData
+    List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
+
+    if (userChatRoomIds == null || userChatRoomIds.isEmpty) {
+      _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
+      return;
+    }
+
+    // Get dormitory data to check its chatRoomIds
+    DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc(dormitoryId)
+        .get();
+
+    if (!dormitorySnapshot.exists) {
+      _showSnackBar(context, 'ไม่พบข้อมูลหอพัก');
+      return;
+    }
+
+    Map<String, dynamic>? dormitoryData =
+        dormitorySnapshot.data() as Map<String, dynamic>?;
+
+    List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomId'];
+
+    if (dormitoryChatRoomIds == null || dormitoryChatRoomIds.isEmpty) {
+      _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
+      return;
+    }
+
+    // Find the matching chatRoomId that belongs to the current dormitory owner
+    String? matchingChatRoomId;
+    for (var chatRoomId in userChatRoomIds) {
+      if (dormitoryChatRoomIds.contains(chatRoomId)) {
+        matchingChatRoomId = chatRoomId;
+        break;
+      }
+    }
+
+    if (matchingChatRoomId != null) {
+      // Navigate to the chat screen with the existing chatRoomId
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OwnerChatScreen(
+            userId: userId,
+            ownerId: ownerId,
+            chatRoomId: matchingChatRoomId!,
+          ),
+        ),
+      );
+    } else {
+      _showSnackBar(context, 'ยังไม่มีการสนทนาในห้องนี้');
     }
   }
 
@@ -159,8 +158,7 @@ class ListOfBookings extends StatelessWidget {
 
                       await dormitoryRef.update({
                         'tenants': FieldValue.arrayUnion(usersBooked),
-                        'usersBooked':
-                            FieldValue.delete(),
+                        'usersBooked': FieldValue.delete(),
                       });
                     }
 
@@ -381,7 +379,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           Colors.red, // สีปุ่มปฏิเสธ
                                     ),
-                                    child: const Text('ปฏิเสธการเข้าหอพัก'),
+                                    child: const Text('ปฏิเสธการจอง'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -389,12 +387,12 @@ class ListOfBookings extends StatelessWidget {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          Colors.blue, // สีปุ่มเปิดการสนทนา
+                                          Colors.blue, // สีปุ่มสนทนา
                                     ),
                                     child: const Text('เปิดการสนทนา'),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),

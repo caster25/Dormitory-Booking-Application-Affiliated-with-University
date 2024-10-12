@@ -122,7 +122,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                     userId: widget.userId,
                     ownerId: ownerId,
                     chatRoomId:
-                        matchingChatRoomId!, // Pass the found chatRoomId
+                        matchingChatRoomId!, dormitoryId: dormitoryId, // Pass the found chatRoomId
                   ),
                 ),
               );

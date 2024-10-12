@@ -9,13 +9,16 @@ import 'package:intl/intl.dart';
 class ChatScreen extends StatefulWidget {
   final String userId;
   final String ownerId;
+  final String dormitoryId; // เพิ่ม dormitoryId
   final String chatRoomId;
 
-  const ChatScreen(
-      {required this.userId,
-      required this.ownerId,
-      super.key,
-      required this.chatRoomId});
+  const ChatScreen({
+    required this.userId,
+    required this.ownerId,
+    required this.dormitoryId, // รับค่า dormitoryId
+    super.key,
+    required this.chatRoomId,
+  });
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -25,27 +28,16 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final CollectionReference _messagesCollection =
       FirebaseFirestore.instance.collection('messages');
-  // ignore: unused_field
-  final CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('users');
   FocusNode _focusNode = FocusNode();
   ScrollController _scrollController = ScrollController();
-  // ignore: unused_field
-  String? _editingMessageId;
-  // ignore: unused_field
-  String? _deletedMessageText;
-  // ignore: unused_field
-  String? _deletedMessageSenderId;
   String? currentUserId;
-  // ignore: unused_field
   bool _isAtBottom = true;
-  // ignore: unused_field
-  DocumentSnapshot? _deletedMessageSnapshot;
 
   @override
   void initState() {
     super.initState();
     _getCurrentUser();
+    _checkChatRoom();
 
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -85,20 +77,45 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _checkChatRoom() async {
+    final chatRoomsCollection =
+        FirebaseFirestore.instance.collection('chatRooms');
+
+    // เช็คว่า chatRoomId นั้นมีอยู่หรือไม่
+    final chatRoomDoc = await chatRoomsCollection.doc(widget.chatRoomId).get();
+
+    if (!chatRoomDoc.exists) {
+      await chatRoomsCollection.doc(widget.chatRoomId).set({
+        'userId': widget.userId,
+        'ownerId': widget.ownerId,
+        'dormitoryId': widget.dormitoryId, // เก็บ dormitoryId
+        'createdAt': Timestamp.now(),
+      });
+    }
+  }
+
   void _sendMessage({String? text, List<String>? imageUrls}) async {
     if ((text != null && text.isNotEmpty) ||
         (imageUrls != null && imageUrls.isNotEmpty)) {
       try {
-        // ส่งข้อความไปยังห้องแชทที่กำหนด
+        // ส่งข้อความและบันทึกเวลา
         await _messagesCollection
-            .doc(widget.chatRoomId) // ใช้ chatRoomId จาก widget
+            .doc(widget.chatRoomId)
             .collection('messages')
             .add({
           'text': text ?? '',
           'createdAt': Timestamp.now(),
           'senderId': currentUserId,
           'imageUrls': imageUrls ?? [],
-          'chatRoomId': widget.chatRoomId, // เก็บ chatRoomId
+          'chatRoomId': widget.chatRoomId,
+        });
+
+        // อัปเดตเวลาสุดท้ายของข้อความ
+        await FirebaseFirestore.instance
+            .collection('chatRooms')
+            .doc(widget.chatRoomId)
+            .update({
+          'lastMessageTime': Timestamp.now(),
         });
 
         _scrollToBottom();
@@ -154,13 +171,11 @@ class _ChatScreenState extends State<ChatScreen> {
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _messagesCollection
-                    .doc(widget.chatRoomId) // Accessing chatRoomId from widget
+                    .doc(widget.chatRoomId)
                     .collection('messages')
                     .orderBy('createdAt')
                     .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  print('Chat Room ID: ${widget.chatRoomId}');
-
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   }
@@ -270,7 +285,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Colors.blue),
+                    icon: const Icon(Icons.send, color: Colors.purple),
                     onPressed: () =>
                         _sendMessage(text: _messageController.text),
                   ),
@@ -283,157 +298,46 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<String> _getUsername(String senderId) async {
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(senderId)
-        .get();
-
-    if (userDoc.exists) {
-      return userDoc['username'] ??
-          'Unknown User'; // Ensure a non-null return value
-    }
-    return 'Unknown User'; // Default value if user does not exist
-  }
-
-  void _showMessageOptions(BuildContext context, DocumentSnapshot message) {
-    final currentUserUid =
-        FirebaseAuth.instance.currentUser?.uid; // รับ uid ของผู้ใช้ปัจจุบัน
-
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ตัวเลือกสำหรับแก้ไขข้อความ หากผู้ใช้เป็นผู้ส่งข้อความ
-            if (currentUserUid == message['senderId'])
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _startEditingMessage(message);
-                },
-              ),
-            // ตัวเลือกสำหรับลบข้อความ หากผู้ใช้เป็นผู้ส่งข้อความ
-            if (currentUserUid == message['senderId'])
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Delete'),
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Confirm Deletion'),
-                        content: const Text(
-                            'Are you sure you want to delete this message?'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('Cancel'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // ปิด dialog
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('Delete'),
-                            onPressed: () {
-                              Navigator.of(context).pop(); // ปิด dialog
-                              _deleteMessage(message); // ดำเนินการลบข้อความ
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            // ตัวเลือกสำหรับดูรายละเอียดข้อความ
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('View Details'),
-              onTap: () {
-                Navigator.pop(context);
-                _viewMessageDetails(message); // เรียกดูรายละเอียดของข้อความ
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _viewMessageDetails(DocumentSnapshot message) {
-    // สร้าง UI หรือหน้าต่างใหม่เพื่อแสดงรายละเอียดของข้อความ
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Message Details'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Sender: ${message['senderName']}'), // แสดงชื่อผู้ส่ง
-              Text('Message: ${message['content']}'), // แสดงเนื้อความ
-              // เพิ่มรายละเอียดอื่น ๆ ที่คุณต้องการแสดง
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _startEditingMessage(DocumentSnapshot message) {
-    setState(() {
-      _editingMessageId = message.id;
-      _messageController.text = message['text'];
-    });
-  }
-
-  void _deleteMessage(DocumentSnapshot message) async {
-    // Delete image from Firebase Storage if it exists
-    if (message['imageUrls'] != null) {
-      for (String url in message['imageUrls']) {
-        final ref = FirebaseStorage.instance.refFromURL(url);
-        await ref.delete();
-      }
-    }
-    // Then delete the message from Firestore
-    _messagesCollection.doc(message.id).delete();
+  Future<String> _getUsername(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.data()?['username'] ?? 'Unknown';
   }
 
   void _showFullScreenImage(String imageUrl) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FullScreenImage(imageUrl: imageUrl),
-      ),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Image.network(imageUrl),
+        );
+      },
     );
   }
-}
 
-class FullScreenImage extends StatelessWidget {
-  final String imageUrl;
-
-  const FullScreenImage({required this.imageUrl});
+  void _showMessageOptions(
+      BuildContext context, QueryDocumentSnapshot message) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView(
+          children: [
+            ListTile(
+              title: const Text('Delete Message'),
+              onTap: () {
+                // เพิ่มฟังก์ชันการลบข้อความที่นี่
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Image.network(imageUrl),
-      ),
-    );
+  void dispose() {
+    _focusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 }

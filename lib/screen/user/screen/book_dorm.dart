@@ -16,6 +16,7 @@ class _BookDormState extends State<BookDorm> {
       false; // State variable to track booking cancellation
 
   // Function to navigate to chat screen
+  // Inside your _navigateToChat function
   void _navigateToChat(String dormitoryId, String ownerId) async {
     // Get user data from Firestore
     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
@@ -29,67 +30,63 @@ class _BookDormState extends State<BookDorm> {
           userSnapshot.data() as Map<String, dynamic>?;
 
       // Get the chatRoomIds list from userData
-      List<dynamic>? userChatRoomIds = userData?['chatRoomIds'];
+      List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
 
-      if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
-        // Get dormitory data to check its chatRoomIds
-        DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-            .collection('dormitories')
-            .doc(dormitoryId)
-            .get();
+      // Get dormitory data to check its chatRoomIds
+      DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+          .collection('dormitories')
+          .doc(dormitoryId)
+          .get();
 
-        if (dormitorySnapshot.exists) {
-          // Cast the data to a Map<String, dynamic>
-          Map<String, dynamic>? dormitoryData =
-              dormitorySnapshot.data() as Map<String, dynamic>?;
+      if (dormitorySnapshot.exists) {
+        // Cast the data to a Map<String, dynamic>
+        Map<String, dynamic>? dormitoryData =
+            dormitorySnapshot.data() as Map<String, dynamic>?;
 
-          // Get the chatRoomIds from dormitory data
-          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomIds'];
+        // Get the chatRoomIds from dormitory data
+        List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomId'];
 
-          if (dormitoryChatRoomIds != null && dormitoryChatRoomIds.isNotEmpty) {
-            // Find the matching chatRoomId that belongs to the current dormitory owner
-            String? matchingChatRoomId;
-            for (var chatRoomId in userChatRoomIds) {
-              if (dormitoryChatRoomIds.contains(chatRoomId)) {
-                matchingChatRoomId = chatRoomId;
-                break;
-              }
+        if (userChatRoomIds != null &&
+            userChatRoomIds.isNotEmpty &&
+            dormitoryChatRoomIds != null &&
+            dormitoryChatRoomIds.isNotEmpty) {
+          // Find the matching chatRoomId that belongs to the current dormitory owner
+          String? matchingChatRoomId;
+          for (var chatRoomId in userChatRoomIds) {
+            if (dormitoryChatRoomIds.contains(chatRoomId)) {
+              matchingChatRoomId = chatRoomId;
+              break;
             }
+          }
 
-            if (matchingChatRoomId != null) {
-              // Navigate to the chat screen with the existing chatRoomId
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatScreen(
-                    userId: widget.userId,
-                    ownerId: ownerId,
-                    chatRoomId:
-                        matchingChatRoomId!, // Pass the found chatRoomId
-                  ),
+          if (matchingChatRoomId != null) {
+            // Navigate to the chat screen with the existing chatRoomId
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  userId: widget.userId,
+                  ownerId: ownerId,
+                  dormitoryId: dormitoryId,
+                  chatRoomId: matchingChatRoomId!, // Use the matching chatRoomId
                 ),
-              );
-            } else {
-              // If no matching chatRoomId found, show a message
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
-              );
-            }
+              ),
+            );
           } else {
-            // If dormitory chatRoomIds is empty, show a message
+            // If no matching chatRoomId found, show a message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
             );
           }
         } else {
+          // If either chatRoomIds is empty, show a message
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
+            const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
           );
         }
       } else {
-        // If user chatRoomIds is empty, show a message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+          const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
         );
       }
     } else {
@@ -237,8 +234,6 @@ class _BookDormState extends State<BookDorm> {
                                       setState(() {
                                         _isBookingCanceled = true;
                                       });
-
-                                      
                                     },
                                     child: const Text('ยืนยัน'),
                                   ),

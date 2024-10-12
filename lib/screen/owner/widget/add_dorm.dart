@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison, unused_field
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -109,7 +111,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         if (currentUser != null) {
           String userId = currentUser.uid;
 
-          await FirebaseFirestore.instance.collection('dormitories').add({
+          // เพิ่มข้อมูลหอพักใน collection dormitories
+          DocumentReference dormitoryRef =
+              await FirebaseFirestore.instance.collection('dormitories').add({
             'name': _dormNameController.text,
             'price': int.parse(_dormPriceController.text),
             'availableRooms': int.parse(_availableRoomsController.text),
@@ -126,11 +130,66 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             'submittedBy': userId,
             'latitude': _dormitoryLocation.latitude,
             'longitude': _dormitoryLocation.longitude,
-            'address': _addressController.text
+            'address': _addressController.text,
+          });
+
+          String dormitoryId = dormitoryRef.id;
+
+          // สร้าง chatRoomId จาก userId และ dormitoryId
+          String chatRoomId = _createChatRoomId(userId, dormitoryId);
+
+          // อัปเดตข้อมูล dormitory ด้วย chatRoomId ที่สร้างขึ้น
+          await dormitoryRef.update({'chatRoomId': chatRoomId});
+
+          // เพิ่มข้อมูลห้องแชทใน collection chatRooms
+          await FirebaseFirestore.instance
+              .collection('chatRooms')
+              .doc(chatRoomId)
+              .set({
+            'chatRoomId': chatRoomId,
+            'dormitoryId': dormitoryId,
+            'ownerId': userId,
+            'lastMessageTime': FieldValue.serverTimestamp(),
+          });
+
+          // สร้าง chatGroupId
+          String chatGroupId = _createChatGroupId(userId, dormitoryId);
+
+          // อัปเดตข้อมูล dormitory ด้วย chatGroupId ที่สร้างขึ้น
+          await dormitoryRef.update({'chatGroupId': chatGroupId});
+
+          // เพิ่มข้อมูลกลุ่มแชทใน collection chatGroups
+          await FirebaseFirestore.instance
+              .collection('chatGroups')
+              .doc(chatGroupId)
+              .set({
+            'chatGroupId': chatGroupId,
+            'dormitoryId': dormitoryId,
+            'ownerId': userId,
+            'lastMessageTime': FieldValue.serverTimestamp(),
+          });
+
+          // เพิ่มข้อความเริ่มต้นใน collection messages
+          await FirebaseFirestore.instance.collection('messages').add({
+            'chatRoomId': chatRoomId,
+            'chatGroupId': chatGroupId,
+            'senderId': userId,
+            'message': 'ยินดีต้อนรับสู่ห้องสนทนาของหอพักนี้!',
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+
+          // เพิ่ม chatRoomId ลงในผู้ใช้
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .update({
+            'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
+            'chatGroupId':chatGroupId
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('บันทึกข้อมูลหอพักเรียบร้อยแล้ว')),
+            const SnackBar(
+                content: Text('บันทึกข้อมูลหอพักและสร้างห้องแชทเรียบร้อยแล้ว')),
           );
 
           _formKey.currentState!.reset();
@@ -145,6 +204,18 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         }
       }
     }
+  }
+
+  String _createChatRoomId(String userId, String ownerId) {
+    var bytes = utf8.encode('$userId$ownerId');
+    var digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  String _createChatGroupId(String userId, String ownerId) {
+    var bytes = utf8.encode('$userId$ownerId');
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   @override
@@ -166,47 +237,34 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
               children: [
                 _buildTextField(
                     'ชื่อหอพัก', _dormNameController, 'กรุณากรอกชื่อหอพัก'),
-
                 _buildTextField('ที่อยู่หอพัก', _addressController,
                     'กรุณากรอกที่อยู่หอพัก'),
-
                 _buildTextField('ราคาหอพัก (บาท/เทอม)', _dormPriceController,
                     'กรุณากรอกราคาหอพัก',
                     isNumber: true),
-
                 _buildTextField('จำนวนห้องว่าง', _availableRoomsController,
                     'กรุณากรอกจำนวนห้องว่าง',
                     isNumber: true),
-
                 _buildRoomTypeDropdown(),
                 const SizedBox(height: 32),
-
                 _buildDormTypeDropdown(),
                 const SizedBox(height: 32),
-
                 _buildTextField('จำนวนคนพัก/ห้อง', _occupantsController,
                     'กรุณากรอกจำนวนคนพัก'),
-
                 _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController,
                     'กรุณากรอกค่าไฟ',
                     isNumber: true),
-
                 _buildTextField(
                     'ค่าน้ำ (หน่วยละ)', _waterRateController, 'กรุณากรอกค่าน้ำ',
                     isNumber: true),
-
                 _buildTextField('ค่าประกันความเสียหาย',
                     _securityDepositController, 'กรุณากรอกค่าประกันความเสียหาย',
                     isNumber: true),
-
                 _buildTextField('อุปกรณ์ที่มีในห้องพัก', _equipmentController,
                     'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
-
                 _buildTextField('กฎของหอพัก', _ruleController,
                     'กรุณาลงรายละเอียดกฎของหอพัก'),
-
                 _buildImagePicker(),
-
                 if (_isUploading) const CircularProgressIndicator(),
               ],
             ),
