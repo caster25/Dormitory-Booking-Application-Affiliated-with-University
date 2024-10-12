@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
-import 'package:dorm_app/screen/notification.dart';
+import 'package:dorm_app/screen/user/widgets/notification_user.dart';
 import 'package:dorm_app/screen/user/widgets/porfile_user.dart';
 import 'package:dorm_app/screen/user/widgets/dorm_user.dart';
 import 'package:dorm_app/screen/user/widgets/feeds_user.dart';
@@ -241,7 +241,7 @@ class _HomepageState extends State<Homepage> {
         IconButton(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const NotificationScreen();
+              return const NotificationUserScreen();
             }));
           },
           icon: const Icon(Icons.notifications),

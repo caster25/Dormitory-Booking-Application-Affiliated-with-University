@@ -13,35 +13,36 @@ class ListOfBookings extends StatelessWidget {
     required String chatRoomId,
   }) : super(key: key);
 
-  Future<List<Map<String, dynamic>>> _fetchBookings() async {
-    final dormitorySnapshot = await FirebaseFirestore.instance
+  Stream<List<Map<String, dynamic>>> _fetchBookings() {
+    return FirebaseFirestore.instance
         .collection('dormitories')
         .doc(dormitoryId)
-        .get();
-
-    final dormitoryData = dormitorySnapshot.data();
-    if (dormitoryData == null || dormitoryData['usersBooked'] == null) {
-      return [];
-    }
-
-    List<dynamic> usersBooked = dormitoryData['usersBooked'];
-    List<Map<String, dynamic>> bookings = [];
-
-    for (String userId in usersBooked) {
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userSnapshot.exists) {
-        Map<String, dynamic> userData =
-            userSnapshot.data() as Map<String, dynamic>;
-        userData['userId'] = userId; // Add userId to user data
-        bookings.add(userData);
+        .snapshots() // ใช้ snapshots แทน get
+        .asyncMap((snapshot) async {
+      final dormitoryData = snapshot.data();
+      if (dormitoryData == null || dormitoryData['usersBooked'] == null) {
+        return [];
       }
-    }
 
-    return bookings;
+      List<dynamic> usersBooked = dormitoryData['usersBooked'];
+      List<Map<String, dynamic>> bookings = [];
+
+      for (String userId in usersBooked) {
+        final userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .get();
+
+        if (userSnapshot.exists) {
+          Map<String, dynamic> userData =
+              userSnapshot.data() as Map<String, dynamic>;
+          userData['userId'] = userId; // เพิ่ม userId ไปยังข้อมูลผู้ใช้
+          bookings.add(userData);
+        }
+      }
+
+      return bookings;
+    });
   }
 
   void _openChat(BuildContext context, String userId) async {
@@ -138,7 +139,6 @@ class ListOfBookings extends StatelessWidget {
                 DocumentReference dormitoryRef = FirebaseFirestore.instance
                     .collection('dormitories')
                     .doc(dormitoryId);
-
                 DocumentSnapshot dormitorySnapshot = await dormitoryRef.get();
 
                 if (dormitorySnapshot.exists) {
@@ -172,7 +172,19 @@ class ListOfBookings extends StatelessWidget {
                         .update({
                       'isStaying': dormitoryId,
                       'currentDormitoryId': dormitoryId,
-                      'bookedDormitory': ''
+                      'bookedDormitory': '',
+                    });
+
+                    // เพิ่มการแจ้งเตือนเมื่อการจองสำเร็จ
+                    await FirebaseFirestore.instance
+                        .collection('notifications')
+                        .add({
+                      'userId': userId,
+                      'dormitoryId': dormitoryId,
+                      'type': 'confirmBooking',
+                      'message': 'การจองหอพักสำเร็จ',
+                      'timestamp': FieldValue.serverTimestamp(),
+                      'status': 'unread', // Mark as unread initially
                     });
 
                     // ignore: use_build_context_synchronously
@@ -213,7 +225,6 @@ class ListOfBookings extends StatelessWidget {
 
   Future<void> _rejectBooking(
       BuildContext context, String dormitoryId, String userId) async {
-    // แสดง AlertDialog เพื่อยืนยันการปฏิเสธการจอง
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -234,7 +245,7 @@ class ListOfBookings extends StatelessWidget {
                     .collection('dormitories')
                     .doc(dormitoryId)
                     .update({
-                  'usersBooked': FieldValue.arrayRemove([userId])
+                  'usersBooked': FieldValue.arrayRemove([userId]),
                 });
 
                 // รีเซ็ตข้อมูลการจองของผู้ใช้
@@ -264,18 +275,15 @@ class ListOfBookings extends StatelessWidget {
                       .collection('dormitories')
                       .doc(dormitoryId)
                       .update({'availableRooms': availableRooms});
-
-                  // แสดงข้อความสำเร็จ
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content:
-                            Text('การจองถูกปฏิเสธและเพิ่มจำนวนห้องว่างแล้ว')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('ไม่พบหอพักที่ต้องการ')),
-                  );
                 }
+
+                // แสดงข้อความเมื่อปฏิเสธการจองเสร็จสิ้น
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('ปฏิเสธการจองเรียบร้อยแล้ว')),
+                );
+
+                // ปิด Dialog
+                Navigator.of(context).pop();
               } catch (e) {
                 print('เกิดข้อผิดพลาด: $e');
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -283,11 +291,8 @@ class ListOfBookings extends StatelessWidget {
                       content: Text('เกิดข้อผิดพลาดในการปฏิเสธการจอง')),
                 );
               }
-
-              // ปิด Dialog หลังการยืนยันเสร็จสิ้น
-              Navigator.of(context).pop();
             },
-            child: const Text('ยืนยัน'),
+            child: const Text('ปฏิเสธ'),
           ),
         ],
       ),
@@ -300,21 +305,25 @@ class ListOfBookings extends StatelessWidget {
       appBar: AppBar(
         title: const Text('รายชื่อผู้จอง'),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchBookings(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('ไม่มีผู้จองในหอพักนี้'));
-          } else {
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: _fetchBookings(), // ใช้ StreamBuilder แทน FutureBuilder
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('ไม่มีการจอง'));
+            }
+
             final bookings = snapshot.data!;
+
             return ListView.builder(
               itemCount: bookings.length,
               itemBuilder: (context, index) {
                 final booking = bookings[index];
+                final userId = booking['userId'];
+
                 return Card(
                   margin: const EdgeInsets.all(10),
                   shape: RoundedRectangleBorder(
@@ -402,9 +411,7 @@ class ListOfBookings extends StatelessWidget {
                 );
               },
             );
-          }
-        },
-      ),
+          }),
     );
   }
 }

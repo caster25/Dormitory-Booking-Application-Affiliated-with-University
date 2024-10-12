@@ -31,6 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
   FocusNode _focusNode = FocusNode();
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
+  // ignore: unused_field
   bool _isAtBottom = true;
 
   @override

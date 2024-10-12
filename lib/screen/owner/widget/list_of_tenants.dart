@@ -7,37 +7,43 @@ import 'package:dorm_app/model/Dormitory.dart';
 class ListOfTenants extends StatelessWidget {
   final String dormitoryId;
 
-  // ignore: use_super_parameters
   const ListOfTenants({Key? key, required this.dormitoryId}) : super(key: key);
 
-  Future<List<Map<String, dynamic>>> _fetchTenants() async {
-    final dormitorySnapshot = await FirebaseFirestore.instance
+  Stream<List<Map<String, dynamic>>> _fetchTenantsStream() {
+    return FirebaseFirestore.instance
         .collection('dormitories')
         .doc(dormitoryId)
-        .get();
+        .snapshots()
+        .asyncMap((dormitorySnapshot) async {
+      final dormitoryData = dormitorySnapshot.data();
 
-    final dormitoryData = dormitorySnapshot.data();
-
-    if (dormitoryData == null || dormitoryData['tenants'] == null) {
-      return [];
-    }
-
-    List<dynamic> tenants = dormitoryData['tenants'];
-
-    List<Map<String, dynamic>> tenantsList = [];
-    for (String tenantId in tenants) {
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(tenantId)
-          .get();
-      if (userSnapshot.exists) {
-        tenantsList.add(userSnapshot.data() as Map<String, dynamic>);
+      if (dormitoryData == null || dormitoryData['tenants'] == null) {
+        return [];
       }
-    }
-    return tenantsList;
+
+      List<dynamic> tenants = dormitoryData['tenants'];
+
+      // สร้างรายการผู้เช่า
+      List<Map<String, dynamic>> tenantsList = [];
+      for (String tenantId in tenants) {
+        final userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(tenantId)
+            .get();
+
+        if (userSnapshot.exists) {
+          tenantsList.add({
+            'iduser': userSnapshot.id, // หรือ tenantId
+            ...userSnapshot.data() as Map<String, dynamic>,
+          });
+        }
+      }
+
+      return tenantsList;
+    });
   }
 
-  Future<void> _cancelBooking(String tenantId) async {
+  Future<void> _removeTenant(String tenantId) async {
     // อัปเดต currentDormitoryId ของผู้เช่าเป็น null
     await FirebaseFirestore.instance
         .collection('users')
@@ -49,10 +55,10 @@ class ListOfTenants extends StatelessWidget {
         .collection('dormitories')
         .doc(dormitoryId)
         .update({
-      'tenants': FieldValue.arrayRemove(
-        [tenantId],
-      )
+      'tenants': FieldValue.arrayRemove([tenantId]),
     });
+
+    // อัปเดต currentDormitoryId ของผู้เช่าเป็น null
 
     DocumentSnapshot dormitoriesSnapshot = await FirebaseFirestore.instance
         .collection('dormitories')
@@ -91,11 +97,11 @@ class ListOfTenants extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('ยืนยันการยกเลิก'),
+          title: const Text('ยืนยันการลบ'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('กรุณาใส่รหัสผ่านเพื่อยืนยันการยกเลิก'),
+              const Text('กรุณาใส่รหัสผ่านเพื่อยืนยันการลบผู้เช่า'),
               TextField(
                 controller: passwordController,
                 obscureText: true,
@@ -114,13 +120,11 @@ class ListOfTenants extends StatelessWidget {
                 bool isPasswordCorrect =
                     await _verifyPassword(passwordController.text);
                 if (isPasswordCorrect) {
-                  // รหัสผ่านถูกต้อง ทำการยกเลิกการเช่า
-                  await _cancelBooking(tenantId);
-                  // ignore: use_build_context_synchronously
+                  // รหัสผ่านถูกต้อง ทำการลบผู้เช่า
+                  await _removeTenant(tenantId);
                   Navigator.of(context).pop();
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('การยกเลิกเสร็จสมบูรณ์')),
+                    const SnackBar(content: Text('ลบผู้เช่าสำเร็จ')),
                   );
                 } else {
                   // รหัสผ่านไม่ถูกต้อง แสดงข้อผิดพลาด
@@ -216,8 +220,8 @@ class ListOfTenants extends StatelessWidget {
       appBar: AppBar(
         title: const Text('รายชื่อผู้เช่า'),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _fetchTenants(),
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: _fetchTenantsStream(), // สร้าง stream สำหรับข้อมูลผู้เช่า
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -281,6 +285,12 @@ class ListOfTenants extends StatelessWidget {
                         IconButton(
                           icon: const Icon(Icons.chat),
                           onPressed: () => _openChat(context, tenantId),
+                        ),
+                        // ปุ่มลบผู้เช่า
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () =>
+                              _showPasswordDialog(context, tenantId),
                         ),
                       ],
                     ),

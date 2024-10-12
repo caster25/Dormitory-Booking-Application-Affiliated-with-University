@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
-import 'package:dorm_app/screen/notification.dart';
+import 'package:dorm_app/screen/owner/widget/%E0%B8%B7widget_nitification/notification_owner.dart';
 import 'package:dorm_app/screen/owner/widget/widgetchat/chat_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
@@ -107,7 +107,7 @@ class _OwnerhomeState extends State<Ownerhome> {
         IconButton(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const NotificationScreen();
+              return const NotificationOwnerScreen();
             }));
           },
           icon: const Icon(Icons.notifications),

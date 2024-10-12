@@ -12,8 +12,7 @@ class DormScreen extends StatefulWidget {
 
 class _DormScreenState extends State<DormScreen> {
   String selectedFilterType = '';
-  int filterState =
-      0;
+  int filterState = 0;
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
   List<String> favorites = [];
@@ -40,67 +39,57 @@ class _DormScreenState extends State<DormScreen> {
             children: [
               _buildSearchBar(),
               const SizedBox(height: 16),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: DropdownButton<String>(
-                      value: selectedFilterType.isEmpty
-                          ? null
-                          : selectedFilterType,
-                      hint: const Text('เลือกประเภทการกรอง'),
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'price',
-                          child: Text('กรองตามราคา'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'rating',
-                          child: Text('กรองตามคะแนน'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          selectedFilterType = value!;
-                          filterState =
-                              0; 
-                        });
-                      },
-                    ),
+                  const Spacer(),
+                  DropdownButton<String>(
+                    value:
+                        selectedFilterType.isEmpty ? null : selectedFilterType,
+                    hint: const Text('เลือกประเภทการกรอง'),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'price',
+                        child: Text('กรองตามราคา'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'rating',
+                        child: Text('กรองตามคะแนน'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedFilterType = value!;
+                        filterState = 0;
+                      });
+                    },
                   ),
-
                   if (selectedFilterType.isNotEmpty) ...[
-                    const SizedBox(
-                        width: 8), 
+                    const SizedBox(width: 8),
                     FilterButton(
                       text: _getFilterText(),
                       icon: _getFilterIcon().icon!,
                       onPressed: () {
                         setState(() {
-                          filterState =
-                              (filterState + 1) % 3; 
+                          filterState = (filterState + 1) % 3;
                         });
                       },
                     ),
                   ],
                 ],
               ),
-
               const SizedBox(height: 8),
-
               if (selectedFilterType.isNotEmpty)
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
                       selectedFilterType = '';
-                      filterState = 0; 
+                      filterState = 0;
                     });
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text('ยกเลิกการกรอง'),
                 ),
-
               const SizedBox(height: 16),
               _buildUserFavorites(),
               const SizedBox(height: 16),
@@ -174,7 +163,6 @@ class _DormScreenState extends State<DormScreen> {
           .where('name', isLessThanOrEqualTo: '$searchQuery\uf8ff');
     }
 
-    // เรียงตามราคา หรือ คะแนน ตามที่เลือก
     if (selectedFilterType == 'price') {
       query = query.orderBy('price', descending: filterState == 1);
     } else if (selectedFilterType == 'rating') {

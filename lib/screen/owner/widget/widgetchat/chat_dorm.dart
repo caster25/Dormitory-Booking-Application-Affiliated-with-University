@@ -1,4 +1,3 @@
-import 'package:dorm_app/screen/owner/widget/widgetchat/list_of_dormitories.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,21 +12,20 @@ class ChatSelectionScreen extends StatefulWidget {
 }
 
 class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
-  bool isChatRoomSelected = true; // สำหรับเลือก Chat Room หรือ Chat Group
+  bool isChatRoomSelected = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('รายละเอียดแชท'),
+        title: const Text('รายละเอียดแชท'),
       ),
       body: Column(
         children: [
-          // แถบเลือก
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ToggleButtons(
-              children: [
+              children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text('Chat Rooms'),

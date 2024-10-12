@@ -261,7 +261,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 Navigator.of(context).pop(); // Close dialog if confirmed
 
                 // Create chatGroupId and chatRoomId
-                 String chatGroupId = dormitorySnapshot.get('chatGroupId'); // Use dormitoryId as the chatGroupId
+                String chatGroupId = dormitorySnapshot
+                    .get('chatGroupId'); // Use dormitoryId as the chatGroupId
                 String chatRoomId = _createChatRoomId(
                     userId, dormitoryId); // Generate unique chatRoomId
 
@@ -272,8 +273,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                     .update({
                   'availableRooms': availableRooms - 1,
                   'usersBooked': FieldValue.arrayUnion([userId]),
-                  'chatRoomId': FieldValue.arrayUnion(
-                      [chatRoomId]), // Store chatRoomId as an array if needed
+                  'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
                 });
 
                 // Update user data with booking information
@@ -282,10 +282,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                     .doc(userId)
                     .update({
                   'bookedDormitory': dormitoryId,
-                  'chatRoomId': FieldValue.arrayUnion(
-                      [chatRoomId]), // Store chatRoomId as an array if needed
-                  'chatGroupId':
-                      chatGroupId, // Keep the chatGroupId as the dormitoryId
+                  'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
+                  'chatGroupId': chatGroupId,
                 });
 
                 // Create chatRoom entry in chatRooms collection
@@ -295,9 +293,34 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                     .set({
                   'participants': [userId, dormitoryId],
                   'createdAt': FieldValue.serverTimestamp(),
-                  'lastMessage':
-                      '', // Can be updated when the first message is sent
+                  'lastMessage': '',
                   'lastMessageAt': FieldValue.serverTimestamp(),
+                });
+
+                // Add notification data to the notifications collection
+                await FirebaseFirestore.instance
+                    .collection('notifications')
+                    .add({
+                  'userId': userId,
+                  'dormitoryId': dormitoryId,
+                  'type': 'booking', // Type of notification
+                  'message': 'การจองหอพักสำเร็จ',
+                  'timestamp': FieldValue.serverTimestamp(),
+                  'status': 'unread', // Mark as unread initially
+                });
+
+                // Update user's notification field to track the notification
+                await FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .update({
+                  'notifications': FieldValue.arrayUnion([
+                    {
+                      'dormitoryId': dormitoryId,
+                      'type': 'booking',
+                      'timestamp': FieldValue.serverTimestamp(),
+                    }
+                  ]),
                 });
 
                 // Show success message
