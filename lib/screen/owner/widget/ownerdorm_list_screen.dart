@@ -60,6 +60,7 @@ class OwnerDormListScreen extends StatelessWidget {
 
               // Get chatGroupId from the dormitory data
               String chatGroupId = dormitory['chatGroupId'] ?? '';
+              String chatRooomId = dormitory['chatRooomId'] ?? '';
 
               // Handle imageUrl as either String or List<String>
               var imageUrlField = dormitory['imageUrl'];
@@ -130,7 +131,7 @@ class OwnerDormListScreen extends StatelessWidget {
                                 builder: (context) => ListOfBookings(
                                   dormitoryId: dormId,
                                   ownerId: currentUserId,
-                                  chatRoomId: chatGroupId, // Use chatGroupId from dormitorytest
+                                  chatRoomId: chatRooomId, // Use chatGroupId from dormitorytest
                                 ),
                               ),
                             );
