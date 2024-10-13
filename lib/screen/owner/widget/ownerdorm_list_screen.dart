@@ -130,7 +130,7 @@ class OwnerDormListScreen extends StatelessWidget {
                                 builder: (context) => ListOfBookings(
                                   dormitoryId: dormId,
                                   ownerId: currentUserId,
-                                  chatRoomId: chatGroupId, // Use chatGroupId from dormitory
+                                  chatRoomId: chatGroupId, // Use chatGroupId from dormitorytest
                                 ),
                               ),
                             );
