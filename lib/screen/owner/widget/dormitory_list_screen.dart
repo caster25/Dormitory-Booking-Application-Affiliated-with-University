@@ -12,74 +12,74 @@ class DormitoryListScreen extends StatelessWidget {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-  body: StreamBuilder<QuerySnapshot>(
-    stream: FirebaseFirestore.instance
-        .collection('dormitories')
-        .where('submittedBy', isEqualTo: currentUserId)
-        .snapshots(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
-      }
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('dormitories')
+            .where('submittedBy', isEqualTo: currentUserId)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-      if (snapshot.hasError) {
-        return const Center(child: Text('เกิดข้อผิดพลาดในการดึงข้อมูล'));
-      }
+          if (snapshot.hasError) {
+            return const Center(child: Text('เกิดข้อผิดพลาดในการดึงข้อมูล'));
+          }
 
-      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text('ยังไม่มีข้อมูลหอพัก'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // ไปยังหน้าสำหรับเพิ่มหอพัก
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DormitoryFormScreen(),
-                    ),
-                  );
-                },
-                child: const Text('เพิ่มหอพัก +'),
-              ),
-            ],
-          ),
-        );
-      }
-
-      final int dormitoryCount = snapshot.data!.docs.length;
-
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('ยังไม่มีข้อมูลหอพัก'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      // ไปยังหน้าสำหรับเพิ่มหอพัก
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DormitoryFormScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('เพิ่มหอพัก +'),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DormitoryFormScreen(),
+                ],
+              ),
+            );
+          }
+
+          final int dormitoryCount = snapshot.data!.docs.length;
+
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DormitoryFormScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: dormitoryCount,
@@ -91,7 +91,12 @@ class DormitoryListScreen extends StatelessWidget {
                     int dormPrice = dormitory['price']?.toInt() ?? 0;
                     int availableRooms =
                         dormitory['availableRooms']?.toInt() ?? 0;
-                    String imageUrl = dormitory['imageUrl'] ?? '';
+
+                    // ดึง URL ของรูปภาพแรก
+                    List<dynamic> images = dormitory['imageUrl'] ?? [];
+                    String imageUrl = (images.isNotEmpty && images[0] is String)
+                        ? images[0]
+                        : '';
 
                     return Card(
                       margin: const EdgeInsets.all(10),

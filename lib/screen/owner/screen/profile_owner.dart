@@ -39,16 +39,16 @@ class Profileowner extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Container(
-              height: 180,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/บ้านแสนสุข/master (1).jpg'),
-                  fit: BoxFit.fill,
-                ),
-              ),
-            ),
+            // Container(
+            //   height: 180,
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(10),
+            //     image: const DecorationImage(
+            //       image: AssetImage('assets/images/บ้านแสนสุข/master (1).jpg'),
+            //       fit: BoxFit.fill,
+            //     ),
+            //   ),
+            // ),
             const SizedBox(height: 16),
             Column(
               children: [
@@ -64,18 +64,18 @@ class Profileowner extends StatelessWidget {
                     );
                   },
                 ),
-                MenuItem(
-                  icon: Icons.account_box_outlined,
-                  text: 'รายชื่อผู้เช่า',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const OwnerDormListScreen(),
-                      ),
-                    );
-                  },
-                ),
+                // MenuItem(
+                //   icon: Icons.account_box_outlined,
+                //   text: 'รายชื่อผู้เช่า',
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //         builder: (context) => const OwnerDormListScreen(),
+                //       ),
+                //     );
+                //   },
+                // ),
                 MenuItem(
                   icon: Icons.settings,
                   text: 'การตั้งค่า',

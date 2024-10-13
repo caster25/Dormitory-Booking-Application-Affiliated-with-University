@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -359,7 +360,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
       ),
     );
   }
-
+  // ฟังก์ชันแสดงรายละเอียดหอพัก
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -378,24 +379,39 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 var dormitory = snapshot.data!;
-
-                // Extract the data for the dormitory
                 double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
                 double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
-                // Display the dormitory image and information
+                // แสดงรูปภาพหอพัก
+                List<String> imageUrls = List<String>.from(dormitory['imageUrl'] ?? []);
+                
                 return Column(
                   children: [
-                    // Dormitory Image Section
-                    SizedBox(
-                      height: 200, // Adjust as needed
-                      width: double.infinity,
-                      child: Image.network(
-                        dormitory['imageUrl'] ??
-                            '', // Ensure 'imageUrl' is the correct field name
-                        fit: BoxFit.cover,
+                    // Section สำหรับเลื่อนรูปภาพ
+                    CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200.0,
+                        autoPlay: true,
                       ),
+                      items: imageUrls.map((url) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.network(
+                                  url,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -408,39 +424,32 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           const SizedBox(height: 8),
                           Text(
                             'ราคา: ${dormitory['price']} บาท/เดือน',
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.grey),
+                            style: const TextStyle(fontSize: 18, color: Colors.grey),
                           ),
                           const SizedBox(height: 16),
 
                           // Type of tenant
-                          Text(
-                              'ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}'),
+                          Text('ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}'),
                           const SizedBox(height: 8),
 
                           // Room type
-                          Text(
-                              'ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}'),
+                          Text('ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}'),
                           const SizedBox(height: 8),
 
                           // Number of occupants
-                          Text(
-                              'จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน'),
+                          Text('จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน'),
                           const SizedBox(height: 8),
 
                           // Electricity charge per unit
-                          Text(
-                              'ค่าไฟหน่วยละ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          Text('ค่าไฟหน่วยละ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
                           // Water charge per unit
-                          Text(
-                              'ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          Text('ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
                           // Damage deposit
-                          Text(
-                              'ค่าประกันความเสียหาย: ${dormitory['securityDeposit'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          Text('ค่าประกันความเสียหาย: ${dormitory['securityDeposit'] ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
                           Text(
@@ -449,7 +458,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           ),
 
                           // Equipment available in the room
-
                           const SizedBox(height: 8),
                           Text(
                             'อุปกรณ์ที่มีในห้องพัก:',
@@ -457,12 +465,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            (dormitory['equipment'] != null &&
-                                    dormitory['equipment'].isNotEmpty)
-                                ? dormitory['equipment']
-                                    .split('\n')
-                                    .map((e) => e.trim())
-                                    .join(', ')
+                            (dormitory['equipment'] != null && dormitory['equipment'].isNotEmpty)
+                                ? dormitory['equipment'].split('\n').map((e) => e.trim()).join(', ')
                                 : 'ไม่มีข้อมูล',
                           ),
                           const SizedBox(height: 8),
@@ -484,8 +488,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                               ),
                               Text(
                                 ' (${dormitory['reviewCount']?.toString() ?? '0'} รีวิว)',
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.grey),
+                                style: const TextStyle(fontSize: 16, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -535,9 +538,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 );
               },
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             const Padding(
               padding: EdgeInsets.all(10),
               child: Text('รีวิว'),
@@ -569,44 +570,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 );
               },
             ),
-            // const SizedBox(height: 16),
-            // Padding(
-            //   padding: const EdgeInsets.all(16.0),
-            //   child: TextField(
-            //     controller: reviewController,
-            //     decoration: const InputDecoration(
-            //       labelText: 'แสดงความคิดเห็น',
-            //       border: OutlineInputBorder(),
-            //     ),
-            //     maxLines: 3,
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //   child: RatingBar.builder(
-            //     initialRating: _rating,
-            //     minRating: 1,
-            //     direction: Axis.horizontal,
-            //     allowHalfRating: true,
-            //     itemCount: 5,
-            //     itemBuilder: (context, _) => const Icon(
-            //       Icons.star,
-            //       color: Colors.amber,
-            //     ),
-            //     onRatingUpdate: (rating) {
-            //       setState(() {
-            //         _rating = rating;
-            //       });
-            //     },
-            //   ),
-            // ),
-            // Padding(
-            //   padding: const EdgeInsets.all(16.0),
-            //   child: ElevatedButton(
-            //     onPressed: _addReview,
-            //     child: const Text('เพิ่มรีวิว'),
-            //   ),
-            // ),
           ],
         ),
       ),

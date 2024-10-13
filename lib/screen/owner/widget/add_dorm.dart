@@ -42,7 +42,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   List<File> _dormImages = [];
   final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
-  late String _uploadedImageUrls;
+  List<String> _uploadedImageUrls = [];
 
   String? _selectedRoomType;
   String? _selectedDormType;
@@ -57,36 +57,45 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     }
   }
 
-  Future<void> _uploadImagesToFirebase() async {
+  Future<String> _uploadImagesToFirebase(File image) async {
+    try {
+      String fileName = image.path.split('/').last;
+      Reference storageReference =
+          FirebaseStorage.instance.ref().child('dormitory_images/$fileName');
+      UploadTask uploadTask = storageReference.putFile(image);
+      TaskSnapshot snapshot = await uploadTask;
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return '';
+    }
+  }
+
+  Future<void> _uploadAllImagesToFirebase() async {
     if (_dormImages.isEmpty) return;
 
     setState(() {
       _isUploading = true;
     });
 
-    String uploadedImageUrls = '';
+    List<String> uploadedImageUrls = [];
 
     try {
-      for (var i = 0; i < _dormImages.length; i++) {
-        var image = _dormImages[i];
-        String fileName = path.basename(image.path);
-        Reference firebaseStorageRef =
-            FirebaseStorage.instance.ref().child('dormitory_images/$fileName');
-
-        UploadTask uploadTask = firebaseStorageRef.putFile(image);
-        TaskSnapshot taskSnapshot = await uploadTask;
-
-        String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-        if (uploadedImageUrls.isNotEmpty) {
-          uploadedImageUrls += ',';
+      for (var image in _dormImages) {
+        String downloadUrl = await _uploadImagesToFirebase(image);
+        if (downloadUrl.isNotEmpty) {
+          uploadedImageUrls.add(downloadUrl);
         }
-        uploadedImageUrls += downloadUrl;
       }
 
+      // เก็บ URL ทั้งหมดใน _uploadedImageUrls
       _uploadedImageUrls = uploadedImageUrls;
+
+      // แสดง URLs ที่อัปโหลดสำเร็จ
+      print('Uploaded Image URLs: $_uploadedImageUrls');
     } catch (e) {
-      print('Error uploading image: $e');
+      print('Error uploading images: $e');
     } finally {
       setState(() {
         _isUploading = false;
@@ -103,7 +112,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         return;
       }
 
-      await _uploadImagesToFirebase();
+      await _uploadAllImagesToFirebase();
 
       if (_uploadedImageUrls.isNotEmpty) {
         final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -184,7 +193,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
               .doc(userId)
               .update({
             'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
-            'chatGroupId':chatGroupId
+            'chatGroupId': chatGroupId
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -195,7 +204,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
           _formKey.currentState!.reset();
           setState(() {
             _dormImages = [];
-            _uploadedImageUrls = '';
+            _uploadedImageUrls = [];
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -224,7 +233,10 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
       appBar: AppBar(
         title: const Text('เพิ่มหอพัก'),
         actions: [
-          IconButton(onPressed: _submitForm, icon: const Icon(Icons.save))
+          IconButton(
+            onPressed: _submitForm,
+            icon: const Icon(Icons.save),
+          ),
         ],
       ),
       body: Padding(
@@ -246,9 +258,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                     'กรุณากรอกจำนวนห้องว่าง',
                     isNumber: true),
                 _buildRoomTypeDropdown(),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
                 _buildDormTypeDropdown(),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
                 _buildTextField('จำนวนคนพัก/ห้อง', _occupantsController,
                     'กรุณากรอกจำนวนคนพัก'),
                 _buildTextField('ค่าไฟ (หน่วยละ)', _electricityRateController,

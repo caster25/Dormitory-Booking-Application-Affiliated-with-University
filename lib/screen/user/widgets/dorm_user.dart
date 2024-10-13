@@ -251,6 +251,7 @@ class _DormScreenState extends State<DormScreen> {
   Widget _buildDormitoryCard(
       QueryDocumentSnapshot dorm, String dormId, List<String> favorites) {
     bool isFavorite = favorites.contains(dormId); // ตรวจสอบสถานะของหัวใจ
+    List<dynamic> images = dorm['imageUrl']; // ดึง list ของรูปภาพ
 
     return Container(
       decoration: BoxDecoration(
@@ -260,14 +261,16 @@ class _DormScreenState extends State<DormScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Dorm image
+          // Dorm images - ดึงรูปแรกจาก list
           Container(
             height: 180,
             decoration: BoxDecoration(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(10)),
               image: DecorationImage(
-                image: NetworkImage(dorm['imageUrl']),
+                image: NetworkImage(images.isNotEmpty
+                    ? images[0]
+                    : ''), // ใช้รูปแรกใน list หรือใช้ '' หากไม่มีรูป
                 fit: BoxFit.cover,
               ),
             ),

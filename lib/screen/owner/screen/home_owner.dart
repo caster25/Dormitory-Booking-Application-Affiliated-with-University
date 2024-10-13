@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/owner/widget/%E0%B8%B7widget_nitification/notification_owner.dart';
+import 'package:dorm_app/screen/owner/widget/ownerdorm_list_screen.dart';
 import 'package:dorm_app/screen/owner/widget/widgetchat/chat_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
@@ -53,19 +54,20 @@ class _OwnerhomeState extends State<Ownerhome> {
     _screens.clear(); // เคลียร์ค่าเดิม
     if (chatGroupId != null) {
       _screens.addAll([
-        const Profileowner(),
         const DormitoryListScreen(),
-        ChatSelectionScreen(chatGroupId: chatGroupId!), // ส่ง chatGroupId
+        const OwnerDormListScreen(), // ส่ง chatGroupId
+        const Profileowner(),
       ]);
     } else {
       // แสดงหน้าจออื่นๆ หากยังไม่ดึง chatGroupId ได้
       _screens.addAll([
-        const Profileowner(),
         const DormitoryListScreen(),
-        Center(child: CircularProgressIndicator()), // หรือหน้าจอแสดงสถานะ
+        const OwnerDormListScreen(), 
+        const Profileowner(),
       ]);
     }
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(

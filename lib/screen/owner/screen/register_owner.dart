@@ -77,6 +77,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
             'numphone': _numphoneController.text,
             'email': _emailController.text,
             'dormitoryname': _dormitoryNameController.text,
+            'dormitoryaddress':_dormitoryAddressController.text,
             'role': 'owner',
           });
           _formKey.currentState!.reset();

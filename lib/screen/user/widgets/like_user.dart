@@ -61,12 +61,33 @@ class _LikeScreenState extends State<LikeScreen> {
               itemBuilder: (context, index) {
                 var dorm = likedDorms[index];
 
-                return ListTile(
-                  leading: Image.network(dorm['imageUrl'], fit: BoxFit.cover),
-                  title: Text(dorm['name']),
-                  subtitle: Text('ราคา: ${dorm['price']} บาท/เดือน\n'
-                      'คะแนน: ${dorm['rating']}/5'),
-                  trailing: const Icon(Icons.favorite, color: Colors.pink),
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      // PageView for images
+                      SizedBox(
+                        height: 200, // Adjust height as needed
+                        child: PageView.builder(
+                          itemCount: dorm['imageUrl']
+                              .length, // Use list of image URLs
+                          itemBuilder: (context, imageIndex) {
+                            return Image.network(
+                              dorm['imageUrl'][imageIndex],
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(dorm['name']),
+                        subtitle: Text('ราคา: ${dorm['price']} บาท/เดือน\n'
+                            'คะแนน: ${dorm['rating']}/5'),
+                        trailing:
+                            const Icon(Icons.favorite, color: Colors.pink),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

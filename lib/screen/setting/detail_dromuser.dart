@@ -71,7 +71,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     }
   }
 
-  void _navigateToChat(String dormitoryId, String ownerId, {bool isGroupChat = false}) async {
+  void _navigateToChat(String dormitoryId, String ownerId,
+      {bool isGroupChat = false}) async {
     // Get user data from Firestore
     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -98,7 +99,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
           String? chatId;
 
           if (isGroupChat) {
-            chatId = dormitoryData?['chatGroupId']; // Assuming chatGroupId exists in the dormitory data
+            chatId = dormitoryData?[
+                'chatGroupId']; // Assuming chatGroupId exists in the dormitory data
           } else {
             // Find the matching chatRoomId
             for (var chatRoomId in userChatRoomIds) {
@@ -144,6 +146,60 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     }
   }
 
+  void _showDormitoryDetails(String dormitoryId) async {
+    // ดึงข้อมูลหอพักจาก Firebase
+    DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc(dormitoryId)
+        .get();
+
+    if (dormitorySnapshot.exists) {
+      var dormitoryData = dormitorySnapshot.data() as Map<String, dynamic>;
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('รายละเอียดหอพัก: ${dormitoryData['name']}'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('ที่อยู่: ${dormitoryData['address']}'),
+                  Text(
+                      'จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
+                  Text('ประเภทหอพัก: ${dormitoryData['dormType']}'),
+                  Text('ราคาห้องพัก: ${dormitoryData['price']} บาท/เดือน'),
+                  Text('เงินประกัน: ${dormitoryData['securityDeposit']} บาท'),
+                  Text('ค่าบำรุงรักษา: ${dormitoryData['furnitureFee']} บาท'),
+                  Text('ค่าไฟ: ${dormitoryData['electricityRate']} บาท/หน่วย'),
+                  Text('ค่าน้ำ: ${dormitoryData['waterRate']} บาท/หน่วย'),
+                  Text('ประเภทห้อง: ${dormitoryData['roomType']}'),
+                  Text('จำนวนผู้อาศัย: ${dormitoryData['occupants']} คน'),
+                  Text('กฎของหอพัก: ${dormitoryData['rule']}'),
+                  Text(
+                      'อุปกรณ์ในห้อง: ${dormitoryData['equipment']}'),
+                  Image.network(dormitoryData['imageUrl']),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('ปิด'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +208,9 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // แสดง Loading เมื่อยังโหลดอยู่
+          ? const Center(
+              child:
+                  CircularProgressIndicator()) // แสดง Loading เมื่อยังโหลดอยู่
           : Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -164,35 +222,66 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   ),
                   const SizedBox(height: 8),
                   currentDormitoryId != null &&
-                          _currentDormController.text.isNotEmpty // เช็คว่ามีข้อมูลหอพักปัจจุบัน
+                          _currentDormController
+                              .text.isNotEmpty // เช็คว่ามีข้อมูลหอพักปัจจุบัน
                       ? Card(
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0), // เพิ่ม Padding ให้กับ Card
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            padding: const EdgeInsets.all(
+                                16.0), // เพิ่ม Padding ให้กับ Card
+                            child: Stack(
                               children: [
-                                ListTile(
-                                  title: Text('ชื่อหอพัก: ${_currentDormController.text}'),
-                                  subtitle: const Text('ข้อมูลหอพักปัจจุบัน'),
-                                ),
-                                const SizedBox(height: 8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        String ownerId = "owner_id_here"; // เปลี่ยนเป็น ownerId ที่แท้จริง
-                                        _navigateToChat(currentDormitoryId!, ownerId, isGroupChat: false);
-                                      },
-                                      child: const Text('เข้าสู่การสนทนาเจ้าของหอพัก'),
+                                    ListTile(
+                                      title: Text(
+                                          'ชื่อหอพัก: ${_currentDormController.text}'),
+                                      subtitle:
+                                          const Text('ข้อมูลหอพักปัจจุบัน'),
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        _navigateToChat(currentDormitoryId!, "", isGroupChat: true); // ปรับให้ไม่มี ownerId สำหรับแชทกลุ่ม
-                                      },
-                                      child: const Text('เข้าสู่แชทกลุ่ม'),
+                                    const SizedBox(
+                                        height:
+                                            8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            String ownerId =
+                                                "owner_id_here"; // เปลี่ยนเป็น ownerId ที่แท้จริง
+                                            _navigateToChat(
+                                                currentDormitoryId!, ownerId,
+                                                isGroupChat: false);
+                                          },
+                                          child: const Text(
+                                              'เข้าสู่การสนทนาเจ้าของหอพัก'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            _navigateToChat(
+                                                currentDormitoryId!, "",
+                                                isGroupChat:
+                                                    true); // ปรับให้ไม่มี ownerId สำหรับแชทกลุ่ม
+                                          },
+                                          child: const Text('เข้าสู่แชทกลุ่ม'),
+                                        ),
+                                      ],
                                     ),
                                   ],
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    icon: const Icon(Icons
+                                        .info_outline), // ไอคอนสำหรับดูรายละเอียด
+                                    onPressed: () {
+                                      // ฟังก์ชันสำหรับดูรายละเอียดหอพัก
+                                      _showDormitoryDetails(
+                                          currentDormitoryId!);
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
@@ -200,7 +289,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                         )
                       : const Text(
                           'ตอนนี้คุณไม่มีหอพัก',
-                          style: TextStyle(fontSize: 16, color: Colors.red), // ข้อความเตือน
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.red), // ข้อความเตือน
                         ),
                 ],
               ),
