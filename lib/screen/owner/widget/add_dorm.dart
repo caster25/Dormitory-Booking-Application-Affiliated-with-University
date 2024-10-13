@@ -11,6 +11,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+// ignore: unused_import
 import 'package:path/path.dart' as path;
 
 class DormitoryFormScreen extends StatefulWidget {

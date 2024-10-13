@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -125,7 +127,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                           const SizedBox(height: 10),
                           Row(
                             children: [
-                              Icon(Icons.home, color: Colors.blueAccent),
+                              const Icon(Icons.home, color: Colors.blueAccent),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -138,7 +140,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                           const SizedBox(height: 5),
                           Row(
                             children: [
-                              Icon(Icons.person, color: Colors.green),
+                              const Icon(Icons.person, color: Colors.green),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -151,7 +153,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                           const SizedBox(height: 5),
                           Row(
                             children: [
-                              Icon(Icons.access_time, color: Colors.orange),
+                              const Icon(Icons.access_time, color: Colors.orange),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(

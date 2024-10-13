@@ -172,10 +172,14 @@ class NavigationDrawer extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 52,
-                    backgroundImage: userData['profilePictureURL'] != null
+                    backgroundImage: (userData['profilePictureURL'] != null &&
+                            userData['profilePictureURL'] != "null" &&
+                            userData['profilePictureURL']!.isNotEmpty)
                         ? NetworkImage(userData['profilePictureURL'])
                         : null,
-                    child: userData['profilePictureURL'] == null
+                    child: (userData['profilePictureURL'] == null ||
+                            userData['profilePictureURL'] == "null" ||
+                            userData['profilePictureURL']!.isEmpty)
                         ? const Icon(
                             Icons.person,
                             size: 52,
@@ -189,8 +193,7 @@ class NavigationDrawer extends StatelessWidget {
                     style: const TextStyle(fontSize: 28, color: Colors.white),
                   ),
                   Text(
-                    user?.email ??
-                        'user@example.com', // Update to use optional user
+                    user?.email ?? 'user@example.com',
                     style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ],

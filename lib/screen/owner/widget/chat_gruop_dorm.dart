@@ -11,6 +11,7 @@ class OwnerAllChatScreen extends StatefulWidget {
   final String userId;
   final String chatGroupId;
 
+  // ignore: use_super_parameters
   const OwnerAllChatScreen({
     required this.ownerId,
     required this.userId,
@@ -19,6 +20,7 @@ class OwnerAllChatScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _OwnerAllChatScreenState createState() => _OwnerAllChatScreenState();
 }
 
@@ -26,7 +28,9 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final CollectionReference _messagesCollection =
       FirebaseFirestore.instance.collection('messages');
+  // ignore: prefer_final_fields
   FocusNode _focusNode = FocusNode();
+  // ignore: prefer_final_fields
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
 
@@ -139,7 +143,7 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No messages yet.'));
+                  return const Center(child: Text('No messages yet.'));
                 }
 
                 final messages = snapshot.data!.docs;
@@ -257,6 +261,7 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
 class FullScreenImage extends StatelessWidget {
   final String imageUrl;
 
+  // ignore: use_key_in_widget_constructors
   const FullScreenImage({required this.imageUrl});
 
   @override

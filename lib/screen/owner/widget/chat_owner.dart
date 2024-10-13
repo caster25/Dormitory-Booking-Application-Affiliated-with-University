@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +13,7 @@ class OwnerChatScreen extends StatefulWidget {
   final String userId;
   final String chatRoomId;
 
+  // ignore: use_super_parameters
   const OwnerChatScreen({
     required this.ownerId,
     required this.userId,
@@ -19,6 +22,7 @@ class OwnerChatScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _OwnerChatScreenState createState() => _OwnerChatScreenState();
 }
 
@@ -26,6 +30,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final CollectionReference _messagesCollection =
       FirebaseFirestore.instance.collection('messages');
+  // ignore: prefer_final_fields
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
 
@@ -117,7 +122,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
                   return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('ยังไม่มีข้อความ.'));
+                  return const Center(child: Text('ยังไม่มีข้อความ.'));
                 }
 
                 final messages = snapshot.data!.docs;
@@ -223,6 +228,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
 class FullScreenImage extends StatelessWidget {
   final String imageUrl;
 
+  // ignore: use_key_in_widget_constructors
   const FullScreenImage({required this.imageUrl});
 
   @override

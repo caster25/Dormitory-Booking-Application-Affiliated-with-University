@@ -258,70 +258,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Column(
-                    children: [
-                      MenuItem(
-                        icon: Icons.info_outline,
-                        text: 'รายละเอียดหอพักของคุณ',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DormitoryDetailsScreen(userId: userId!),
-                            ),
-                          );
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.domain_rounded,
-                        text: 'หอพักของคุณจองไว้',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BookDorm(userId: userId!),
-                            ),
-                          );
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.favorite_border,
-                        text: 'หอพักที่ถูกใจ',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LikeScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.settings,
-                        text: 'การตั้งค่า',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SettingsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      MenuItem(
-                        icon: Icons.notifications_none,
-                        text: 'แจ้งระบบต่างๆ',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SubmitIssueScreen()),
-                          );
-                        },
-                      ),
-                    ],
+                  Card(
+                    elevation: 2, // ปรับความสูงเงา
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0), // ขอบของการ์ด
+                    child: ListTile(
+                      leading: const Icon(Icons.info_outline),
+                      title: const Text('รายละเอียดหอพักของคุณ'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DormitoryDetailsScreen(userId: userId!),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.domain_rounded),
+                      title: const Text('หอพักของคุณจองไว้'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookDorm(userId: userId!),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.favorite_border),
+                      title: const Text('หอพักที่ถูกใจ'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LikeScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: const Text('การตั้งค่า'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.notifications_none),
+                      title: const Text('แจ้งระบบต่างๆ'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SubmitIssueScreen()),
+                        );
+                      },
+                    ),
                   ),
                 ],
               );

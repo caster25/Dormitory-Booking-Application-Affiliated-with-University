@@ -12,12 +12,14 @@ import 'package:dorm_app/screen/user/widgets/feeds_user.dart';
 import 'package:dorm_app/screen/user/screen/profile.dart';
 
 class Homepage extends StatefulWidget {
+  
   const Homepage({super.key, this.title = "Home"});
 
   final String title;
 
   @override
   State<Homepage> createState() => _HomepageState();
+  
 }
 
 class NavigationDrawer extends StatelessWidget {

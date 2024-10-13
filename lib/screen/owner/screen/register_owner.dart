@@ -21,6 +21,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  // ignore: unused_field
   bool _acceptTerms = false;
 
   final auth = FirebaseAuth.instance;

@@ -41,7 +41,7 @@ class DormitoryListScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => DormitoryFormScreen(),
+                          builder: (context) => const DormitoryFormScreen(),
                         ),
                       );
                     },
@@ -74,7 +74,7 @@ class DormitoryListScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DormitoryFormScreen(),
+                            builder: (context) => const DormitoryFormScreen(),
                           ),
                         );
                       },

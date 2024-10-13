@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_fields, use_build_context_synchronously, use_key_in_widget_constructors
+
 import 'package:firebase_auth/firebase_auth.dart'; 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +21,7 @@ class UserAllChatScreen extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _UserAllChatScreenState createState() => _UserAllChatScreenState();
 }
 
@@ -167,7 +170,7 @@ void _scrollToBottom() {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No messages yet.'));
+                  return const Center(child: Text('No messages yet.'));
                 }
 
                 final messages = snapshot.data!.docs;

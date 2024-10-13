@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dorm_app/screen/user/widgets/chat_user.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -164,7 +166,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('รายละเอียดหอพัก: ${dormitoryData['name']}'),
-            content: Container(
+            content: SizedBox(
               width: double.maxFinite, // กำหนดความกว้างให้เต็มที่
               child: Column(
                 mainAxisSize: MainAxisSize.min, // ปรับให้มีขนาดตามเนื้อหา
@@ -184,6 +186,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   Text('อุปกรณ์ในห้อง: ${dormitoryData['equipment']}'),
 
                   // ใช้ PageView เพื่อแสดงภาพทั้งหมด
+                  // ignore: sized_box_for_whitespace
                   Container(
                     height: 200, // กำหนดความสูงของภาพ
                     child: PageView.builder(
@@ -214,6 +217,59 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
       );
+    }
+  }
+
+  // ฟังก์ชันสำหรับแสดงกล่องโต้ตอบรีวิว
+  void _showReviewDialog(String dormitoryId) {
+    TextEditingController reviewController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('เขียนรีวิว'),
+          content: TextField(
+            controller: reviewController,
+            decoration:
+                const InputDecoration(hintText: 'ป้อนรีวิวของคุณที่นี่'),
+            maxLines: 3,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String review = reviewController.text.trim();
+                if (review.isNotEmpty) {
+                  await _submitReview(dormitoryId, review);
+                  Navigator.of(context).pop();
+                  // อาจเพิ่มการแจ้งเตือนหรืออัปเดต UI ที่นี่
+                }
+              },
+              child: const Text('ส่งรีวิว'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// ฟังก์ชันสำหรับบันทึกรีวิวลง Firestore
+  Future<void> _submitReview(String dormitoryId, String review) async {
+    try {
+      await FirebaseFirestore.instance.collection('reviews').add({
+        'dormitoryId': dormitoryId,
+        'review': review,
+        'timestamp': FieldValue.serverTimestamp(),
+        // อาจเพิ่มข้อมูลผู้ใช้ที่ส่งรีวิว เช่น userId, username เป็นต้น
+      });
+      print('รีวิวถูกบันทึกเรียบร้อยแล้ว');
+    } catch (e) {
+      print('เกิดข้อผิดพลาดในการบันทึกรีวิว: $e');
     }
   }
 
@@ -259,6 +315,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                     const SizedBox(
                                         height:
                                             8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
+
+                                    // ปุ่มสำหรับเข้าสู่การสนทนา
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
@@ -284,6 +342,20 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                           child: const Text('เข้าสู่แชทกลุ่ม'),
                                         ),
                                       ],
+                                    ),
+                                    const SizedBox(
+                                        height:
+                                            8), // เพิ่มช่องว่างระหว่างปุ่มและรีวิว
+
+                                    // ปุ่มรีวิว
+                                    Center(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          _showReviewDialog(
+                                              currentDormitoryId!);
+                                        },
+                                        child: const Text('รีวิวหอพัก'),
+                                      ),
                                     ),
                                   ],
                                 ),

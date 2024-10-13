@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/user/widgets/chat_user.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ class BookDorm extends StatefulWidget {
   const BookDorm({required this.userId, super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _BookDormState createState() => _BookDormState();
 }
 

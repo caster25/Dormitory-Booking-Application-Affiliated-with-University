@@ -2,6 +2,7 @@ import 'package:dorm_app/screen/owner/widget/list_of_tenants.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// ignore: use_key_in_widget_constructors
 class ListOfDormitories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

@@ -25,7 +25,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   late Future<Map<String, dynamic>> dormitoryData;
   late Future<List<Map<String, dynamic>>> reviewsData;
   final TextEditingController reviewController = TextEditingController();
-  // ignore: unused_field
+  // ignore: unused_field, prefer_final_fields
   double _rating = 0;
   User? currentUser;
   Map<String, dynamic>? userData;
@@ -130,6 +130,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   //   }
   // }
 
+  // ignore: unused_element
   Future<void> _updateDormitoryReviews() async {
     try {
       QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
@@ -165,6 +166,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return digest.toString();
   }
 
+  // ignore: unused_element
   String _createChatGroupId(String userId, String ownerId) {
     var bytes = utf8.encode('$userId$ownerId');
     var digest = sha256.convert(bytes);
@@ -343,6 +345,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     }
   }
 
+  // ignore: unused_element
   void _showDialog(BuildContext context, String title, String content) {
     showDialog(
       context: context,

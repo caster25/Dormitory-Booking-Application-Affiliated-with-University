@@ -19,6 +19,7 @@ class DormitoryDetailsScreen extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditDormitoryScreenState createState() => _EditDormitoryScreenState();
 }
 
@@ -46,6 +47,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
   late final String _dormitoryId;
 
   List<String> _imageUrls = []; // List สำหรับเก็บ URL ของรูปภาพ
+  // ignore: prefer_final_fields
   List<File> _selectedImages = [];
   final NumberFormat _formatter = NumberFormat('#,##0');
 
@@ -79,6 +81,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
     _loadImages();
   }
 
+  // ignore: unused_element
   void _formatPrice() {
     String text =
         _priceController.text.replaceAll(',', ''); // เอาเครื่องหมาย , ออกก่อน
@@ -170,6 +173,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
       // ดึงข้อมูลปัจจุบันจาก Firestore
       final docSnapshot = await docRef.get();
+      // ignore: unnecessary_cast
       final currentData = docSnapshot.data() as Map<String, dynamic>?;
 
       if (currentData != null) {
@@ -208,6 +212,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
         if (!isDataChanged) {
           // หากไม่มีการเปลี่ยนแปลงข้อมูล
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('ไม่มีการเปลี่ยนแปลงข้อมูล')),
           );
@@ -216,6 +221,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
         // ถ้ามีการเปลี่ยนแปลงข้อมูล แสดงกล่องยืนยันการบันทึก
         bool confirmSave = await showDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -242,6 +248,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
         // ถ้า confirmSave เป็น true ถึงจะดำเนินการบันทึกข้อมูล
         if (confirmSave == true) {
           await docRef.update(newData);
+          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('ข้อมูลหอพักได้รับการอัปเดต')),
           );

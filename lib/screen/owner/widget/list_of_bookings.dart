@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dorm_app/screen/owner/widget/chat_owner.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +8,7 @@ class ListOfBookings extends StatelessWidget {
   final String dormitoryId;
   final String ownerId;
 
+  // ignore: use_super_parameters
   const ListOfBookings({
     Key? key,
     required this.dormitoryId,
@@ -187,30 +190,24 @@ class ListOfBookings extends StatelessWidget {
                       'status': 'unread', // Mark as unread initially
                     });
 
-                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content:
                               Text('การจองสำเร็จและคุณได้ย้ายเข้าหอพักแล้ว')),
                     );
-
-                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                   } else {
-                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('หอพักไม่พบหรือไม่มีอยู่')),
                     );
                   }
                 } else {
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('หอพักไม่พบหรือไม่มีอยู่')),
                   );
                 }
               } catch (e) {
                 print('เกิดข้อผิดพลาด: $e');
-                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('เกิดข้อผิดพลาดในการจอง')),
                 );

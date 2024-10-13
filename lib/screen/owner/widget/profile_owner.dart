@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dorm_app/screen/owner/screen/home_owner.dart';
 import 'package:dorm_app/screen/owner/widget/edit_owner_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 class ProfileOwner extends StatefulWidget {
   const ProfileOwner({super.key});
 
@@ -49,6 +52,7 @@ class _ProfileOwnerState extends State<ProfileOwner> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _updateUserData() async {
     try {
       await FirebaseFirestore.instance
@@ -90,22 +94,23 @@ class _ProfileOwnerState extends State<ProfileOwner> {
                 child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
             : Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    userData?['username'],
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  CircleAvatar(
+                    radius: 52,
+                    backgroundImage: userData?['profilePictureURL'] != null
+                        ? NetworkImage(userData?['profilePictureURL'])
+                        : null,
+                    child: userData?['profilePictureURL'] == null
+                        ? const Icon(
+                            Icons.person,
+                            size: 52,
+                            color: Colors.white,
+                          )
+                        : null,
                   ),
                   ProfileInfoRow(
                     icon: Icons.person,
-                    text: userData?['fullname'],
+                    text: userData?['fullname'] ??
+                        'ไม่มีชื่อ', // ใช้ค่าทดแทนเมื่อ fullname เป็น null
                   ),
                   ProfileInfoRow(
                     icon: Icons.phone,

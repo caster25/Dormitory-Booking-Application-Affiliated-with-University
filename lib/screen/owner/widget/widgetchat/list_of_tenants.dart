@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ListOfTenants extends StatelessWidget {
   final String dormitoryId;
 
+  // ignore: use_super_parameters
   const ListOfTenants({Key? key, required this.dormitoryId}) : super(key: key);
 
   Future<List<Map<String, dynamic>>> _fetchTenants() async {

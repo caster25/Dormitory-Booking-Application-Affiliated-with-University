@@ -8,6 +8,7 @@ class EditOwnerProfile extends StatefulWidget {
   const EditOwnerProfile({super.key, required this.userId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditOwnerProfileState createState() => _EditOwnerProfileState();
 }
 
@@ -67,15 +68,18 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
       'fullname': fullNameController.text,
       'numphone': phoneController.text,
     }).then((_) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('ข้อมูลได้รับการอัปเดตแล้ว')),
       );
       Navigator.pushAndRemoveUntil(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const Ownerhome()),
         (route) => false,
       );
     }).catchError((error) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('เกิดข้อผิดพลาด: $error')),
       );
@@ -166,14 +170,14 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: _confirmUpdate, // แทนที่การบันทึกด้วยการยืนยัน
-                    child: const Text('บันทึก', style: TextStyle(fontSize: 18)),
+                    onPressed: _confirmUpdate,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                    ),
+                    ), // แทนที่การบันทึกด้วยการยืนยัน
+                    child: const Text('บันทึก', style: TextStyle(fontSize: 18)),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -184,13 +188,13 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                         (route) => false,
                       );
                     },
-                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 18)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
+                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),

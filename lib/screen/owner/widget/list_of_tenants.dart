@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dorm_app/screen/owner/widget/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:dorm_app/model/Dormitory.dart';
 class ListOfTenants extends StatelessWidget {
   final String dormitoryId;
 
+  // ignore: use_super_parameters
   const ListOfTenants({Key? key, required this.dormitoryId}) : super(key: key);
 
   Stream<List<Map<String, dynamic>>> _fetchTenantsStream() {

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, unnecessary_nullable_for_final_variable_declarations
+
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,8 +8,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+// ignore: use_key_in_widget_constructors
 class SubmitIssueScreen extends StatefulWidget {
   @override
+  // ignore: library_private_types_in_public_api
   _SubmitIssueScreenState createState() => _SubmitIssueScreenState();
 }
 
@@ -30,7 +34,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
 
     if (!userDoc.exists) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User not found in Firestore')),
+        const SnackBar(content: Text('User not found in Firestore')),
       );
       return;
     }
@@ -66,7 +70,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
     await FirebaseFirestore.instance.collection('issues').add(issueData);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Issue submitted successfully')),
+      const SnackBar(content: Text('Issue submitted successfully')),
     );
 
     issueController.clear();
@@ -94,7 +98,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Submit Issue')),
+      appBar: AppBar(title: const Text('Submit Issue')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -146,7 +150,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'แนบรูปภาพ',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
@@ -154,7 +158,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: _pickImages,
-                        child: Text('เลือกรูปภาพ'),
+                        child: const Text('เลือกรูปภาพ'),
                       ),
                       const SizedBox(height: 10),
                       Wrap(
@@ -171,7 +175,7 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
                                 fit: BoxFit.cover,
                               ),
                               IconButton(
-                                icon: Icon(Icons.remove_circle,
+                                icon: const Icon(Icons.remove_circle,
                                     color: Colors.red),
                                 onPressed: () => _removeImage(index),
                               ),
@@ -187,10 +191,11 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: _submitIssue,
-                  child: Text('ส่งปัญหา'),
+                  // ignore: sort_child_properties_last
+                  child: const Text('ส่งปัญหา'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-                    textStyle: TextStyle(fontSize: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

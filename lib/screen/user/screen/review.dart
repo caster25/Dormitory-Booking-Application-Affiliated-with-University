@@ -91,7 +91,7 @@ class DormDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ReadReviewsScreen(),
+                  const ReadReviewsScreen(),
                 ],
               ),
             ),
@@ -226,6 +226,7 @@ class WriteReviewScreen extends StatefulWidget {
   const WriteReviewScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _WriteReviewScreenState createState() => _WriteReviewScreenState();
 }
 

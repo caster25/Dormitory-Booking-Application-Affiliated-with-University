@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationOwnerScreen extends StatefulWidget {
   const NotificationOwnerScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NotificationOwnerScreenState createState() =>
       _NotificationOwnerScreenState();
 }
@@ -35,6 +37,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('notifications')
           .where('type', isEqualTo: 'booking')
+          .where('ownerId', isEqualTo: _ownerId) // หากต้องการกรองโดย ownerId
           .get();
 
       List<Map<String, dynamic>> notifications = [];
@@ -42,46 +45,56 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-        // ดึงข้อมูลหอพักที่เกี่ยวข้อง
         DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
             .collection('dormitories')
             .doc(data['dormitoryId'])
             .get();
 
-        // ตรวจสอบว่าหอพักมีอยู่จริงหรือไม่
         if (dormitorySnapshot.exists) {
           String dormitoryName =
               dormitorySnapshot.get('name') ?? 'Unnamed Dormitory';
 
-          // ดึงข้อมูล ownerId จากหอพัก
-          String ownerId = dormitorySnapshot.get('ownerId') ?? 'Unknown Owner';
+          Map<String, dynamic>? dormitoryData =
+              dormitorySnapshot.data() as Map<String, dynamic>?;
 
-          // ดึงข้อมูลผู้ใช้ที่เป็นเจ้าของ
+          String ownerId =
+              dormitoryData != null && dormitoryData.containsKey('ownerId')
+                  ? dormitoryData['ownerId']
+                  : 'Unknown Owner';
+
           DocumentSnapshot ownerSnapshot = await FirebaseFirestore.instance
               .collection('users')
               .doc(ownerId)
               .get();
 
-          String userName = ownerSnapshot.get('username') ?? 'Unnamed User';
+          if (ownerSnapshot.exists) {
+            // ตรวจสอบว่ามีเอกสารผู้ใช้หรือไม่
+            String userName = ownerSnapshot.get('username') ?? 'Unnamed User';
+            Timestamp? timestamp = data['timestamp'];
+            DateTime? notificationTime;
 
-          // ดึงข้อมูล timestamp
-          Timestamp? timestamp = data['timestamp'];
-          DateTime? notificationTime;
+            if (timestamp != null) {
+              notificationTime = timestamp.toDate();
+            }
 
-          if (timestamp != null) {
-            notificationTime = timestamp.toDate();
+            notifications.add({
+              'dormitoryName': dormitoryName,
+              'userName': userName,
+              'message': data['message'] ?? 'No message',
+              'timestamp': notificationTime,
+            });
+          } else {
+            // ถ้าไม่พบผู้ใช้ ให้เพิ่มข้อมูลที่ไม่มีชื่อผู้ใช้
+            notifications.add({
+              'dormitoryName': dormitoryName,
+              'userName': 'Unnamed User', // หรือข้อความที่คุณต้องการ
+              'message': data['message'] ?? 'No message',
+              'timestamp': null,
+            });
           }
-
-          notifications.add({
-            'dormitoryName': dormitoryName,
-            'userName': userName,
-            'message': data['message'] ?? 'No message',
-            'timestamp': notificationTime,
-          });
         }
       }
 
-      // เรียงลำดับ notifications ตาม timestamp โดยให้ล่าสุดอยู่บนสุด
       notifications.sort((a, b) {
         DateTime aTime =
             a['timestamp'] ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -92,9 +105,14 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
 
       setState(() {
         _notifications = notifications;
+        _isLoading =
+            false; // เปลี่ยน _isLoading เป็น false หลังจากโหลดข้อมูลเสร็จ
       });
     } catch (e) {
       print('Error fetching notifications: $e');
+      setState(() {
+        _isLoading = false; // เปลี่ยน _isLoading เป็น false เมื่อมีข้อผิดพลาด
+      });
     }
   }
 
@@ -143,7 +161,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.home,
                                     color: Colors.blueAccent,
                                   ),
@@ -159,7 +177,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const SizedBox(height: 5),
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.person,
                                     color: Colors.green,
                                   ),
@@ -175,7 +193,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const SizedBox(height: 5),
                               Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.access_time,
                                     color: Colors.orange,
                                   ),

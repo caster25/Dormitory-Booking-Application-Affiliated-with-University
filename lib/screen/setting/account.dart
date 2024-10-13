@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,7 +14,7 @@ class AccountInfoScreen extends StatefulWidget {
 
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
   late Future<UserProfile> _userProfile;
-  // ignore: unused_field
+  // ignore: unused_field, prefer_final_fields
   bool _isPasswordVisible = false; // Control visibility of password
   final _newPasswordController = TextEditingController(); // New password controller
 

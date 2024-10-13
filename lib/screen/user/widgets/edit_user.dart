@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/user/screen/homepage.dart';
 import 'package:flutter/material.dart';
@@ -166,14 +168,14 @@ class _EditUserState extends State<EditUser> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: _confirmUpdate, // แทนที่การบันทึกด้วยการยืนยัน
-                    child: const Text('บันทึก', style: TextStyle(fontSize: 18)),
+                    onPressed: _confirmUpdate,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
-                    ),
+                    ), // แทนที่การบันทึกด้วยการยืนยัน
+                    child: const Text('บันทึก', style: TextStyle(fontSize: 18)),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -184,13 +186,13 @@ class _EditUserState extends State<EditUser> {
                         (route) => false,
                       );
                     },
-                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 18)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
+                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),

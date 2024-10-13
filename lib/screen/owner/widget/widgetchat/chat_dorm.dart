@@ -5,9 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChatSelectionScreen extends StatefulWidget {
   final String chatGroupId;
 
-  ChatSelectionScreen({required this.chatGroupId});
+  // ignore: use_key_in_widget_constructors
+  const ChatSelectionScreen({required this.chatGroupId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChatSelectionScreenState createState() => _ChatSelectionScreenState();
 }
 
@@ -25,6 +27,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ToggleButtons(
+              // ignore: sort_child_properties_last
               children: const [
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -60,7 +63,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
           .get(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -68,7 +71,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
         }
 
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return Center(child: Text('ไม่มีข้อมูลห้องแชท'));
+          return const Center(child: Text('ไม่มีข้อมูลห้องแชท'));
         }
 
         // ดึงข้อมูลจาก snapshot
@@ -77,7 +80,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
 
         // ตรวจสอบว่ามี chatRoomIds หรือไม่
         if (chatRoomIds.isEmpty) {
-          return Center(child: Text('ไม่มีห้องแชทในกลุ่มนี้'));
+          return const Center(child: Text('ไม่มีห้องแชทในกลุ่มนี้'));
         }
 
         return ListView.builder(
@@ -110,7 +113,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
           .get(),
       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {
@@ -118,7 +121,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
         }
 
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return Center(child: Text('ไม่มีข้อมูลกลุ่มแชท'));
+          return const Center(child: Text('ไม่มีข้อมูลกลุ่มแชท'));
         }
 
         // ดึงข้อมูลจาก snapshot
@@ -127,7 +130,7 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
 
         // ตรวจสอบว่ามี groupDetails หรือไม่
         if (groupDetails.isEmpty) {
-          return Center(child: Text('ไม่มีข้อมูลกลุ่มแชทในกลุ่มนี้'));
+          return const Center(child: Text('ไม่มีข้อมูลกลุ่มแชทในกลุ่มนี้'));
         }
 
         return ListView.builder(
@@ -156,7 +159,8 @@ class _ChatSelectionScreenState extends State<ChatSelectionScreen> {
 class ChatRoomScreen extends StatelessWidget {
   final String chatRoomId;
 
-  ChatRoomScreen({required this.chatRoomId});
+  // ignore: use_key_in_widget_constructors
+  const ChatRoomScreen({required this.chatRoomId});
 
   @override
   Widget build(BuildContext context) {
