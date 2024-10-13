@@ -21,11 +21,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _dormitoryNameController =
-      TextEditingController();
-  final TextEditingController _dormitoryAddressController =
-      TextEditingController();
-  // ignore: prefer_final_fields, unused_field
   bool _acceptTerms = false;
 
   final auth = FirebaseAuth.instance;
@@ -76,8 +71,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
             'fullname': _fullnameController.text,
             'numphone': _numphoneController.text,
             'email': _emailController.text,
-            'dormitoryname': _dormitoryNameController.text,
-            'dormitoryaddress':_dormitoryAddressController.text,
+            'profilePictureURL': '',
             'role': 'owner',
           });
           _formKey.currentState!.reset();
@@ -209,28 +203,6 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     }
                     if (!RegExp(r'^\d{10}$').hasMatch(value)) {
                       return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: _dormitoryNameController,
-                  decoration: _buildInputDecoration('ชื่อหอพัก'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกชื่อหอพัก';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 30),
-                TextFormField(
-                  controller: _dormitoryAddressController,
-                  decoration: _buildInputDecoration('ที่อยู่หอพัก'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกที่อยู่หอพัก';
                     }
                     return null;
                   },

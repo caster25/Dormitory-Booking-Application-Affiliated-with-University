@@ -230,10 +230,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ? FileImage(_tempImage!)
                               : _profileImageUrl != null
                                   ? NetworkImage(_profileImageUrl!)
-                                  : const NetworkImage(
-                                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s')
-                                      as ImageProvider,
+                                  : null, // เปลี่ยนเป็น null ถ้าไม่มีรูปภาพ
                           radius: 40,
+                          child: _tempImage == null &&
+                                  _profileImageUrl == null // ตรวจสอบว่าไม่มีภาพ
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 40, // ขนาดของไอคอน
+                                  color: Colors.white, // สีของไอคอน
+                                )
+                              : null, // หากมีภาพให้ไม่แสดงไอคอน
                         ),
                         const SizedBox(width: 16),
                         Column(
@@ -250,18 +256,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    height: 180,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                        fit: BoxFit.cover,
-                      ),
                     ),
                   ),
                   const SizedBox(height: 16),

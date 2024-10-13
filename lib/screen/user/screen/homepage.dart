@@ -32,7 +32,6 @@ class NavigationDrawer extends StatelessWidget {
         .get();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -49,47 +48,53 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context) => Container(
-      color: const Color.fromARGB(255, 153, 85, 240),
-      padding: EdgeInsets.only(
-        top: 24 + MediaQuery.of(context).padding.top,
-        bottom: 24,
-      ),
-      child: FutureBuilder<DocumentSnapshot>(
-        future: getUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Error fetching user data'));
-          } else if (snapshot.hasData && snapshot.data!.exists) {
-            var userData = snapshot.data!.data() as Map<String, dynamic>;
-            return Column(
-              children: [
-                CircleAvatar(
-                  radius: 52,
-                  backgroundImage: userData['profilePictureURL'] != null
-                      ? NetworkImage(userData['profilePictureURL'])
-                      : const AssetImage('assets/images/default_avatar.png')
-                          as ImageProvider,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  userData['username'] ?? 'User Name',
-                  style: const TextStyle(fontSize: 28, color: Colors.white),
-                ),
-                Text(
-                  user.email ?? 'user@example.com',
-                  style: const TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('No user data found'));
-          }
-        },
-      ),
-    );
-
+        color: const Color.fromARGB(255, 153, 85, 240),
+        padding: EdgeInsets.only(
+          top: 24 + MediaQuery.of(context).padding.top,
+          bottom: 24,
+        ),
+        child: FutureBuilder<DocumentSnapshot>(
+          future: getUserData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error fetching user data'));
+            } else if (snapshot.hasData && snapshot.data!.exists) {
+              var userData = snapshot.data!.data() as Map<String, dynamic>;
+              return Column(
+                children: [
+                  CircleAvatar(
+                    radius: 52,
+                    backgroundImage: userData['profilePictureURL'] != null
+                        ? NetworkImage(userData['profilePictureURL'])
+                        : null, // กำหนดให้เป็น null หากไม่มี URL
+                    child: userData['profilePictureURL'] ==
+                            null // ตรวจสอบว่ามี URL หรือไม่
+                        ? const Icon(
+                            Icons.person,
+                            size: 52, // ขนาดไอคอน
+                            color: Colors.white, // สีของไอคอน
+                          )
+                        : null, // หากมี URL ให้ใช้ backgroundImage แทน
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    userData['username'] ?? 'User Name',
+                    style: const TextStyle(fontSize: 28, color: Colors.white),
+                  ),
+                  Text(
+                    user.email ?? 'user@example.com',
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No user data found'));
+            }
+          },
+        ),
+      );
 
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
@@ -193,12 +198,9 @@ class _HomepageState extends State<Homepage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar:
-            index != 2 ? getAppBar(index) : null,
+        appBar: index != 2 ? getAppBar(index) : null,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        drawer: index != 2
-            ? NavigationDrawer(user: _currentUser)
-            : null,
+        drawer: index != 2 ? NavigationDrawer(user: _currentUser) : null,
         body: IndexedStack(
           index: index,
           children: _screens,

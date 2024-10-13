@@ -3,6 +3,7 @@ import 'package:dorm_app/model/Dormitory.dart';
 import 'package:dorm_app/screen/owner/widget/details_dorm.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class DormitoryListEditScreen extends StatelessWidget {
   const DormitoryListEditScreen({super.key});
@@ -11,6 +12,7 @@ class DormitoryListEditScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the current owner's user ID
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final formatNumber = NumberFormat('#,##0');
 
     return Scaffold(
       appBar: AppBar(
@@ -44,6 +46,10 @@ class DormitoryListEditScreen extends StatelessWidget {
                   snapshot.data!.docs[index].data() as Map<String, dynamic>;
               String dormId = snapshot.data!.docs[index].id;
 
+              // แปลง imageUrl เป็น List<String>
+              List<String> imageUrlList =
+                  List<String>.from(dormitoryData['imageUrl'] ?? []);
+
               // สร้างอ็อบเจ็กต์ Dormitory
               var dormitory = Dormitory(
                   id: dormId,
@@ -61,7 +67,7 @@ class DormitoryListEditScreen extends StatelessWidget {
                       dormitoryData['electricityRate']?.toInt() ?? 0,
                   waterRate: dormitoryData['waterRate']?.toInt() ?? 0,
                   rating: dormitoryData['rating']?.toDouble() ?? 0,
-                  imageUrl: dormitoryData['imageUrl'] ?? [],
+                  imageUrl: imageUrlList, // ใช้ imageUrl ที่แปลงแล้ว
                   tenants: List<String>.from(dormitoryData['tenants'] ?? []),
                   equipment: dormitoryData['equipment'] ?? '-',
                   address: dormitoryData['address'] ?? '',
@@ -72,10 +78,9 @@ class DormitoryListEditScreen extends StatelessWidget {
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
-                  leading: (dormitoryData['imageUrl'] != null &&
-                          dormitoryData['imageUrl'].isNotEmpty)
+                  leading: (imageUrlList.isNotEmpty)
                       ? Image.network(
-                          dormitoryData['imageUrl'],
+                          imageUrlList[0], // แสดงภาพแรกจากอาเรย์
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
@@ -89,7 +94,7 @@ class DormitoryListEditScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          'ราคา: ฿${dormitory.price.toStringAsFixed(0)} บาท/เดือน'),
+                          'ราคา: ฿${formatNumber.format(dormitory.price)} บาท/เดือน'),
                       Text('ห้องว่าง: ${dormitory.availableRooms} ห้อง'),
                     ],
                   ),

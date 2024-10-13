@@ -5,6 +5,7 @@ import 'package:dorm_app/screen/owner/widget/list_of_bookings.dart';
 import 'package:dorm_app/screen/owner/widget/list_of_tenants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class OwnerDormListScreen extends StatelessWidget {
   const OwnerDormListScreen({super.key});
@@ -15,25 +16,19 @@ class OwnerDormListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current user's ID
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final formatNumber = NumberFormat('#,##0');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('รายการหอพัก'),
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const Ownerhome()),
-            (route) => false,
-          ),
-          icon: const Icon(Icons.arrow_back),
-        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         // Filter dormitories by the current owner's submittedBy ID
         stream: FirebaseFirestore.instance
             .collection('dormitories')
-            .where('submittedBy', isEqualTo: currentUserId) // Filter by submittedBy
+            .where('submittedBy',
+                isEqualTo: currentUserId) // Filter by submittedBy
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,13 +57,21 @@ class OwnerDormListScreen extends StatelessWidget {
               String chatGroupId = dormitory['chatGroupId'] ?? '';
               String chatRooomId = dormitory['chatRooomId'] ?? '';
 
-              // Handle imageUrl as either String or List<String>
+
               var imageUrlField = dormitory['imageUrl'];
               String? firstImageUrl;
-              if (imageUrlField is String) {
-                firstImageUrl = imageUrlField;
-              } else if (imageUrlField is List<String> && imageUrlField.isNotEmpty) {
-                firstImageUrl = imageUrlField[0]; // Use the first image in the list
+              if (imageUrlField is List && imageUrlField.isNotEmpty) {
+                firstImageUrl =
+                    imageUrlField[0]; 
+              } else {
+                firstImageUrl =
+                    'https://via.placeholder.com/150'; 
+              }
+
+              List<String> chatRoomIds = [];
+              if (dormitory['chatRoomId'] != null &&
+                  dormitory['chatRoomId'] is List) {
+                chatRoomIds = List<String>.from(dormitory['chatRoomId']);
               }
 
               // Handle tenants
@@ -95,7 +98,7 @@ class OwnerDormListScreen extends StatelessWidget {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ราคา: ฿${dormPrice.toStringAsFixed(2)} บาท/เดือน'),
+                      Text('ราคา: ฿${formatNumber.format(dormPrice)} บาท/เดือน'),
                       Text('ห้องว่าง: $availableRooms ห้อง'),
                       Text(
                         'ผู้เช่า: ${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน',
@@ -131,7 +134,8 @@ class OwnerDormListScreen extends StatelessWidget {
                                 builder: (context) => ListOfBookings(
                                   dormitoryId: dormId,
                                   ownerId: currentUserId,
-                                  chatRoomId: chatRooomId, // Use chatGroupId from dormitorytest
+                                  chatRoomId:
+                                      chatRooomId, // Use chatGroupId from dormitorytest
                                 ),
                               ),
                             );
@@ -154,7 +158,8 @@ class OwnerDormListScreen extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => OwnerAllChatScreen(
                                   ownerId: currentUserId,
-                                  chatGroupId: chatGroupId, // Use chatGroupId from dormitory
+                                  chatGroupId:
+                                      chatGroupId, // Use chatGroupId from dormitory
                                   userId: getUserId(),
                                 ),
                               ),

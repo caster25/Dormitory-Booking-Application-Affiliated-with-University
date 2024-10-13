@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:dorm_app/model/Dormitory.dart';
+import 'package:intl/intl.dart';
 
 class Details extends StatelessWidget {
   final Dormitory dormitory;
   final String dormitoryId;
+  
 
   const Details({
     super.key,
@@ -13,6 +15,7 @@ class Details extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final formatNumber = NumberFormat('#,##0');
     return Scaffold(
       appBar: AppBar(
         title: Text('รายละเอียดหอพัก ${dormitory.name}'),
@@ -28,11 +31,9 @@ class Details extends StatelessWidget {
                 'ชื่อหอพัก: ${dormitory.name}',
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              Text('ราคา: ฿${dormitory.price}'),
-              const SizedBox(height: 8),
             Text('ประเภทห้อง: ${dormitory.roomType}'),
             Text('ผู้พักอาศัย: ${dormitory.occupants} คน'),
-            Text('ราคา: ${dormitory.price} บาท/เดือน'),
+            Text('ราคา: ${formatNumber.format(dormitory.price) } บาท/เดือน'),
             Text('ค่ามัดจำ: ${dormitory.securityDeposit} บาท'),
             Text('ค่าบำรุงรักษา: ${dormitory.maintenanceFee} บาท'),
             Text('ค่ารายเดือน: ${dormitory.monthlyRent} บาท'),

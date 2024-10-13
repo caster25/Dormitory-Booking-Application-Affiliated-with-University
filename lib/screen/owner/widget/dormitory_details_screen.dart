@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class DormitoryDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> dormitory;
@@ -46,6 +47,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
   List<String> _imageUrls = []; // List สำหรับเก็บ URL ของรูปภาพ
   List<File> _selectedImages = [];
+  final NumberFormat _formatter = NumberFormat('#,##0');
 
   @override
   void initState() {
@@ -75,6 +77,20 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
     _ruleController.text = widget.dormitory['rule'] ?? '';
     _contaxtController.text = widget.dormitory['contaxt'] ?? '';
     _loadImages();
+  }
+
+  void _formatPrice() {
+    String text =
+        _priceController.text.replaceAll(',', ''); // เอาเครื่องหมาย , ออกก่อน
+    if (text.isNotEmpty) {
+      double value = double.parse(text);
+      String formatted = _formatter.format(value); // จัดรูปแบบใหม่
+      _priceController.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(
+            offset: formatted.length), // ตั้งตำแหน่ง cursor ใหม่
+      );
+    }
   }
 
   Future<void> _loadImages() async {
@@ -374,6 +390,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                   decoration: const InputDecoration(labelText: 'ราคา'),
                   keyboardType: TextInputType.number,
                 ),
+
                 TextField(
                   controller: _availableRoomsController,
                   decoration: const InputDecoration(labelText: 'ห้องว่าง'),

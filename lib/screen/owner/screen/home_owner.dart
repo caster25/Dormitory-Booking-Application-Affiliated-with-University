@@ -3,7 +3,6 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/owner/widget/%E0%B8%B7widget_nitification/notification_owner.dart';
 import 'package:dorm_app/screen/owner/widget/ownerdorm_list_screen.dart';
-import 'package:dorm_app/screen/owner/widget/widgetchat/chat_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
 import 'package:dorm_app/screen/owner/widget/profile_owner.dart';
@@ -62,7 +61,7 @@ class _OwnerhomeState extends State<Ownerhome> {
       // แสดงหน้าจออื่นๆ หากยังไม่ดึง chatGroupId ได้
       _screens.addAll([
         const DormitoryListScreen(),
-        const OwnerDormListScreen(), 
+        const OwnerDormListScreen(),
         const Profileowner(),
       ]);
     }
@@ -71,8 +70,8 @@ class _OwnerhomeState extends State<Ownerhome> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: index != 2 ? getAppBar(index) : null,
-        drawer: index != 2
+        appBar: index != 3 ? getAppBar(index) : null,
+        drawer: index != 3
             ? NavigationDrawer(user: _currentUser, userData: userData)
             : null,
         body: IndexedStack(
@@ -85,7 +84,7 @@ class _OwnerhomeState extends State<Ownerhome> {
           items: const [
             Icon(Icons.home, size: 30),
             Icon(Icons.domain_rounded, size: 30),
-            Icon(Icons.domain_rounded, size: 30),
+            Icon(Icons.person, size: 30),
           ],
           color: const Color.fromARGB(255, 153, 85, 240),
           buttonBackgroundColor: const Color.fromARGB(255, 153, 85, 240),
@@ -175,8 +174,14 @@ class NavigationDrawer extends StatelessWidget {
                     radius: 52,
                     backgroundImage: userData['profilePictureURL'] != null
                         ? NetworkImage(userData['profilePictureURL'])
-                        : const AssetImage('assets/images/default_avatar.png')
-                            as ImageProvider,
+                        : null,
+                    child: userData['profilePictureURL'] == null
+                        ? const Icon(
+                            Icons.person,
+                            size: 52,
+                            color: Colors.white,
+                          )
+                        : null,
                   ),
                   const SizedBox(height: 12),
                   Text(

@@ -89,48 +89,61 @@ class _UserScreenState extends State<UserScreen> {
         child: currentUser == null
             ? const Center(
                 child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
-            : Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzmmPFs5rDiVo_R3ivU_J_-CaQGyvJj-ADNQ&s'),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    userData?['username'],
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+            : SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 52,
+                      backgroundImage: userData?['profilePictureURL'] != null
+                          ? NetworkImage(userData!['profilePictureURL'])
+                          : null,
+                      child: userData?['profilePictureURL'] == null
+                          ? const Icon(
+                              Icons.person,
+                              size: 52,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
-                  ),
-                  ProfileInfoRow(
-                    icon: Icons.person,
-                    text: userData?['fullname'],
-                  ),
-                  ProfileInfoRow(
-                    icon: Icons.phone,
-                    text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                EditUser(userId: currentUser!.uid)),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 73, 177, 247),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 16),
+                    Text(
+                      userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    child: const Text('แก้ไขข้อมูล'),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    ProfileInfoRow(
+                      icon: Icons.person,
+                      text: userData?['fullname'] ?? 'ไม่มีข้อมูล',
+                    ),
+                    ProfileInfoRow(
+                      icon: Icons.phone,
+                      text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EditUser(userId: currentUser!.uid)),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 73, 177, 247),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text('แก้ไขข้อมูล'),
+                    ),
+                  ],
+                ),
               ),
       ),
     );
@@ -148,21 +161,20 @@ class ProfileInfoRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
         children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.grey),
-              const SizedBox(width: 16),
-              Text(
-                text,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
+          Icon(icon, color: Colors.grey),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 16),
+              overflow: TextOverflow.ellipsis, // Handle overflow
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
-            onPressed: () {},
+            onPressed: () {}, // ปุ่มแก้ไขสามารถใส่ฟังก์ชันการทำงานได้
           ),
         ],
       ),

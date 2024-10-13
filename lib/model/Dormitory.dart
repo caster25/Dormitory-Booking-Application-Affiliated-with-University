@@ -12,7 +12,7 @@ class Dormitory {
   int electricityRate;
   int waterRate;
   double rating;
-  String imageUrl; // แก้ไขจาก imageUrls ให้ตรงกับข้อมูล
+  List<String> imageUrl;// แก้ไขจาก imageUrls ให้ตรงกับข้อมูล
   List<String> tenants;
   String equipment;
   String address;
@@ -46,7 +46,7 @@ class Dormitory {
   // Method to create a Dormitory instance from Firestore data
   factory Dormitory.fromFirestore(Map<String, dynamic> data, String id) {
     return Dormitory(
-      id: id,
+      id: data['id'] ?? '',
       name: data['name'] ?? '',
       roomType: data['roomType'] ?? '',
       occupants: data['occupants'] ?? '',
@@ -59,7 +59,7 @@ class Dormitory {
       electricityRate: data['electricityRate']?.toInt() ?? 0,
       waterRate: data['waterRate']?.toInt() ?? 0,
       rating: data['rating']?.toDouble() ?? 0.0,
-      imageUrl: data['imageUrl'] ?? '',
+      imageUrl: List<String>.from(data['imageUrl'] ?? []),
       tenants: List<String>.from(data['tenants'] ?? []),
       equipment: data['equipment'] ?? '-',
       address: data['address'] ?? '',
@@ -93,4 +93,6 @@ class Dormitory {
       'submittedBy': submittedBy, // เพิ่ม submittedBy
     };
   }
+
+  static fromMap(Map<String, dynamic> data) {}
 }

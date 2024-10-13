@@ -3,6 +3,7 @@ import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DormitoryListScreen extends StatelessWidget {
   const DormitoryListScreen({super.key});
@@ -10,6 +11,7 @@ class DormitoryListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final formatNumber = NumberFormat('#,##0');
 
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
@@ -116,7 +118,7 @@ class DormitoryListScreen extends StatelessWidget {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('ราคา: $dormPrice บาท/เดือน'),
+                            Text('ราคา: ${formatNumber.format(dormPrice)}  บาท/เดือน'),
                             Text('ห้องว่าง: $availableRooms ห้อง'),
                           ],
                         ),

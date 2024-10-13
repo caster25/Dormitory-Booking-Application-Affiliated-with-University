@@ -172,7 +172,7 @@ class ListOfBookings extends StatelessWidget {
                         .update({
                       'isStaying': dormitoryId,
                       'currentDormitoryId': dormitoryId,
-                      'bookedDormitory': '',
+                      'bookedDormitory': null,
                     });
 
                     // เพิ่มการแจ้งเตือนเมื่อการจองสำเร็จ
