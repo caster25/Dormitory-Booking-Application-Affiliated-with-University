@@ -156,13 +156,18 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     if (dormitorySnapshot.exists) {
       var dormitoryData = dormitorySnapshot.data() as Map<String, dynamic>;
 
+      // ดึงข้อมูลภาพจาก Array
+      List<dynamic> imageUrls = dormitoryData['imageUrl'] ?? [];
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('รายละเอียดหอพัก: ${dormitoryData['name']}'),
-            content: SingleChildScrollView(
-              child: ListBody(
+            content: Container(
+              width: double.maxFinite, // กำหนดความกว้างให้เต็มที่
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // ปรับให้มีขนาดตามเนื้อหา
                 children: <Widget>[
                   Text('ที่อยู่: ${dormitoryData['address']}'),
                   Text(
@@ -176,9 +181,21 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   Text('ประเภทห้อง: ${dormitoryData['roomType']}'),
                   Text('จำนวนผู้อาศัย: ${dormitoryData['occupants']} คน'),
                   Text('กฎของหอพัก: ${dormitoryData['rule']}'),
-                  Text(
-                      'อุปกรณ์ในห้อง: ${dormitoryData['equipment']}'),
-                  Image.network(dormitoryData['imageUrl']),
+                  Text('อุปกรณ์ในห้อง: ${dormitoryData['equipment']}'),
+
+                  // ใช้ PageView เพื่อแสดงภาพทั้งหมด
+                  Container(
+                    height: 200, // กำหนดความสูงของภาพ
+                    child: PageView.builder(
+                      itemCount: imageUrls.length,
+                      itemBuilder: (context, index) {
+                        return Image.network(
+                          imageUrls[index],
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

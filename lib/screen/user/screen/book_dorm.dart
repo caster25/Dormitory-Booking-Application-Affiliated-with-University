@@ -68,7 +68,8 @@ class _BookDormState extends State<BookDorm> {
                   userId: widget.userId,
                   ownerId: ownerId,
                   dormitoryId: dormitoryId,
-                  chatRoomId: matchingChatRoomId!, // Use the matching chatRoomId
+                  chatRoomId:
+                      matchingChatRoomId!, // Use the matching chatRoomId
                 ),
               ),
             );
@@ -145,13 +146,15 @@ class _BookDormState extends State<BookDorm> {
               if (!dormSnapshot.hasData || !dormSnapshot.data!.exists) {
                 return const Center(child: Text('ไม่พบข้อมูลหอพัก'));
               }
-
               var dormData = dormSnapshot.data!.data() as Map<String, dynamic>;
               String dormName = dormData['name'] ?? 'ไม่มีชื่อ';
               double price = dormData['price']?.toDouble() ?? 0;
-              String imageUrl = dormData['imageUrl'];
-              String ownerId =
-                  dormData['submittedBy'] ?? ''; // Get ownerId from dormData
+
+// ตรวจสอบว่า imageUrl เป็น List หรือไม่ และดึงรูปภาพแรก
+              List<dynamic> imageUrls = dormData['imageUrl'] ?? [];
+              String imageUrl = imageUrls.isNotEmpty ? imageUrls[0] : '';
+
+              String ownerId = dormData['submittedBy'] ?? '';
 
               return Card(
                 margin:
