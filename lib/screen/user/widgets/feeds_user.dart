@@ -296,7 +296,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       ),
                       SizedBox(width: 8), // เพิ่มระยะห่างระหว่างไอคอนกับข้อความ
                       Text(
-                        'หอพักที่แนนนำ',
+                        'หอพักที่แนะนำ',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

@@ -22,7 +22,7 @@ class NavigationDrawer extends StatelessWidget {
   const NavigationDrawer({super.key, required this.user});
 
   final User user;
-  
+
   Future<DocumentSnapshot> getUserData() async {
     return await FirebaseFirestore.instance
         .collection('users')
@@ -238,6 +238,7 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   AppBar getAppBar(int index) {
     return AppBar(
+      backgroundColor: Color.fromARGB(255, 153, 85, 240),
       title: getTitle(index),
       actions: [
         IconButton(
@@ -265,4 +266,3 @@ class _OwnerhomeState extends State<Ownerhome> {
     }
   }
 }
-

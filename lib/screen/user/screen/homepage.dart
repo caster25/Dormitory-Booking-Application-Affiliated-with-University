@@ -1,6 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:dorm_app/screen/user/widgets/chat.dart';
-// import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -246,6 +246,7 @@ class _HomepageState extends State<Homepage> {
 
   AppBar getAppBar(int index) {
     return AppBar(
+      backgroundColor: Color.fromARGB(255, 153, 85, 240),
       actions: [
         IconButton(
           onPressed: () {
