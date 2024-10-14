@@ -45,7 +45,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(10)),
               child: Container(
-                height: 170,
+                height: 130,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage(
@@ -58,57 +58,41 @@ class _FeedsScreenState extends State<FeedsScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // จัดเรียงให้อยู่ในพื้นที่ที่เหมาะสม
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, // ใช้สีที่อ่านง่าย
+              child: SingleChildScrollView(
+                // Allow scrolling if needed
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          dorm['rating'] != null && dorm['rating'] > 0
-                              ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
-                              : 'ยังไม่มีการรีวิว',
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      ],
+                          const SizedBox(height: 5),
+                          Text(
+                            'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            dorm['rating'] != null && dorm['rating'] > 0
+                                ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
+                                : 'ยังไม่มีการรีวิว',
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  // const SizedBox(width: 8), // เพิ่มช่องว่างระหว่างข้อความและปุ่ม
-                  // IconButton(
-                  //   iconSize: 24, // ปรับขนาดไอคอนให้เล็กลง
-                  //   icon: Icon(
-                  //     isFavorite ? Icons.favorite : Icons.favorite_border,
-                  //     color: isFavorite ? Colors.red : Colors.grey,
-                  //   ),
-                  //   onPressed: () async {
-                  //     await _toggleFavorite(dormId);
-                  //     setState(() {
-                  //       isFavorite = !isFavorite;
-                  //       if (isFavorite) {
-                  //         favorites.add(dormId); // เพิ่มหอพักใน favorites
-                  //       } else {
-                  //         favorites.remove(dormId); // ลบหอพักออกจาก favorites
-                  //       }
-                  //     });
-                  //   },
-                  // ),
-                ],
+                    // Icon button can be added here
+                  ],
+                ),
               ),
             ),
           ],

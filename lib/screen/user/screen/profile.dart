@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
-import 'package:dorm_app/screen/index.dart';
 import 'package:dorm_app/screen/setting/detail_dromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:dorm_app/screen/setting/submitIssue.dart';

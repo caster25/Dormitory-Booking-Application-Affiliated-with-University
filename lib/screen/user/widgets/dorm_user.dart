@@ -48,7 +48,7 @@ class _DormScreenState extends State<DormScreen> {
                   DropdownButton<String>(
                     value:
                         selectedFilterType.isEmpty ? null : selectedFilterType,
-                    hint: const Text('เลือกประเภทการกรอง'),
+                    hint: const Text('เลือกการกรอง'),
                     items: const [
                       DropdownMenuItem(
                         value: 'price',
@@ -282,7 +282,8 @@ class _DormScreenState extends State<DormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text( '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                Text(
+                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text('ราคา ${formatNumber.format(dorm['price'])} บาท',

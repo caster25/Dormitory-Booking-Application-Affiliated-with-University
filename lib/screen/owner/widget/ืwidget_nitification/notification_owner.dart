@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationOwnerScreen extends StatefulWidget {
   const NotificationOwnerScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _NotificationOwnerScreenState createState() =>
       _NotificationOwnerScreenState();
 }

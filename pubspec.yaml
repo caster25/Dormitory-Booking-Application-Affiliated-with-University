@@ -75,11 +75,6 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  #   flutter_localizations:
-  #     sdk: flutter
-  #   provider: ^6.0.0
-  #   flutter_local_notifications: ^15.0.0
-  #   shared_preferences: ^2.0.15
 
   # flutter:
   #   assets:
