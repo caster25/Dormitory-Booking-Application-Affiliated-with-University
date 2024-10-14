@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-// ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationOwnerScreen extends StatefulWidget {
   const NotificationOwnerScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _NotificationOwnerScreenState createState() =>
       _NotificationOwnerScreenState();
 }
@@ -37,7 +35,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('notifications')
           .where('type', isEqualTo: 'booking')
-          .where('ownerId', isEqualTo: _ownerId) // หากต้องการกรองโดย ownerId
+          .where('ownerId', isEqualTo: _ownerId) // กรองโดย ownerId
           .get();
 
       List<Map<String, dynamic>> notifications = [];
@@ -45,56 +43,42 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
+        // ดึงข้อมูล dormitory โดยใช้ dormitoryId
         DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
             .collection('dormitories')
             .doc(data['dormitoryId'])
             .get();
 
-        if (dormitorySnapshot.exists) {
-          String dormitoryName =
-              dormitorySnapshot.get('name') ?? 'Unnamed Dormitory';
+        String dormitoryName = dormitorySnapshot.exists
+            ? dormitorySnapshot.get('name') ?? 'Unnamed Dormitory'
+            : 'Unnamed Dormitory';
 
-          Map<String, dynamic>? dormitoryData =
-              dormitorySnapshot.data() as Map<String, dynamic>?;
+        // ดึงข้อมูล user โดยใช้ userId
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(data['userId'])
+            .get();
 
-          String ownerId =
-              dormitoryData != null && dormitoryData.containsKey('ownerId')
-                  ? dormitoryData['ownerId']
-                  : 'Unknown Owner';
+        String userName = userSnapshot.exists
+            ? userSnapshot.get('username') ?? 'Unnamed User'
+            : 'Unnamed User';
 
-          DocumentSnapshot ownerSnapshot = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(ownerId)
-              .get();
+        Timestamp? timestamp = data['timestamp'];
+        DateTime? notificationTime;
 
-          if (ownerSnapshot.exists) {
-            // ตรวจสอบว่ามีเอกสารผู้ใช้หรือไม่
-            String userName = ownerSnapshot.get('username') ?? 'Unnamed User';
-            Timestamp? timestamp = data['timestamp'];
-            DateTime? notificationTime;
-
-            if (timestamp != null) {
-              notificationTime = timestamp.toDate();
-            }
-
-            notifications.add({
-              'dormitoryName': dormitoryName,
-              'userName': userName,
-              'message': data['message'] ?? 'No message',
-              'timestamp': notificationTime,
-            });
-          } else {
-            // ถ้าไม่พบผู้ใช้ ให้เพิ่มข้อมูลที่ไม่มีชื่อผู้ใช้
-            notifications.add({
-              'dormitoryName': dormitoryName,
-              'userName': 'Unnamed User', // หรือข้อความที่คุณต้องการ
-              'message': data['message'] ?? 'No message',
-              'timestamp': null,
-            });
-          }
+        if (timestamp != null) {
+          notificationTime = timestamp.toDate();
         }
+
+        notifications.add({
+          'dormitoryName': dormitoryName,
+          'userName': userName,
+          'message': data['message'] ?? 'No message',
+          'timestamp': notificationTime,
+        });
       }
 
+      // จัดเรียง notifications ตามเวลา
       notifications.sort((a, b) {
         DateTime aTime =
             a['timestamp'] ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -120,7 +104,23 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
     if (notificationTime == null) {
       return 'Unknown time';
     }
-    return DateFormat('dd/MM/yyyy HH:mm').format(notificationTime);
+    final Duration difference = DateTime.now().difference(notificationTime);
+
+    if (difference.inMinutes < 1) {
+      return 'เพิ่งเกิดขึ้นเมื่อไม่กี่วินาทีที่แล้ว';
+    } else if (difference.inMinutes == 1) {
+      return 'เมื่อ 1 นาทีที่แล้ว';
+    } else if (difference.inMinutes < 60) {
+      return 'เมื่อ ${difference.inMinutes} นาทีที่แล้ว';
+    } else if (difference.inHours == 1) {
+      return 'เมื่อ 1 ชั่วโมงที่แล้ว';
+    } else if (difference.inHours < 24) {
+      return 'เมื่อ ${difference.inHours} ชั่วโมงที่แล้ว';
+    } else if (difference.inDays == 1) {
+      return 'เมื่อ 1 วันที่แล้ว';
+    } else {
+      return 'เมื่อ ${difference.inDays} วันที่แล้ว';
+    }
   }
 
   @override

@@ -51,20 +51,19 @@ class OwnerDormListScreen extends StatelessWidget {
               String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
               double dormPrice = dormitory['price']?.toDouble() ?? 0;
               int availableRooms = dormitory['availableRooms']?.toInt() ?? 0;
+              String roomType = dormitory['roomType'] ?? 'ไม่มีประเภทห้อง';
+              String dormType = dormitory['dormType'] ?? 'ไม่มีประเภทหอพัก';
 
               // Get chatGroupId from the dormitory data
               String chatGroupId = dormitory['chatGroupId'] ?? '';
               String chatRooomId = dormitory['chatRooomId'] ?? '';
 
-
               var imageUrlField = dormitory['imageUrl'];
               String? firstImageUrl;
               if (imageUrlField is List && imageUrlField.isNotEmpty) {
-                firstImageUrl =
-                    imageUrlField[0]; 
+                firstImageUrl = imageUrlField[0];
               } else {
-                firstImageUrl =
-                    'https://via.placeholder.com/150'; 
+                firstImageUrl = 'https://via.placeholder.com/150';
               }
 
               List<String> chatRoomIds = [];
@@ -91,13 +90,14 @@ class OwnerDormListScreen extends StatelessWidget {
                         )
                       : const Icon(Icons.image, size: 50),
                   title: Text(
-                    dormName,
+                    '$dormName ($roomType, $dormType)',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('ราคา: ฿${formatNumber.format(dormPrice)} บาท/เดือน'),
+                      Text(
+                          'ราคา: ฿${formatNumber.format(dormPrice)} บาท/เทอม'),
                       Text('ห้องว่าง: $availableRooms ห้อง'),
                       Text(
                         'ผู้เช่า: ${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน',

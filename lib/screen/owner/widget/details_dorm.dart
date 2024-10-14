@@ -33,7 +33,7 @@ class Details extends StatelessWidget {
               ),
             Text('ประเภทห้อง: ${dormitory.roomType}'),
             Text('ผู้พักอาศัย: ${dormitory.occupants} คน'),
-            Text('ราคา: ${formatNumber.format(dormitory.price) } บาท/เดือน'),
+            Text('ราคา: ${formatNumber.format(dormitory.price) } บาท/เทอม'),
             Text('ค่ามัดจำ: ${dormitory.securityDeposit} บาท'),
             Text('ค่าบำรุงรักษา: ${dormitory.maintenanceFee} บาท'),
             Text('ค่ารายเดือน: ${dormitory.monthlyRent} บาท'),

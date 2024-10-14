@@ -178,7 +178,7 @@ class _BookDormState extends State<BookDorm> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle:
-                          Text('ราคา: ฿${price.toStringAsFixed(2)} บาท/เดือน'),
+                          Text('ราคา: ฿${price.toStringAsFixed(2)} บาท/เทอม'),
                     ),
                     // Render button only if the booking is not canceled
                     if (!_isBookingCanceled)

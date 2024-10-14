@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/user/screen/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class DormScreen extends StatefulWidget {
   const DormScreen({super.key});
@@ -17,6 +18,7 @@ class _DormScreenState extends State<DormScreen> {
   TextEditingController searchController = TextEditingController();
   List<String> favorites = [];
   late String userId;
+  final formatNumber = NumberFormat('#,##0');
 
   @override
   void initState() {
@@ -280,14 +282,17 @@ class _DormScreenState extends State<DormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(dorm['name'],
+                Text( '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text('ราคา ${dorm['price']} บาท',
+                Text('ราคา ${formatNumber.format(dorm['price'])} บาท',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text('คะแนน ${dorm['rating']}/5',
-                    style: const TextStyle(color: Colors.red)),
+                Text(
+                  dorm['rating'] != null && dorm['rating'] > 0
+                      ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
+                      : 'ยังไม่มีการรีวิว',
+                  style: const TextStyle(color: Colors.red),
+                ),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

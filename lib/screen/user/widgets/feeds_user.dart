@@ -22,72 +22,104 @@ class _FeedsScreenState extends State<FeedsScreen> {
     List<dynamic> images = dorm['imageUrl'];
     final formatNumber = NumberFormat('#,##0');
 
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 241, 229, 255),
-        borderRadius: BorderRadius.circular(10),
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return DormallDetailScreen(
+            dormId: dormId, // Pass dormId to the detail screen
+          );
+        }));
+      },
+      child: Card(
+  margin: const EdgeInsets.symmetric(vertical: 8.0), // เพิ่ม margin เพื่อให้มีระยะห่างระหว่าง card
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10), // รูปร่างของ Card
+  ),
+  elevation: 7, // เพิ่มเงาให้การ์ดดูเหมือนยกขึ้นมา
+  child: Column(
+     mainAxisSize: MainAxisSize.max, // ให้ Column ใช้ขนาดที่เหมาะสม
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+        child: Container(
+          height: 170,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(
+                images.isNotEmpty ? images[0] : 'URL_placeholder_image',
+              ),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Dorm images - ดึงรูปแรกจาก list
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(10)),
-              image: DecorationImage(
-                image: NetworkImage(
-                  images.isNotEmpty ? images[0] : '',
-                ),
-                fit: BoxFit.cover,
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // จัดเรียงให้อยู่ในพื้นที่ที่เหมาะสม
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black, // ใช้สีที่อ่านง่าย
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'คะแนน: ${dorm['rating'] ?? 'ยังไม่มีการรีวิว'}',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.black, // ใช้สีที่อ่านง่าย
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              dorm['name'], // แสดงชื่อ dormitory
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            const SizedBox(width: 8), // เพิ่มช่องว่างระหว่างข้อความและปุ่ม
+            IconButton(
+              iconSize: 24, // ปรับขนาดไอคอนให้เล็กลง
+              icon: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : Colors.grey,
               ),
+              onPressed: () async {
+                await _toggleFavorite(dormId);
+                setState(() {
+                  isFavorite = !isFavorite;
+                  if (isFavorite) {
+                    favorites.add(dormId); // เพิ่มหอพักใน favorites
+                  } else {
+                    favorites.remove(dormId); // ลบหอพักออกจาก favorites
+                  }
+                });
+              },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(
-              'ราคา: ${formatNumber.format(dorm['price'])} บาท', // แสดงราคา
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.red : Colors.grey,
-            ),
-            onPressed: () async {
-              await _toggleFavorite(dormId);
-              setState(() {
-                // อัปเดต favorites ที่จะทำให้ UI เปลี่ยนแปลง
-                isFavorite = !isFavorite;
-                if (isFavorite) {
-                  favorites.add(dormId); // เพิ่มหอพักใน favorites
-                } else {
-                  favorites.remove(dormId); // ลบหอพักออกจาก favorites
-                }
-              });
-            },
-          ),
-        ],
+          ],
+        ),
       ),
+    ],
+  ),
+),
+
     );
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchFavorites(); // เรียกใช้ฟังก์ชันเพื่อดึง favorites
+    _fetchFavorites();
   }
 
   Future<void> _fetchFavorites() async {
@@ -201,41 +233,48 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               Positioned(
                                 bottom: 16,
                                 left: 16,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      dorm['name'],
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 10.0,
-                                            color: Colors.black,
-                                            offset: Offset(2.0, 2.0),
-                                          ),
-                                        ],
+                                child: Container(
+                                  padding: const EdgeInsets.all(
+                                      8), // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
+                                  color: Colors.black.withOpacity(
+                                      0.5), // เปลี่ยนสีพื้นหลังให้ทึบขึ้น
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 10.0,
+                                              color: Colors.black,
+                                              offset: Offset(2.0, 2.0),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      'คะแนน: ${dorm['rating']}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'คะแนน: ${dorm['rating'] ?? 'ยังไม่มีการรีวิว'}', // แสดงข้อความถ้าไม่มีรีวิว
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -261,32 +300,23 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.start, // จัดให้อยู่กลาง
                     children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'ค้นหาหอพัก',
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0))),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 153, 158, 158),
-                                width: 1.0,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.blue, width: 2.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(vertical: 10),
-                            suffixIcon: Icon(Icons.search),
-                          ),
+                      Icon(
+                        Icons.hotel, // เลือกไอคอนที่ต้องการ
+                        color: Colors.purple, // สีของไอคอน
+                        size: 24, // ขนาดของไอคอน
+                      ),
+                      SizedBox(width: 8), // เพิ่มระยะห่างระหว่างไอคอนกับข้อความ
+                      Text(
+                        'หอพักที่แนนนำ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),

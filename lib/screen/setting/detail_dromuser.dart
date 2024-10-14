@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:dorm_app/screen/user/widgets/chat_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class DormitoryDetailsScreen extends StatefulWidget {
   final String userId;
@@ -175,7 +177,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   Text(
                       'จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
                   Text('ประเภทหอพัก: ${dormitoryData['dormType']}'),
-                  Text('ราคาห้องพัก: ${dormitoryData['price']} บาท/เดือน'),
+                  Text('ราคาห้องพัก: ${dormitoryData['price']} บาท/เทอม'),
                   Text('เงินประกัน: ${dormitoryData['securityDeposit']} บาท'),
                   Text('ค่าบำรุงรักษา: ${dormitoryData['furnitureFee']} บาท'),
                   Text('ค่าไฟ: ${dormitoryData['electricityRate']} บาท/หน่วย'),
@@ -220,19 +222,50 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     }
   }
 
-  // ฟังก์ชันสำหรับแสดงกล่องโต้ตอบรีวิว
+// ในฟังก์ชัน _showReviewDialog
   void _showReviewDialog(String dormitoryId) {
     TextEditingController reviewController = TextEditingController();
+    double _rating = 0;
+
+    // ดึง userId จาก Firebase Authentication
+    final String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      print('ไม่สามารถดึง userId ได้ ผู้ใช้ยังไม่ได้ล็อกอิน');
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('เขียนรีวิว'),
-          content: TextField(
-            controller: reviewController,
-            decoration:
-                const InputDecoration(hintText: 'ป้อนรีวิวของคุณที่นี่'),
-            maxLines: 3,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: reviewController,
+                decoration:
+                    const InputDecoration(hintText: 'ป้อนรีวิวของคุณที่นี่'),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              RatingBar.builder(
+                initialRating: 0,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                onRatingUpdate: (rating) {
+                  _rating = rating; // เก็บค่าคะแนนดาวที่ผู้ใช้กด
+                },
+              ),
+            ],
           ),
           actions: [
             TextButton(
@@ -243,11 +276,12 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
             ),
             TextButton(
               onPressed: () async {
-                String review = reviewController.text.trim();
-                if (review.isNotEmpty) {
-                  await _submitReview(dormitoryId, review);
+                String reviewText = reviewController.text.trim();
+                if (reviewText.isNotEmpty && _rating > 0) {
+                  await _submitReview(dormitoryId, reviewText, _rating, userId);
                   Navigator.of(context).pop();
-                  // อาจเพิ่มการแจ้งเตือนหรืออัปเดต UI ที่นี่
+                } else {
+                  print('กรุณากรอกข้อความรีวิวและเลือกคะแนน');
                 }
               },
               child: const Text('ส่งรีวิว'),
@@ -259,19 +293,48 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
   }
 
 // ฟังก์ชันสำหรับบันทึกรีวิวลง Firestore
-  Future<void> _submitReview(String dormitoryId, String review) async {
-    try {
-      await FirebaseFirestore.instance.collection('reviews').add({
-        'dormitoryId': dormitoryId,
-        'review': review,
-        'timestamp': FieldValue.serverTimestamp(),
-        // อาจเพิ่มข้อมูลผู้ใช้ที่ส่งรีวิว เช่น userId, username เป็นต้น
-      });
-      print('รีวิวถูกบันทึกเรียบร้อยแล้ว');
-    } catch (e) {
-      print('เกิดข้อผิดพลาดในการบันทึกรีวิว: $e');
-    }
+  Future<void> _submitReview(String dormitoryId, String userId, double rating, String reviewText) async {
+  // Reference to Firestore
+  final CollectionReference reviewsRef = FirebaseFirestore.instance.collection('reviews');
+  final DocumentReference dormitoryRef = FirebaseFirestore.instance.collection('dormitories').doc(dormitoryId);
+
+  // Add review
+  await reviewsRef.add({
+    'dormitoryId': dormitoryId,
+    'userId': userId,
+    'rating': rating,
+    'reviewText': reviewText,
+    'timestamp': FieldValue.serverTimestamp(),
+  });
+
+  // Update dormitory rating and review count
+  await updateDormitoryRating(dormitoryId);
+}
+
+Future<void> updateDormitoryRating(String dormitoryId) async {
+  // Get all reviews for the dormitory
+  final QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
+      .collection('reviews')
+      .where('dormitoryId', isEqualTo: dormitoryId)
+      .get();
+
+  // Calculate new rating and review count
+  int reviewCount = reviewsSnapshot.docs.length;
+  double totalRating = 0;
+
+  for (var review in reviewsSnapshot.docs) {
+    totalRating += review['rating'];
   }
+
+  double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+
+  // Update dormitory document
+  await FirebaseFirestore.instance.collection('dormitories').doc(dormitoryId).update({
+    'reviewCount': reviewCount,
+    'rating': averageRating,
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +371,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                   children: [
                                     ListTile(
                                       title: Text(
-                                          'ชื่อหอพัก: ${_currentDormController.text}'),
+                                          'ชื่อหอพัก: ${_currentDormController.text} '),
                                       subtitle:
                                           const Text('ข้อมูลหอพักปัจจุบัน'),
                                     ),
@@ -323,8 +386,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                       children: [
                                         ElevatedButton(
                                           onPressed: () {
-                                            String ownerId =
-                                                "owner_id_here"; // เปลี่ยนเป็น ownerId ที่แท้จริง
+                                            String ownerId = "owner_id_here";
                                             _navigateToChat(
                                                 currentDormitoryId!, ownerId,
                                                 isGroupChat: false);

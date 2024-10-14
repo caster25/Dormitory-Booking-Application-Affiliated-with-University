@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class LikeScreen extends StatefulWidget {
   const LikeScreen({super.key});
@@ -11,6 +12,7 @@ class LikeScreen extends StatefulWidget {
 
 class _LikeScreenState extends State<LikeScreen> {
   List<DocumentSnapshot> likedDorms = [];
+  final formatNumber = NumberFormat('#,##0');
 
   @override
   void initState() {
@@ -20,6 +22,7 @@ class _LikeScreenState extends State<LikeScreen> {
 
   Future<void> _fetchLikedDorms() async {
     final user = FirebaseAuth.instance.currentUser;
+    final formatNumber = NumberFormat('#,##0');
 
     if (user != null) {
       final userFavoritesRef =
@@ -69,8 +72,8 @@ class _LikeScreenState extends State<LikeScreen> {
                       SizedBox(
                         height: 200, // Adjust height as needed
                         child: PageView.builder(
-                          itemCount: dorm['imageUrl']
-                              .length, // Use list of image URLs
+                          itemCount:
+                              dorm['imageUrl'].length, // Use list of image URLs
                           itemBuilder: (context, imageIndex) {
                             return Image.network(
                               dorm['imageUrl'][imageIndex],
@@ -80,9 +83,11 @@ class _LikeScreenState extends State<LikeScreen> {
                         ),
                       ),
                       ListTile(
-                        title: Text(dorm['name']),
-                        subtitle: Text('ราคา: ${dorm['price']} บาท/เดือน\n'
-                            'คะแนน: ${dorm['rating']}/5'),
+                        title: Text( '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',),
+                        subtitle: Text(
+                          'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม\n'
+                          '${dorm['rating'] != null && dorm['rating'] > 0 ? 'คะแนน: ${dorm['rating']?.toStringAsFixed(0)}/5' : 'ยังไม่มีการรีวิว'}',
+                        ),
                         trailing:
                             const Icon(Icons.favorite, color: Colors.pink),
                       ),

@@ -87,14 +87,14 @@ class DormitoryListEditScreen extends StatelessWidget {
                         )
                       : const Icon(Icons.image, size: 50),
                   title: Text(
-                    dormitory.name,
+                    '${dormitory.name} (${dormitory.dormType},${dormitory.dormType})',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          'ราคา: ฿${formatNumber.format(dormitory.price)} บาท/เดือน'),
+                          'ราคา: ฿${formatNumber.format(dormitory.price)} บาท/เทอม'),
                       Text('ห้องว่าง: ${dormitory.availableRooms} ห้อง'),
                     ],
                   ),

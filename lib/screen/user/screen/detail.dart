@@ -11,6 +11,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 class DormallDetailScreen extends StatefulWidget {
   final String dormId;
@@ -32,6 +33,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   double? distanceInKm;
   final Completer<GoogleMapController> _mapController = Completer();
   Map<String, dynamic>? selectedDormitory;
+  final formatNumber = NumberFormat('#,##0');
 
   @override
   void initState() {
@@ -69,7 +71,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   Future<List<Map<String, dynamic>>> _fetchReviewsData() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('reviews')
-        .where('dormId', isEqualTo: widget.dormId)
+        .where('dormitoryId', isEqualTo: widget.dormId)
         .get();
     return querySnapshot.docs
         .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
@@ -102,51 +104,54 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return await Geolocator.getCurrentPosition();
   }
 
-  // Future<void> _addReview() async {
-  //   if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
-  //     return;
-  //   }
+  // ignore: unused_element
+  Future<void> _addReview() async {
+    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
+      return;
+    }
 
-  //   try {
-  //     await FirebaseFirestore.instance.collection('reviews').add({
-  //       'dormId': widget.dormId,
-  //       'user': currentUser!.email,
-  //       'date': DateTime.now().toString(),
-  //       'text': reviewController.text,
-  //       'rating': _rating,
-  //       'likes': 0,
-  //       'comments': 0
-  //     });
+    try {
+      await FirebaseFirestore.instance.collection('reviews').add({
+        'dormId': widget.dormId,
+        'user': currentUser!.email,
+        'date': DateTime.now().toString(),
+        'text': reviewController.text,
+        'rating': _rating,
+        'likes': 0,
+        'comments': 0
+      });
 
-  //     await _updateDormitoryReviews();
+      await _updateDormitoryReviews();
 
-  //     reviewController.clear();
-  //     setState(() {
-  //       _rating = 0;
-  //       reviewsData = _fetchReviewsData();
-  //     });
-  //   } catch (e) {
-  //     print('Error adding review: $e');
-  //   }
-  // }
+      reviewController.clear();
+      setState(() {
+        _rating = 0;
+        reviewsData = _fetchReviewsData();
+      });
+    } catch (e) {
+      print('Error adding review: $e');
+    }
+  }
 
   // ignore: unused_element
   Future<void> _updateDormitoryReviews() async {
     try {
       QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
           .collection('reviews')
-          .where('dormId', isEqualTo: widget.dormId)
+          .where('dormitoryId', isEqualTo: widget.dormId)
           .get();
 
       int reviewCount = reviewsSnapshot.size;
-      double totalRating = 0;
+      double totalRating = 0; // เปลี่ยน totalRating เป็น double
 
       for (var doc in reviewsSnapshot.docs) {
         totalRating +=
             (doc.data() as Map<String, dynamic>)['rating']?.toDouble() ?? 0;
       }
 
-      double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+      // คำนวณค่าเฉลี่ยคะแนนให้เป็น int
+      int averageRating =
+          reviewCount > 0 ? (totalRating / reviewCount).toInt() : 0;
 
       await FirebaseFirestore.instance
           .collection('dormitories')
@@ -363,6 +368,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
       ),
     );
   }
+
   // ฟังก์ชันแสดงรายละเอียดหอพัก
   @override
   Widget build(BuildContext context) {
@@ -386,8 +392,9 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
                 // แสดงรูปภาพหอพัก
-                List<String> imageUrls = List<String>.from(dormitory['imageUrl'] ?? []);
-                
+                List<String> imageUrls =
+                    List<String>.from(dormitory['imageUrl'] ?? []);
+
                 return Column(
                   children: [
                     // Section สำหรับเลื่อนรูปภาพ
@@ -401,7 +408,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           builder: (BuildContext context) {
                             return Container(
                               width: MediaQuery.of(context).size.width,
-                              margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Image.network(
@@ -426,33 +434,40 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'ราคา: ${dormitory['price']} บาท/เดือน',
-                            style: const TextStyle(fontSize: 18, color: Colors.grey),
+                            'ราคา: ${formatNumber.format(dormitory['price']) } บาท/เทอม',
+                            style: const TextStyle(
+                                fontSize: 18, color: Colors.grey),
                           ),
                           const SizedBox(height: 16),
 
                           // Type of tenant
-                          Text('ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}'),
+                          Text(
+                              'ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}'),
                           const SizedBox(height: 8),
 
                           // Room type
-                          Text('ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}'),
+                          Text(
+                              'ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}'),
                           const SizedBox(height: 8),
 
                           // Number of occupants
-                          Text('จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน'),
+                          Text(
+                              'จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน'),
                           const SizedBox(height: 8),
 
                           // Electricity charge per unit
-                          Text('ค่าไฟหน่วยละ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          Text(
+                              'ค่าไฟหน่วยละ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
                           // Water charge per unit
-                          Text('ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          Text(
+                              'ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
                           // Damage deposit
-                          Text('ค่าประกันความเสียหาย: ${dormitory['securityDeposit'] ?? 'ไม่มีข้อมูล'} บาท'),
+                          Text(
+                              'ค่าประกันความเสียหาย: ${formatNumber.format(dormitory['securityDeposit'])  ?? 'ไม่มีข้อมูล'} บาท'),
                           const SizedBox(height: 8),
 
                           Text(
@@ -468,8 +483,12 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            (dormitory['equipment'] != null && dormitory['equipment'].isNotEmpty)
-                                ? dormitory['equipment'].split('\n').map((e) => e.trim()).join(', ')
+                            (dormitory['equipment'] != null &&
+                                    dormitory['equipment'].isNotEmpty)
+                                ? dormitory['equipment']
+                                    .split('\n')
+                                    .map((e) => e.trim())
+                                    .join(', ')
                                 : 'ไม่มีข้อมูล',
                           ),
                           const SizedBox(height: 8),
@@ -486,12 +505,13 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                 direction: Axis.horizontal,
                               ),
                               Text(
-                                ' ${dormitory['rating']?.toStringAsFixed(1) ?? '0.0'}',
+                                ' ${dormitory['rating']?.toInt() ?? '0'}',
                                 style: const TextStyle(fontSize: 18),
                               ),
                               Text(
                                 ' (${dormitory['reviewCount']?.toString() ?? '0'} รีวิว)',
-                                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.grey),
                               ),
                             ],
                           ),
@@ -556,8 +576,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 return Column(
                   children: reviews.map((review) {
                     return ListTile(
-                      title: Text(review['user'] ?? 'ผู้ใช้ไม่ระบุชื่อ'),
-                      subtitle: Text(review['text'] ?? ''),
+                      title: Text(review['userId'] ?? 'ผู้ใช้ไม่ระบุชื่อ'),
+                      subtitle: Text(review['reviewText'] ?? ''),
                       trailing: RatingBarIndicator(
                         rating: review['rating']?.toDouble() ?? 0.0,
                         itemBuilder: (context, index) => const Icon(

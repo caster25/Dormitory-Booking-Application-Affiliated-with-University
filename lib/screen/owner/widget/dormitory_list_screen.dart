@@ -90,10 +90,13 @@ class DormitoryListScreen extends StatelessWidget {
                         as Map<String, dynamic>;
                     String dormId = snapshot.data!.docs[index].id;
                     String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
+                    String roomType =
+                        dormitory['roomType'] ?? 'ไม่มีประเภทห้อง';
+                    String dormType =
+                        dormitory['dormType'] ?? 'ไม่มีประเภทหอพัก';
                     int dormPrice = dormitory['price']?.toInt() ?? 0;
                     int availableRooms =
                         dormitory['availableRooms']?.toInt() ?? 0;
-
                     // ดึง URL ของรูปภาพแรก
                     List<dynamic> images = dormitory['imageUrl'] ?? [];
                     String imageUrl = (images.isNotEmpty && images[0] is String)
@@ -112,13 +115,14 @@ class DormitoryListScreen extends StatelessWidget {
                               )
                             : const Icon(Icons.image, size: 50),
                         title: Text(
-                          dormName,
+                          '$dormName ($roomType, $dormType)',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('ราคา: ${formatNumber.format(dormPrice)}  บาท/เดือน'),
+                            Text(
+                                'ราคา: ${formatNumber.format(dormPrice)}  บาท/เทอม'),
                             Text('ห้องว่าง: $availableRooms ห้อง'),
                           ],
                         ),

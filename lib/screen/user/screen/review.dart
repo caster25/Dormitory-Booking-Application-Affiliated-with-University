@@ -63,7 +63,7 @@ class DormDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'ราคา: $price บาท/เดือน',
+                          'ราคา: $price บาท/เทอม',
                           style: const TextStyle(
                               fontSize: 18, color: Colors.grey),
                         ),
