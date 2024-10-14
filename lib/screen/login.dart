@@ -95,13 +95,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginFunction() async {
-    if (formKey.currentState!.validate()) {
-      try {
-        UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
+     if (formKey.currentState!.validate()) {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
 
         String? role = await getUserRole(userCredential.user!.uid);
         if (role != null) {

@@ -230,24 +230,38 @@ class NavigationDrawer extends StatelessWidget {
                     title: const Text('ยืนยันการออกจากระบบ'),
                     content: const Text('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
                     actions: <Widget>[
+                      // ปุ่มยกเลิก
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text('ยกเลิก'),
                       ),
+                      // ปุ่มยืนยันการล็อกเอาต์
                       TextButton(
-                        onPressed: () =>
+                        onPressed: () async {
+                          try {
+                            await FirebaseAuth.instance
+                                .signOut(); // ล็อกเอาต์จาก Firebase
+                            // เปลี่ยนเส้นทางกลับไปยังหน้าหลัก (IndexScreen)
                             Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const IndexScreen()),
-                          (Route<dynamic> route) => false,
-                        ),
+                              MaterialPageRoute(
+                                  builder: (context) => const IndexScreen()),
+                              (Route<dynamic> route) =>
+                                  false, // ลบเส้นทางทั้งหมด
+                            );
+                          } catch (e) {
+                            // จัดการข้อผิดพลาดถ้ามี
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+                            );
+                          }
+                        },
                         child: const Text('ยืนยัน'),
                       ),
                     ],
                   );
                 },
               ),
-            ),
+            )
           ],
         ),
       );
