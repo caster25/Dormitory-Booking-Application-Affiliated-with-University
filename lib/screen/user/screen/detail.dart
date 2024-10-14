@@ -267,6 +267,21 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); // Close dialog if confirmed
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('การจองสำเร็จ'),
+                    content: const Text('คุณได้จองหอพักเรียบร้อยแล้ว\nรอการยืนยันจากเจ้าของหอพัก\nหรือทำการติดต่อกับเจ้าของหอพัก'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close dialog
+                        },
+                        child: const Text('ตกลง'),
+                      ),
+                    ],
+                  ),
+                );
 
                 // Create chatGroupId and chatRoomId
                 String chatGroupId = dormitorySnapshot
@@ -330,11 +345,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                     }
                   ]),
                 });
-
-                // Show success message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('จองหอพักสำเร็จ')),
-                );
               },
               child: const Text('ยืนยัน'),
             ),
@@ -434,7 +444,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'ราคา: ${formatNumber.format(dormitory['price']) } บาท/เทอม',
+                            'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',
                             style: const TextStyle(
                                 fontSize: 18, color: Colors.grey),
                           ),
@@ -467,7 +477,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
                           // Damage deposit
                           Text(
-                              'ค่าประกันความเสียหาย: ${formatNumber.format(dormitory['securityDeposit'])  ?? 'ไม่มีข้อมูล'} บาท'),
+                              'ค่าประกันความเสียหาย: ${formatNumber.format(dormitory['securityDeposit'])} บาท'),
                           const SizedBox(height: 8),
 
                           Text(

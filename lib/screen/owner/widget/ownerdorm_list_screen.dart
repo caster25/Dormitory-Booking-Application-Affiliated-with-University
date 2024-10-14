@@ -19,9 +19,6 @@ class OwnerDormListScreen extends StatelessWidget {
     final formatNumber = NumberFormat('#,##0');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายการหอพัก'),
-      ),
       body: StreamBuilder<QuerySnapshot>(
         // Filter dormitories by the current owner's submittedBy ID
         stream: FirebaseFirestore.instance

@@ -166,7 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return Scaffold(
       appBar: AppBar(
-        title: const Text('แชทกับเจ้าของหอพัก'),
+        title: const Text('แชทกลุ่มหอพัก'),
       ),
       body: Builder(builder: (context) {
         return Column(

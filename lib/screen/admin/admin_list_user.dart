@@ -47,11 +47,22 @@ class UserListScreen extends StatelessWidget {
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16.0),
                     leading: CircleAvatar(
-                      backgroundImage: user['profilePictureURL'] != null && user['profilePictureURL'] != ''
-                          ? NetworkImage(user['profilePictureURL'])
-                          : const AssetImage('assets/images/default_avatar.png') as ImageProvider,
-                      radius: 30,
-                    ),
+                    radius: 52,
+                    backgroundImage: (user['profilePictureURL'] != null &&
+                            user['profilePictureURL'] != "null" &&
+                            user['profilePictureURL']!.isNotEmpty)
+                        ? NetworkImage(user['profilePictureURL'])
+                        : null,
+                    child: (user['profilePictureURL'] == null ||
+                            user['profilePictureURL'] == "null" ||
+                            user['profilePictureURL']!.isEmpty)
+                        ? const Icon(
+                            Icons.person,
+                            size: 52,
+                            color: Colors.white,
+                          )
+                        : null,
+                  ),
                     title: Text(
                       user['fullname'] ?? 'No Name',
                       style: const TextStyle(fontWeight: FontWeight.bold),

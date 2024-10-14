@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'dart:io';
 
 import 'package:dorm_app/model/Userprofile.dart';
@@ -5,9 +7,11 @@ import 'package:dorm_app/screen/owner/widget/dormitory_list_edit.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
 import 'package:dorm_app/screen/setting/submitIssue.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // อย่าลืม import package นี้
-// แก้ไขให้ตรงกับ path ของ UserProfile
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 
 class Profileowner extends StatefulWidget {
   const Profileowner({super.key});
@@ -18,18 +22,13 @@ class Profileowner extends StatefulWidget {
 }
 
 class _ProfileownerState extends State<Profileowner> {
-  // ignore: unused_field
   File? _profileImage;
   File? _tempImage; // Temporary image to be saved
-  // ignore: unused_field
   String _userName = 'Unknown User';
   String? _profileImageUrl;
-  String? userId; 
-
-   @override
+  @override
   void initState() {
     super.initState();
-    userId = FirebaseAuth.instance.currentUser?.uid;
     _loadOwnerProfile();
   }
 
@@ -68,10 +67,97 @@ class _ProfileownerState extends State<Profileowner> {
     );
   }
 
+  // ฟังก์ชันสำหรับเลือกภาพ
+  void _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _tempImage = File(pickedFile.path); // Use a temporary image
+      });
+      _showConfirmationDialog(); // Show the confirmation dialog after image selection
+    }
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ยืนยันการเปลี่ยนรูปโปรไฟล์'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _tempImage != null
+                  ? Image.file(
+                      _tempImage!,
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    )
+                  : const SizedBox.shrink(),
+              const SizedBox(height: 10),
+              const Text('คุณแน่ใจว่าจะเปลี่ยนรูปโปรไฟล์?'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog without saving
+                setState(() {
+                  _tempImage = null; // Revert to previous image
+                });
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Save'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                _uploadProfileImage(); // Upload the image if confirmed
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _uploadProfileImage() async {
+    if (_tempImage == null) return;
+
+    try {
+      final fileName = p.basename(_tempImage!.path);
+      final destination = 'profiles/$fileName';
+      final ref = FirebaseStorage.instance.ref(destination);
+      final uploadTask = ref.putFile(_tempImage!);
+      final snapshot = await uploadTask.whenComplete(() {});
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) throw Exception('User not logged in');
+
+      // Update the profile picture URL in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update({'profilePictureURL': downloadUrl});
+
+      setState(() {
+        _profileImageUrl = downloadUrl; // Update the profile image URL
+        _tempImage = null; // Clear the temporary image
+      });
+      print('Profile image uploaded successfully');
+    } catch (e) {
+      print('Failed to upload profile image: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: StreamBuilder<DocumentSnapshot>(
@@ -103,15 +189,16 @@ class _ProfileownerState extends State<Profileowner> {
                               ? FileImage(_tempImage!)
                               : _profileImageUrl != null
                                   ? NetworkImage(_profileImageUrl!)
-                                  : null,
+                                  : null, // เปลี่ยนเป็น null ถ้าไม่มีรูปภาพ
                           radius: 40,
-                          child: _tempImage == null && _profileImageUrl == null
+                          child: _tempImage == null &&
+                                  _profileImageUrl == null // ตรวจสอบว่าไม่มีภาพ
                               ? const Icon(
                                   Icons.person,
-                                  size: 40,
-                                  color: Colors.white,
+                                  size: 40, // ขนาดของไอคอน
+                                  color: Colors.white, // สีของไอคอน
                                 )
-                              : null,
+                              : null, // หากมีภาพให้ไม่แสดงไอคอน
                         ),
                         const SizedBox(width: 16),
                         Column(
@@ -132,58 +219,54 @@ class _ProfileownerState extends State<Profileowner> {
                   ),
                   const SizedBox(
                       height: 16), // เพิ่มระยะห่างระหว่างชื่อและการ์ด
-                  _buildMenuItem(
-                    context,
-                    Icons.info_outline,
-                    'รายละเอียดหอพัก',
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const DormitoryListEditScreen(),
-                        ),
-                      );
-                    },
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.info_outline),
+                      title: const Text('รายละเอียดหอพัก'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const DormitoryListEditScreen(),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  // ถ้าต้องการเปิดใช้งานการ์ดรายชื่อผู้เช่า
-                  // _buildMenuItem(
-                  //   context,
-                  //   Icons.account_box_outlined,
-                  //   'รายชื่อผู้เช่า',
-                  //   () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => const OwnerDormListScreen(),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
-                  _buildMenuItem(
-                    context,
-                    Icons.settings,
-                    'การตั้งค่า',
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    },
+
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.settings),
+                      title: const Text('การตั้งค่า'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                  _buildMenuItem(
-                    context,
-                    Icons.notifications_none,
-                    'แจ้งระบบต่างๆ',
-                    () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SubmitIssueScreen(),
-                        ),
-                      );
-                    },
+                  Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      leading: const Icon(Icons.notifications_none),
+                      title: const Text('แจ้งระบบต่างๆ'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SubmitIssueScreen()),
+                        );
+                      },
+                    ),
                   ),
                 ],
               );
@@ -192,24 +275,5 @@ class _ProfileownerState extends State<Profileowner> {
         ),
       ),
     );
-  }
-
-  // ฟังก์ชันช่วยสำหรับสร้างเมนู
-  Widget _buildMenuItem(
-      BuildContext context, IconData icon, String text, VoidCallback onTap) {
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(text),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  // ฟังก์ชันสำหรับเลือกภาพ
-  void _pickImage() {
-    // โค้ดเลือกภาพที่คุณจะเพิ่มเข้าไป
   }
 }

@@ -151,7 +151,7 @@ void _scrollToBottom() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('แชทกับผู้ใช้ที่จองหอพัก'),
+        title: const Text('แชทกลุ่มหอพัก'),
       ),
       body: Column(
         children: [

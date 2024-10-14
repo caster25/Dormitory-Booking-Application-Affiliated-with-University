@@ -31,88 +31,89 @@ class _FeedsScreenState extends State<FeedsScreen> {
         }));
       },
       child: Card(
-  margin: const EdgeInsets.symmetric(vertical: 8.0), // เพิ่ม margin เพื่อให้มีระยะห่างระหว่าง card
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(10), // รูปร่างของ Card
-  ),
-  elevation: 7, // เพิ่มเงาให้การ์ดดูเหมือนยกขึ้นมา
-  child: Column(
-     mainAxisSize: MainAxisSize.max, // ให้ Column ใช้ขนาดที่เหมาะสม
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-        child: Container(
-          height: 170,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                images.isNotEmpty ? images[0] : 'URL_placeholder_image',
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
+        margin: const EdgeInsets.symmetric(
+            vertical: 8.0), // เพิ่ม margin เพื่อให้มีระยะห่างระหว่าง card
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // รูปร่างของ Card
         ),
-      ),
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // จัดเรียงให้อยู่ในพื้นที่ที่เหมาะสม
+        elevation: 7, // เพิ่มเงาให้การ์ดดูเหมือนยกขึ้นมา
+        child: Column(
+          mainAxisSize: MainAxisSize.max, // ให้ Column ใช้ขนาดที่เหมาะสม
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(10)),
+              child: Container(
+                height: 170,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      images.isNotEmpty ? images[0] : 'URL_placeholder_image',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // จัดเรียงให้อยู่ในพื้นที่ที่เหมาะสม
                 children: [
-                  Text(
-                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black, // ใช้สีที่อ่านง่าย
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black, // ใช้สีที่อ่านง่าย
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          dorm['rating'] != null && dorm['rating'] > 0
+                              ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
+                              : 'ยังไม่มีการรีวิว',
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'คะแนน: ${dorm['rating'] ?? 'ยังไม่มีการรีวิว'}',
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Colors.black, // ใช้สีที่อ่านง่าย
-                    ),
-                  ),
+                  // const SizedBox(width: 8), // เพิ่มช่องว่างระหว่างข้อความและปุ่ม
+                  // IconButton(
+                  //   iconSize: 24, // ปรับขนาดไอคอนให้เล็กลง
+                  //   icon: Icon(
+                  //     isFavorite ? Icons.favorite : Icons.favorite_border,
+                  //     color: isFavorite ? Colors.red : Colors.grey,
+                  //   ),
+                  //   onPressed: () async {
+                  //     await _toggleFavorite(dormId);
+                  //     setState(() {
+                  //       isFavorite = !isFavorite;
+                  //       if (isFavorite) {
+                  //         favorites.add(dormId); // เพิ่มหอพักใน favorites
+                  //       } else {
+                  //         favorites.remove(dormId); // ลบหอพักออกจาก favorites
+                  //       }
+                  //     });
+                  //   },
+                  // ),
                 ],
               ),
-            ),
-            const SizedBox(width: 8), // เพิ่มช่องว่างระหว่างข้อความและปุ่ม
-            IconButton(
-              iconSize: 24, // ปรับขนาดไอคอนให้เล็กลง
-              icon: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : Colors.grey,
-              ),
-              onPressed: () async {
-                await _toggleFavorite(dormId);
-                setState(() {
-                  isFavorite = !isFavorite;
-                  if (isFavorite) {
-                    favorites.add(dormId); // เพิ่มหอพักใน favorites
-                  } else {
-                    favorites.remove(dormId); // ลบหอพักออกจาก favorites
-                  }
-                });
-              },
             ),
           ],
         ),
       ),
-    ],
-  ),
-),
-
     );
   }
 
@@ -267,11 +268,12 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        'คะแนน: ${dorm['rating'] ?? 'ยังไม่มีการรีวิว'}', // แสดงข้อความถ้าไม่มีรีวิว
+                                        dorm['rating'] != null &&
+                                                dorm['rating'] > 0
+                                            ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
+                                            : 'ยังไม่มีการรีวิว',
                                         style: const TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white,
-                                        ),
+                                            color: Colors.white),
                                       ),
                                     ],
                                   ),

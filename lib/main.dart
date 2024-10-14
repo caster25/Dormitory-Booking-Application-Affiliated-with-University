@@ -19,15 +19,17 @@ void main() async {
     messagingSenderId: 'G-T3QSM1C2CH',
     projectId: 'accommoease',
     storageBucket: 'accommoease.appspot.com',
-  ));
+  )
+  );
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My App',
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -37,10 +39,11 @@ class MyApp extends StatelessWidget {
             User? user = snapshot.data;
             return UserRoleScreen(user: user);
           } else {
-            return IndexScreen(); // หน้าสำหรับการล็อกอิน
+            return const IndexScreen(); // หน้าสำหรับการล็อกอิน
           }
         },
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -48,6 +51,7 @@ class MyApp extends StatelessWidget {
 class UserRoleScreen extends StatelessWidget {
   final User? user;
 
+  // ignore: use_super_parameters
   const UserRoleScreen({Key? key, required this.user}) : super(key: key);
 
   @override

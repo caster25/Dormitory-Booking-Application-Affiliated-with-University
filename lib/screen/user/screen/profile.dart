@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field
+// ignore_for_file: unused_field, use_build_context_synchronously
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,6 +44,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error loading user profile: $e');
     }
+  }
+
+  Future<UserProfile> getUserProfile() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      throw Exception('User not logged in');
+    }
+
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (!userDoc.exists) {
+      throw Exception('User profile not found');
+    }
+
+    final userData = userDoc.data()!;
+    return UserProfile(
+      email: userData['email'],
+      numphone: userData['numphone'],
+      username: userData['username'],
+      fullname: userData['fullname'],
+      profilePictureURL: userData['profilePictureURL'],
+    );
   }
 
   Future<void> _pickImage() async {
@@ -132,73 +155,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<UserProfile> getUserProfile() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) {
-      throw Exception('User not logged in');
-    }
-
-    final userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-    if (!userDoc.exists) {
-      throw Exception('User profile not found');
-    }
-
-    final userData = userDoc.data()!;
-    return UserProfile(
-      email: userData['email'],
-      numphone: userData['numphone'],
-      username: userData['username'],
-      fullname: userData['fullname'],
-      profilePictureURL: userData['profilePictureURL'],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: Colors.purple),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('ยืนยันการออกจากระบบ'),
-                  content: const Text('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close dialog
-                      },
-                      child: const Text('ยกเลิก'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigate to Login Screen and remove all previous routes
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const IndexScreen()),
-                          (Route<dynamic> route) => false,
-                        );
-                      },
-                      child: const Text('ยืนยัน'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-        automaticallyImplyLeading: false,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: StreamBuilder<DocumentSnapshot>(

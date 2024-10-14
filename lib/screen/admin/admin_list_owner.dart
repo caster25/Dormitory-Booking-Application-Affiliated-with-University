@@ -47,11 +47,22 @@ class OwnerListScreen extends StatelessWidget {
                   child: ListTile(
                     contentPadding: const EdgeInsets.all(16.0),
                     leading: CircleAvatar(
-                      backgroundImage: owner['profilePictureURL'] != null && owner['profilePictureURL'] != ''
-                          ? NetworkImage(owner['profilePictureURL'])
-                          : const AssetImage('assets/images/default_avatar.png') as ImageProvider,
-                      radius: 30,
-                    ),
+                    radius: 52,
+                    backgroundImage: (owner['profilePictureURL'] != null &&
+                            owner['profilePictureURL'] != "null" &&
+                            owner['profilePictureURL']!.isNotEmpty)
+                        ? NetworkImage(owner['profilePictureURL'])
+                        : null,
+                    child: (owner['profilePictureURL'] == null ||
+                            owner['profilePictureURL'] == "null" ||
+                            owner['profilePictureURL']!.isEmpty)
+                        ? const Icon(
+                            Icons.person,
+                            size: 52,
+                            color: Colors.white,
+                          )
+                        : null,
+                  ),
                     title: Text(
                       owner['fullname'] ?? 'No Name',
                       style: const TextStyle(fontWeight: FontWeight.bold),

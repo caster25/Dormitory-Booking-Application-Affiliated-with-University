@@ -208,9 +208,9 @@ class _HomepageState extends State<Homepage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: index != 2 ? getAppBar(index) : null,
+        appBar: index != 3 ? getAppBar(index) : null,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        drawer: index != 2 ? NavigationDrawer(user: _currentUser) : null,
+        drawer: index != 3 ? NavigationDrawer(user: _currentUser) : null,
         body: IndexedStack(
           index: index,
           children: _screens,
@@ -246,9 +246,6 @@ class _HomepageState extends State<Homepage> {
 
   AppBar getAppBar(int index) {
     return AppBar(
-      title: getTitle(index),
-      backgroundColor:
-          const Color.fromARGB(255, 153, 85, 240), // กำหนดสีแบล็กกราวที่นี่
       actions: [
         IconButton(
           onPressed: () {
@@ -268,6 +265,8 @@ class _HomepageState extends State<Homepage> {
         return const Text('หน้าแรก');
       case 1:
         return const Text('หอพัก');
+      case 2:
+        return const Text('');
       default:
         return const Text('ข้อมูลส่วนตัว');
     }
