@@ -18,6 +18,8 @@ class _DormScreenState extends State<DormScreen> {
   TextEditingController searchController = TextEditingController();
   List<String> favorites = [];
   late String userId;
+  bool isSearching = false; // ตัวแปรสำหรับตรวจสอบสถานะการค้นหา
+  bool isFiltering = false; // ตัวแปรสำหรับตรวจสอบสถานะการกรอง
   final formatNumber = NumberFormat('#,##0');
 
   @override
@@ -27,6 +29,109 @@ class _DormScreenState extends State<DormScreen> {
     if (user != null) {
       userId = user.uid;
     }
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Colors.purple,
+          width: 2.0,
+        ),
+      ),
+      child: TextField(
+        controller: searchController,
+        decoration: InputDecoration(
+          hintText: 'ค้นหาหอพัก',
+          border: InputBorder.none,
+          prefixIcon: const Icon(Icons.search, color: Colors.purple),
+          suffixIcon: isSearching // เพิ่มไอคอนยกเลิกในช่องค้นหา
+              ? IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.grey),
+                  onPressed: () {
+                    setState(() {
+                      isSearching = false;
+                      searchController.clear();
+                      searchQuery = '';
+                    });
+                  },
+                )
+              : null,
+        ),
+        onTap: () {
+          setState(() {
+            isSearching = true;
+            isFiltering = false;
+          });
+        },
+        onChanged: (value) {
+          setState(() {
+            searchQuery = value;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildFilterSection() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Spacer(),
+        DropdownButton<String>(
+          value: selectedFilterType.isEmpty ? null : selectedFilterType,
+          hint: const Text('เลือกการกรอง'),
+          onTap: () {
+            setState(() {
+              isFiltering = true;
+              isSearching = false;
+            });
+          },
+          items: const [
+            DropdownMenuItem(
+              value: 'price',
+              child: Text('กรองตามราคา'),
+            ),
+            DropdownMenuItem(
+              value: 'rating',
+              child: Text('กรองตามคะแนน'),
+            ),
+          ],
+          onChanged: (value) {
+            setState(() {
+              selectedFilterType = value!;
+              filterState = 0;
+            });
+          },
+        ),
+        if (selectedFilterType.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          FilterButton(
+            text: _getFilterText(),
+            icon: _getFilterIcon().icon!,
+            onPressed: () {
+              setState(() {
+                filterState = (filterState + 1) % 3;
+              });
+            },
+          ),
+        ],
+        if (isFiltering) // เพิ่มปุ่มยกเลิกการกรอง
+          IconButton(
+            icon: const Icon(Icons.clear, color: Colors.grey),
+            onPressed: () {
+              setState(() {
+                isFiltering = false;
+                selectedFilterType = '';
+                filterState = 0;
+              });
+            },
+          ),
+      ],
+    );
   }
 
   @override
@@ -39,59 +144,11 @@ class _DormScreenState extends State<DormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSearchBar(),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Spacer(),
-                  DropdownButton<String>(
-                    value:
-                        selectedFilterType.isEmpty ? null : selectedFilterType,
-                    hint: const Text('เลือกการกรอง'),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'price',
-                        child: Text('กรองตามราคา'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'rating',
-                        child: Text('กรองตามคะแนน'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedFilterType = value!;
-                        filterState = 0;
-                      });
-                    },
-                  ),
-                  if (selectedFilterType.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    FilterButton(
-                      text: _getFilterText(),
-                      icon: _getFilterIcon().icon!,
-                      onPressed: () {
-                        setState(() {
-                          filterState = (filterState + 1) % 3;
-                        });
-                      },
-                    ),
-                  ],
-                ],
-              ),
+              // แสดงช่องค้นหาหรือช่องกรองอย่างใดอย่างหนึ่งเท่านั้น
+              if (!isFiltering) _buildSearchBar(),
+              if (!isSearching) _buildFilterSection(),
+
               const SizedBox(height: 8),
-              if (selectedFilterType.isNotEmpty)
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedFilterType = '';
-                      filterState = 0;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: const Text('ยกเลิกการกรอง'),
-                ),
               const SizedBox(height: 16),
               _buildUserFavorites(),
               const SizedBox(height: 16),
@@ -127,29 +184,6 @@ class _DormScreenState extends State<DormScreen> {
       default:
         return const Icon(Icons.filter_list);
     }
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        controller: searchController,
-        decoration: const InputDecoration(
-          hintText: 'ค้นหาหอพัก',
-          border: InputBorder.none,
-          prefixIcon: Icon(Icons.search, color: Colors.purple),
-        ),
-        onChanged: (value) {
-          setState(() {
-            searchQuery = value;
-          });
-        },
-      ),
-    );
   }
 
   Stream<QuerySnapshot> _getDormitoryStream() {
