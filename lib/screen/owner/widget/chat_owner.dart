@@ -33,6 +33,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   // ignore: prefer_final_fields
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
+  FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -87,7 +88,8 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
 
   Future<String> _uploadImageToFirebase(File imageFile) async {
     final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final imageRef = storageRef
+        .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
     await imageRef.putFile(imageFile);
     return await imageRef.getDownloadURL();
   }
@@ -101,144 +103,203 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('แชทกับผู้ใช้ที่จองหอพัก'),
+        title: Text('ผู้เช่า'), // แสดงชื่อหอพัก
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: _messagesCollection
-                  .doc(widget.chatRoomId)
-                  .collection('messages')
-                  .orderBy('createdAt')
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('เกิดข้อผิดพลาด: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return const Center(child: Text('ยังไม่มีข้อความ.'));
-                }
+      body: Builder(builder: (context) {
+        return Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _messagesCollection
+                    .doc(widget.chatRoomId)
+                    .collection('messages')
+                    .orderBy('createdAt')
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final messages = snapshot.data!.docs;
 
-                final messages = snapshot.data!.docs;
+                  return ListView.builder(
+                    controller: _scrollController,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message =
+                          messages[index].data() as Map<String, dynamic>;
+                      final bool isMe = message['senderId'] == currentUserId;
 
-                return ListView.builder(
-                  controller: _scrollController,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index].data() as Map<String, dynamic>;
-                    final bool isMe = message['senderId'] == currentUserId;
-
-                    return Align(
-                      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
-                        decoration: BoxDecoration(
-                          color: isMe ? Colors.blue[100] : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (message['imageUrls'] != null && (message['imageUrls'] as List<dynamic>).isNotEmpty)
-                              Wrap(
-                                spacing: 8.0,
-                                runSpacing: 8.0,
-                                children: (message['imageUrls'] as List<dynamic>).map((url) {
-                                  return GestureDetector(
-                                    onTap: () => _showFullScreenImage(url),
-                                    child: Image.network(
-                                      url,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            if (message['text'] != null && message['text'].isNotEmpty)
-                              Text(
-                                message['text'],
-                                style: const TextStyle(color: Colors.black87, fontSize: 16.0),
-                              ),
-                            const SizedBox(height: 5),
-                            Text(
-                              _formatTimestamp(message['createdAt']),
-                              style: const TextStyle(color: Colors.black45, fontSize: 10.0),
+                      return Align(
+                        alignment:
+                            isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        child: GestureDetector(
+                          onLongPress: () =>
+                              _showMessageOptions(context, messages[index]),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 4.0, horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 14.0),
+                            decoration: BoxDecoration(
+                              color: isMe ? Colors.blue[100] : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(12.0),
                             ),
-                          ],
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (message['imageUrls'] != null &&
+                                    (message['imageUrls'] as List<dynamic>)
+                                        .isNotEmpty)
+                                  Wrap(
+                                    spacing: 8.0,
+                                    runSpacing: 8.0,
+                                    children:
+                                        (message['imageUrls'] as List<dynamic>)
+                                            .map((url) {
+                                      return GestureDetector(
+                                        onTap: () => _showFullScreenImage(url),
+                                        child: Image.network(
+                                          url,
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                if (message['text'] != null &&
+                                    message['text'].isNotEmpty)
+                                  Text(
+                                    message['text'],
+                                    style: const TextStyle(
+                                        color: Colors.black87, fontSize: 16.0),
+                                  ),
+                                const SizedBox(height: 5),
+                                FutureBuilder<String>(
+                                  future: _getUsername(message['senderId']),
+                                  builder: (context, snapshot) {
+                                    return Text(
+                                      snapshot.data ?? 'Unknown User',
+                                      style: const TextStyle(
+                                          color: Colors.black45,
+                                          fontSize: 12.0),
+                                    );
+                                  },
+                                ),
+                                Text(
+                                  _formatTimestamp(message['createdAt']),
+                                  style: const TextStyle(
+                                      color: Colors.black45, fontSize: 10.0),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.photo, color: Colors.purple),
-                  onPressed: _pickImages,
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      labelText: 'ส่งข้อความ...',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide.none,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.photo, color: Colors.purple),
+                    onPressed: _pickImages,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      focusNode: _focusNode,
+                      decoration: InputDecoration(
+                        labelText: 'Send a message...',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blue),
-                  onPressed: () => _sendMessage(text: _messageController.text),
-                ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Colors.purple),
+                    onPressed: () =>
+                        _sendMessage(text: _messageController.text),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
+  }
+
+  Future<String> _getUsername(String userId) async {
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return userDoc.data()?['username'] ?? 'Unknown';
   }
 
   void _showFullScreenImage(String imageUrl) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FullScreenImage(imageUrl: imageUrl),
-      ),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Image.network(imageUrl),
+        );
+      },
     );
   }
-}
 
-class FullScreenImage extends StatelessWidget {
-  final String imageUrl;
+  void _showMessageOptions(
+      BuildContext context, QueryDocumentSnapshot message) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView(
+          children: [
+            ListTile(
+              title: const Text('Delete Message'),
+              onTap: () {
+                _deleteMessage(message.id);
+                Navigator.pop(context); // ปิด Bottom Sheet
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  // ignore: use_key_in_widget_constructors
-  const FullScreenImage({required this.imageUrl});
+  Future<void> _deleteMessage(String messageId) async {
+    try {
+      await _messagesCollection
+          .doc(widget.chatRoomId)
+          .collection('messages')
+          .doc(messageId)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Message deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete message: $e')),
+      );
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Image.network(imageUrl),
-      ),
-    );
+  void dispose() {
+    _focusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 }
