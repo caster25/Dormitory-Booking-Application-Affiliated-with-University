@@ -83,10 +83,23 @@ class _LikeScreenState extends State<LikeScreen> {
                         ),
                       ),
                       ListTile(
-                        title: Text( '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',),
-                        subtitle: Text(
-                          'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม\n'
-                          '${dorm['rating'] != null && dorm['rating'] > 0 ? 'คะแนน: ${dorm['rating']?.toStringAsFixed(0)}/5' : 'ยังไม่มีการรีวิว'}',
+                        title: Text(
+                          '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment
+                              .start, // ปรับให้ข้อความจัดชิดซ้าย
+                          children: [
+                            Text(
+                              'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม',
+                            ),
+                            Text(
+                              dorm['rating'] != null && dorm['rating'] > 0
+                                  ? 'คะแนน: ${dorm['rating'] % 1 == 0 ? dorm['rating'].toInt() : dorm['rating'].toStringAsFixed(1)}/5'
+                                  : 'ยังไม่มีการรีวิว',
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ],
                         ),
                         trailing:
                             const Icon(Icons.favorite, color: Colors.pink),

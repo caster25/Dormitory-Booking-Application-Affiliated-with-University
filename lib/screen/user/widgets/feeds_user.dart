@@ -83,9 +83,9 @@ class _FeedsScreenState extends State<FeedsScreen> {
                           const SizedBox(height: 5),
                           Text(
                             dorm['rating'] != null && dorm['rating'] > 0
-                                ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
+                                ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
                                 : 'ยังไม่มีการรีวิว',
-                            style: const TextStyle(color: Colors.black),
+                            style: const TextStyle(color: Colors.red),
                           ),
                         ],
                       ),
@@ -254,10 +254,10 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                       Text(
                                         dorm['rating'] != null &&
                                                 dorm['rating'] > 0
-                                            ? 'คะแนน ${dorm['rating']?.toStringAsFixed(0) ?? '0'}/5'
+                                            ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
                                             : 'ยังไม่มีการรีวิว',
-                                        style: const TextStyle(
-                                            color: Colors.white),
+                                        style:
+                                            const TextStyle(color: Colors.red),
                                       ),
                                     ],
                                   ),

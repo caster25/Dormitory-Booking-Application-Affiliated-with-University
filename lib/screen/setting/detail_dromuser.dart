@@ -292,49 +292,48 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     );
   }
 
-// ฟังก์ชันสำหรับบันทึกรีวิวลง Firestore
-  Future<void> _submitReview(String dormitoryId, String userId, double rating, String reviewText) async {
-  // Reference to Firestore
-  final CollectionReference reviewsRef = FirebaseFirestore.instance.collection('reviews');
-  final DocumentReference dormitoryRef = FirebaseFirestore.instance.collection('dormitories').doc(dormitoryId);
-
-  // Add review
-  await reviewsRef.add({
-    'dormitoryId': dormitoryId,
-    'userId': userId,
-    'rating': rating,
-    'reviewText': reviewText,
-    'timestamp': FieldValue.serverTimestamp(),
-  });
-
-  // Update dormitory rating and review count
-  await updateDormitoryRating(dormitoryId);
-}
-
-Future<void> updateDormitoryRating(String dormitoryId) async {
-  // Get all reviews for the dormitory
-  final QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
-      .collection('reviews')
-      .where('dormitoryId', isEqualTo: dormitoryId)
-      .get();
-
-  // Calculate new rating and review count
-  int reviewCount = reviewsSnapshot.docs.length;
-  double totalRating = 0;
-
-  for (var review in reviewsSnapshot.docs) {
-    totalRating += review['rating'];
+  Future<void> _submitReview(String dormitoryId, String reviewText,
+      double rating, String userId) async {
+    // เก็บรีวิวใน Firestore โดยใช้ userId เป็น document ID
+    await FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(userId) // ใช้ userId เป็น document ID
+        .set({
+          'dormitoryId': dormitoryId,
+      'reviewText': reviewText, // ข้อความรีวิว
+      'rating': rating, // คะแนนรีวิว
+      'userId': userId, // userId ที่ถูกต้อง
+      'timestamp': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)); 
+    await updateDormitoryRating(dormitoryId);// ใช้ merge เพื่ออัปเดตหากมีข้อมูลอยู่แล้ว
   }
 
-  double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+  Future<void> updateDormitoryRating(String dormitoryId) async {
+    // Get all reviews for the dormitory
+    final QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('dormitoryId', isEqualTo: dormitoryId)
+        .get();
 
-  // Update dormitory document
-  await FirebaseFirestore.instance.collection('dormitories').doc(dormitoryId).update({
-    'reviewCount': reviewCount,
-    'rating': averageRating,
-  });
-}
+    // Calculate new rating and review count
+    int reviewCount = reviewsSnapshot.docs.length;
+    double totalRating = 0;
 
+    for (var review in reviewsSnapshot.docs) {
+      totalRating += review['rating'];
+    }
+
+    double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+
+    // Update dormitory document
+    await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc(dormitoryId)
+        .update({
+      'reviewCount': reviewCount,
+      'rating': averageRating,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

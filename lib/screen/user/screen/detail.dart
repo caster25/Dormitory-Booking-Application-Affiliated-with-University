@@ -271,7 +271,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('การจองสำเร็จ'),
-                    content: const Text('คุณได้จองหอพักเรียบร้อยแล้ว\nรอการยืนยันจากเจ้าของหอพัก\nหรือทำการติดต่อกับเจ้าของหอพัก'),
+                    content: const Text(
+                        'คุณได้จองหอพักเรียบร้อยแล้ว\nรอการยืนยันจากเจ้าของหอพัก\nหรือทำการติดต่อกับเจ้าของหอพัก'),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -515,7 +516,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                 direction: Axis.horizontal,
                               ),
                               Text(
-                                ' ${dormitory['rating']?.toInt() ?? '0'}',
+                                dormitory['rating'] != null
+                                    ? (dormitory['rating'] % 1 == 0
+                                            ? dormitory['rating']
+                                                .toInt()
+                                                .toString() // แสดงเป็นจำนวนเต็มหากไม่มีทศนิยม
+                                            : dormitory['rating'].toStringAsFixed(
+                                                1) // แสดงเป็นทศนิยม 1 ตำแหน่งถ้ามีทศนิยม
+                                        )
+                                    : '0',
                                 style: const TextStyle(fontSize: 18),
                               ),
                               Text(
@@ -582,22 +591,42 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
+
                 var reviews = snapshot.data!;
                 return Column(
                   children: reviews.map((review) {
-                    return ListTile(
-                      title: Text(review['userId'] ?? 'ผู้ใช้ไม่ระบุชื่อ'),
-                      subtitle: Text(review['reviewText'] ?? ''),
-                      trailing: RatingBarIndicator(
-                        rating: review['rating']?.toDouble() ?? 0.0,
-                        itemBuilder: (context, index) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        itemCount: 5,
-                        itemSize: 20.0,
-                        direction: Axis.horizontal,
-                      ),
+                    // ดึงชื่อผู้ใช้จาก Firestore โดยใช้ userId
+                    return FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users') // ชื่อคอลเลกชันผู้ใช้
+                          .doc(review['userId'])
+                          .get(),
+                      builder: (context, userSnapshot) {
+                        if (!userSnapshot.hasData) {
+                          return const ListTile(
+                              title: Text('กำลังโหลดชื่อผู้ใช้...'));
+                        }
+
+                        var userData =
+                            userSnapshot.data!.data() as Map<String, dynamic>;
+                        String userName =
+                            userData['username'] ?? 'ผู้ใช้ไม่ระบุชื่อ';
+
+                        return ListTile(
+                          title: Text(userName), // แสดงชื่อผู้ใช้
+                          subtitle: Text(review['reviewText'] ?? ''),
+                          trailing: RatingBarIndicator(
+                            rating: review['rating']?.toDouble() ?? 0.0,
+                            itemBuilder: (context, index) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            itemCount: 5,
+                            itemSize: 20.0,
+                            direction: Axis.horizontal,
+                          ),
+                        );
+                      },
                     );
                   }).toList(),
                 );
