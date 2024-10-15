@@ -98,7 +98,9 @@ class _SubmitIssueScreenState extends State<SubmitIssueScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Submit Issue')),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        title: const Text('Submit Issue')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(

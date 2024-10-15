@@ -68,15 +68,15 @@ class NavigationDrawer extends StatelessWidget {
                     radius: 52,
                     backgroundImage: userData['profilePictureURL'] != null
                         ? NetworkImage(userData['profilePictureURL'])
-                        : null, // กำหนดให้เป็น null หากไม่มี URL
+                        : null,
                     child: userData['profilePictureURL'] ==
-                            null // ตรวจสอบว่ามี URL หรือไม่
+                            null
                         ? const Icon(
                             Icons.person,
-                            size: 52, // ขนาดไอคอน
-                            color: Colors.white, // สีของไอคอน
+                            size: 52,
+                            color: Colors.white,
                           )
-                        : null, // หากมี URL ให้ใช้ backgroundImage แทน
+                        : null,
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -246,7 +246,8 @@ class _HomepageState extends State<Homepage> {
 
   AppBar getAppBar(int index) {
     return AppBar(
-      backgroundColor: Color.fromARGB(255, 153, 85, 240),
+      backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+      title: getTitle(index),
       actions: [
         IconButton(
           onPressed: () {

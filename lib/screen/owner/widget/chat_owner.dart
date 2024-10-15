@@ -103,6 +103,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('แชทกับผู้ใช้ที่จองหอพัก'),
       ),
       body: Column(

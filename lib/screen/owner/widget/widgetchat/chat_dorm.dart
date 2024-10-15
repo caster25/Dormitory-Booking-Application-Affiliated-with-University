@@ -166,6 +166,7 @@ class ChatRoomScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: Text('ห้องแชท: $chatRoomId'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(

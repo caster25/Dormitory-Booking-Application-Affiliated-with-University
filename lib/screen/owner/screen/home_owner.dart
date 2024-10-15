@@ -12,7 +12,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Ownerhome extends StatefulWidget {
-  const Ownerhome({super.key});
+  const Ownerhome({super.key, this.title = "Home"});
+
+    final String title;
 
   @override
   State<Ownerhome> createState() => _OwnerhomeState();
@@ -172,11 +174,11 @@ class NavigationDrawer extends StatelessWidget {
 
 class _OwnerhomeState extends State<Ownerhome> {
   int index = 0;
-  late User _currentUser; // Allow null value
+  late User _currentUser;
 
   final List<Widget> _screens = [
     const DormitoryListScreen(),
-    const OwnerDormListScreen(), // ส่ง chatGroupId
+    const OwnerDormListScreen(),
     const Profileowner(),
   ];
 

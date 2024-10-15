@@ -96,6 +96,7 @@ class _EditUserState extends State<EditUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('แก้ไขข้อมูลส่วนตัว'),
       ),
       body: Padding(

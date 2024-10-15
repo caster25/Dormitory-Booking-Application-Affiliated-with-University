@@ -221,6 +221,7 @@ class ListOfTenants extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('รายชื่อผู้เช่า'),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(

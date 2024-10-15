@@ -91,6 +91,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('User Notifications'),
       ),
       body: _notifications.isEmpty

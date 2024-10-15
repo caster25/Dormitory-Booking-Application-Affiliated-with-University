@@ -73,69 +73,84 @@ class _ProfileOwnerState extends State<ProfileOwner> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.purple),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const Ownerhome()),
-            (route) => false,
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Ownerhome()),
+          (route) => false,
+        );
+        return false; // ไม่ให้ปิดแอปเมื่อกดปุ่ม back
+      },
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const Ownerhome()),
+              (route) => false,
+            ),
           ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: currentUser == null
-            ? const Center(
-                child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
-            : Column(
-                children: [
-                  CircleAvatar(
-                    radius: 52,
-                    backgroundImage: userData?['profilePictureURL'] != null
-                        ? NetworkImage(userData?['profilePictureURL'])
-                        : null,
-                    child: userData?['profilePictureURL'] == null
-                        ? const Icon(
-                            Icons.person,
-                            size: 52,
-                            color: Colors.white,
-                          )
-                        : null,
-                  ),
-                  ProfileInfoRow(
-                    icon: Icons.person,
-                    text: userData?['fullname'] ??
-                        'ไม่มีชื่อ', // ใช้ค่าทดแทนเมื่อ fullname เป็น null
-                  ),
-                  ProfileInfoRow(
-                    icon: Icons.phone,
-                    text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
-                  ),
-                  const SizedBox(height: 32),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                EditOwnerProfile(userId: currentUser!.uid)),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 73, 177, 247),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: currentUser == null
+              ? const Center(
+                  child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
+              : Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 52,
+                      backgroundImage: (userData != null &&
+                              userData!['profilePictureURL'] != null &&
+                              userData!['profilePictureURL'].isNotEmpty &&
+                              userData!['profilePictureURL'].startsWith('http'))
+                          ? NetworkImage(userData!['profilePictureURL'])
+                          : null,
+                      child: (userData == null ||
+                              userData!['profilePictureURL'] == null ||
+                              userData!['profilePictureURL'].isEmpty)
+                          ? const Icon(
+                              Icons.person,
+                              size: 52,
+                              color: Colors.white,
+                            )
+                          : null,
                     ),
-                    child: const Text('แก้ไขข้อมูล'),
-                  ),
-                ],
-              ),
+                    ProfileInfoRow(
+                      icon: Icons.person,
+                      text: userData?['fullname'] ?? 'ไม่มีชื่อ',
+                    ),
+                    ProfileInfoRow(
+                      icon: Icons.phone,
+                      text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EditOwnerProfile(userId: currentUser!.uid)),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 73, 177, 247),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text('แก้ไขข้อมูล'),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }

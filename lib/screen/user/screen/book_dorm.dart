@@ -72,7 +72,7 @@ class _BookDormState extends State<BookDorm> {
                   ownerId: ownerId,
                   dormitoryId: dormitoryId,
                   chatRoomId:
-                      matchingChatRoomId!, // Use the matching chatRoomId
+                      matchingChatRoomId!, 
                 ),
               ),
             );

@@ -232,6 +232,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('เพิ่มหอพัก'),
         actions: [
           IconButton(

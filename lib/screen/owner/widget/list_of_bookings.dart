@@ -254,6 +254,18 @@ class ListOfBookings extends StatelessWidget {
                   'currentDormitoryId': null,
                 });
 
+                // เพิ่มการแจ้งเตือนเมื่อการจองสำเร็จ
+                await FirebaseFirestore.instance
+                    .collection('notifications')
+                    .add({
+                  'userId': userId,
+                  'dormitoryId': dormitoryId,
+                  'type': 'rejectBooking',
+                  'message': 'ถูกปฏิเสธการจอง',
+                  'timestamp': FieldValue.serverTimestamp(),
+                  'status': 'unread', // Mark as unread initially
+                });
+
                 DocumentSnapshot dormitorySnapshot = await FirebaseFirestore
                     .instance
                     .collection('dormitories')
@@ -300,6 +312,7 @@ class ListOfBookings extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('รายชื่อผู้จอง'),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(

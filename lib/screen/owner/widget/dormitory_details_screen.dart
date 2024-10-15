@@ -371,6 +371,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
           title: const Text('แก้ไขข้อมูลหอพัก'),
           actions: [
             IconButton(

@@ -33,15 +33,16 @@ class _ChatScreenState extends State<ChatScreen> {
   FocusNode _focusNode = FocusNode();
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
-  // ignore: unused_field
+  String? dormitoryName; // เพิ่มตัวแปรนี้เพื่อเก็บชื่อหอพัก
   bool _isAtBottom = true;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _getCurrentUser();
     _checkChatRoom();
-
+    _getDormitoryName(); // เรียกใช้ฟังก์ชันนี้
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -49,8 +50,18 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       }
     });
-
     _scrollController.addListener(_handleScroll);
+  }
+
+  Future<void> _getDormitoryName() async {
+    final dormitoryDoc = await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc(widget.dormitoryId)
+        .get();
+    setState(() {
+      dormitoryName =
+          dormitoryDoc.data()?['name']; // แก้ไขให้ตรงกับฟิลด์ชื่อใน Firestore
+    });
   }
 
   void _handleScroll() {
@@ -166,7 +177,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return Scaffold(
       appBar: AppBar(
-        title: const Text('แชทกลุ่มหอพัก'),
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        title: Text(dormitoryName ?? 'Loading...'), // แสดงชื่อหอพัก
       ),
       body: Builder(builder: (context) {
         return Column(
@@ -328,13 +340,31 @@ class _ChatScreenState extends State<ChatScreen> {
             ListTile(
               title: const Text('Delete Message'),
               onTap: () {
-                // เพิ่มฟังก์ชันการลบข้อความที่นี่
+                _deleteMessage(message.id);
+                Navigator.pop(context); // ปิด Bottom Sheet
               },
             ),
           ],
         );
       },
     );
+  }
+
+  Future<void> _deleteMessage(String messageId) async {
+    try {
+      await _messagesCollection
+          .doc(widget.chatRoomId)
+          .collection('messages')
+          .doc(messageId)
+          .delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Message deleted')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete message: $e')),
+      );
+    }
   }
 
   @override

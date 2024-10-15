@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:dorm_app/screen/user/widgets/edit_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -52,7 +50,6 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
-  // ignore: unused_element
   Future<void> _updateUserData() async {
     try {
       await FirebaseFirestore.instance
@@ -73,81 +70,91 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.purple),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const Homepage()),
-            (route) => false,
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Homepage()),
+          (route) => false,
+        );
+        return false; // ไม่ให้ปิดแอปเมื่อกดปุ่ม back
+      },
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.purple),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const Homepage()),
+              (route) => false,
+            ),
           ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: currentUser == null
-            ? const Center(
-                child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
-            : SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 52,
-                      backgroundImage: userData?['profilePictureURL'] != null
-                          ? NetworkImage(userData!['profilePictureURL'])
-                          : null,
-                      child: userData?['profilePictureURL'] == null
-                          ? const Icon(
-                              Icons.person,
-                              size: 52,
-                              color: Colors.white,
-                            )
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: currentUser == null
+              ? const Center(
+                  child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
+              : SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        radius: 52,
+                        backgroundImage: userData?['profilePictureURL'] != null
+                            ? NetworkImage(userData!['profilePictureURL'])
+                            : null,
+                        child: userData?['profilePictureURL'] == null
+                            ? const Icon(
+                                Icons.person,
+                                size: 52,
+                                color: Colors.white,
+                              )
+                            : null,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    ProfileInfoRow(
-                      icon: Icons.person,
-                      text: userData?['fullname'] ?? 'ไม่มีข้อมูล',
-                    ),
-                    ProfileInfoRow(
-                      icon: Icons.phone,
-                      text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  EditUser(userId: currentUser!.uid)),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 73, 177, 247),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      const SizedBox(height: 16),
+                      Text(
+                        userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      child: const Text('แก้ไขข้อมูล'),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      ProfileInfoRow(
+                        icon: Icons.person,
+                        text: userData?['fullname'] ?? 'ไม่มีข้อมูล',
+                      ),
+                      ProfileInfoRow(
+                        icon: Icons.phone,
+                        text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    EditUser(userId: currentUser!.uid)),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 73, 177, 247),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text('แก้ไขข้อมูล'),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

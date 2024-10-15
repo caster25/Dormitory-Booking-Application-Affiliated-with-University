@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,9 +12,9 @@ class AccountInfoScreen extends StatefulWidget {
 
 class _AccountInfoScreenState extends State<AccountInfoScreen> {
   late Future<UserProfile> _userProfile;
-  // ignore: unused_field, prefer_final_fields
-  bool _isPasswordVisible = false; // Control visibility of password
-  final _newPasswordController = TextEditingController(); // New password controller
+  final bool _isPasswordVisible = false; // Control visibility of password
+  final _newPasswordController =
+      TextEditingController(); // New password controller
 
   @override
   void initState() {
@@ -48,22 +46,26 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('อีเมล: ${userProfile.email}', style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 8),
-                  Text('เบอร์โทร: ${userProfile.numphone}', style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 8),
-                  Text('ชื่อบัญชี: ${userProfile.username}', style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 8),
-                  Text('ชื่อ-นามสกุล: ${userProfile.fullname}', style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 8),
-
+                  _buildAccountInfoItem(
+                      'อีเมล', userProfile.email ?? 'ไม่ระบุ'),
+                  _buildAccountInfoItem(
+                      'เบอร์โทร', userProfile.numphone ?? 'ไม่ระบุ'),
+                  _buildAccountInfoItem(
+                      'ชื่อบัญชี', userProfile.username ?? 'ไม่ระบุ'),
+                  _buildAccountInfoItem(
+                      'ชื่อ-นามสกุล', userProfile.fullname ?? 'ไม่ระบุ'),
+                  const Divider(height: 20, thickness: 1),
                   const SizedBox(height: 16),
-
-                  ElevatedButton(
+                  ElevatedButton.icon(
                     onPressed: () {
                       _showPasswordChangeDialog(context);
                     },
-                    child: const Text('เปลี่ยนรหัสผ่าน'),
+                    icon: const Icon(Icons.lock, size: 18),
+                    label: const Text('เปลี่ยนรหัสผ่าน'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 239, 239, 239),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
                   ),
                 ],
               ),
@@ -74,13 +76,30 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     );
   }
 
+  Widget _buildAccountInfoItem(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 16),
+        ),
+      ],
+    );
+  }
+
   Future<UserProfile> getUserProfile() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) {
       throw Exception('User not logged in');
     }
 
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
     if (!userDoc.exists) {
       throw Exception('User profile not found');

@@ -127,6 +127,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('Owner Notifications'),
       ),
       body: _isLoading
@@ -205,16 +206,6 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                                     ),
                                   ),
                                 ],
-                              ),
-                              const SizedBox(height: 15),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    // Navigate to details screen
-                                  },
-                                  child: const Text('View Details'),
-                                ),
                               ),
                             ],
                           ),

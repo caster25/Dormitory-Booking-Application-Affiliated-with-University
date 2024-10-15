@@ -185,20 +185,23 @@ class _ProfileownerState extends State<Profileowner> {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: _tempImage != null
-                              ? FileImage(_tempImage!)
-                              : _profileImageUrl != null
-                                  ? NetworkImage(_profileImageUrl!)
-                                  : null, // เปลี่ยนเป็น null ถ้าไม่มีรูปภาพ
-                          radius: 40,
-                          child: _tempImage == null &&
-                                  _profileImageUrl == null // ตรวจสอบว่าไม่มีภาพ
+                          radius: 52,
+                          backgroundImage: (userProfile.profilePictureURL !=
+                                      null &&
+                                  userProfile.profilePictureURL!.isNotEmpty &&
+                                  Uri.tryParse(userProfile.profilePictureURL!)
+                                          ?.hasScheme ==
+                                      true)
+                              ? NetworkImage(userProfile.profilePictureURL!)
+                              : null, // Don't provide a NetworkImage if URL is invalid
+                          child: userProfile.profilePictureURL == null ||
+                                  userProfile.profilePictureURL!.isEmpty
                               ? const Icon(
                                   Icons.person,
-                                  size: 40, // ขนาดของไอคอน
-                                  color: Colors.white, // สีของไอคอน
+                                  size: 52,
+                                  color: Colors.white,
                                 )
-                              : null, // หากมีภาพให้ไม่แสดงไอคอน
+                              : null,
                         ),
                         const SizedBox(width: 16),
                         Column(
@@ -217,6 +220,7 @@ class _ProfileownerState extends State<Profileowner> {
                       ],
                     ),
                   ),
+
                   const SizedBox(
                       height: 16), // เพิ่มระยะห่างระหว่างชื่อและการ์ด
                   Card(
