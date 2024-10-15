@@ -80,14 +80,14 @@ class _ProfileOwnerState extends State<ProfileOwner> {
           MaterialPageRoute(builder: (context) => const Ownerhome()),
           (route) => false,
         );
-        return false; // ไม่ให้ปิดแอปเมื่อกดปุ่ม back
+        return false;
       },
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 153, 85, 240),
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
+          iconTheme: const IconThemeData(color: Colors.purple),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.of(context).pushAndRemoveUntil(

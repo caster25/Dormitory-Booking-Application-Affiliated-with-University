@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dorm_app/screen/user/widgets/edit_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -50,6 +52,7 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _updateUserData() async {
     try {
       await FirebaseFirestore.instance
@@ -77,7 +80,7 @@ class _UserScreenState extends State<UserScreen> {
           MaterialPageRoute(builder: (context) => const Homepage()),
           (route) => false,
         );
-        return false; // ไม่ให้ปิดแอปเมื่อกดปุ่ม back
+        return false;
       },
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
