@@ -4,7 +4,6 @@ import 'package:dorm_app/screen/login.dart';
 class TermsAndConditionsScreen extends StatelessWidget {
   const TermsAndConditionsScreen({super.key});
 
-  // ignore: unused_element
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -40,7 +39,10 @@ class TermsAndConditionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('เงื่อนไขและข้อตกลง'),
+        backgroundColor: Colors.blueAccent,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -55,13 +57,14 @@ class TermsAndConditionsScreen extends StatelessWidget {
                       child: Text(
                         'เงื่อนไขและข้อตกลงการใช้บริการ',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     SizedBox(height: 20),
-                    SizedBox(height: 20),
+                    Divider(thickness: 2),
                     Text(
                       '1. ข้อมูลหอพักที่ถูกต้อง',
                       style:
@@ -140,29 +143,36 @@ class TermsAndConditionsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 24),
+                  ),
                   onPressed: () {
                     Navigator.pop(context, false); // ส่งค่ายกเลิกกลับ
                   },
-                  child: const Center(
-                    child: Text(
-                      'ยกเลิก',
-                      style: TextStyle(fontSize: 20),
-                    ),
+                  child: const Text(
+                    'ยกเลิก',
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 24),
+                  ),
                   onPressed: () {
                     Navigator.pop(context, true); // ส่งค่ายอมรับกลับ
                   },
-                  child: const Center(
-                    child: Text(
-                      'ยอมรับ',
-                      style: TextStyle(fontSize: 20),
-                    ),
+                  child: const Text(
+                    'ยอมรับ',
+                    style: TextStyle(fontSize: 18),
                   ),
                 ),
               ],

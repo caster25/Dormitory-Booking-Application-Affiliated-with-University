@@ -32,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _isObscure = true;
 
   Future<void> _showErrorDialog(String message,
       {bool showRegisterButton = false,
@@ -95,13 +96,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _loginFunction() async {
-     if (formKey.currentState!.validate()) {
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+    if (formKey.currentState!.validate()) {
+      try {
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
 
         String? role = await getUserRole(userCredential.user!.uid);
         if (role != null) {
@@ -141,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
             showRegisterButton = true;
             break;
           case 'invalid-credential':
-            errorMessage = 'ข้อมูลรับรองไม่ถูกต้องหรือหมดอายุ';
+            errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
             break;
           case 'too-many-requests':
             errorMessage =
@@ -253,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
                       TextFormField(
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: _isObscure,
                         decoration: InputDecoration(
                           hintText: 'กรอกรหัสผ่านของคุณ',
                           filled: true,
@@ -261,6 +262,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isObscure
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isObscure = !_isObscure;
+                              });
+                            },
                           ),
                         ),
                         validator: (value) {

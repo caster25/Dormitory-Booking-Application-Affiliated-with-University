@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:dorm_app/screen/terms_and_conditions.dart';
 import 'package:dorm_app/service/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:dorm_app/screen/login.dart';// Assuming this contains the userProfile class
+import 'package:dorm_app/screen/login.dart'; // Assuming this contains the userProfile class
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,40 +17,53 @@ class _RegisterFormState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  // ignore: prefer_final_fields, unused_field
   bool _acceptTerms = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   void _register() async {
     if (_formKey.currentState!.validate()) {
-      if (!_acceptTerms) {
+      bool? acceptTerms = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TermsAndConditionsScreen(),
+        ),
+      );
+
+      // ตรวจสอบว่าผู้ใช้ยอมรับเงื่อนไขหรือไม่
+      if (acceptTerms == true) {
+        try {
+          await _authService.registerUser(
+            email: _emailController.text,
+            password: _passwordController.text,
+            username: _usernameController.text,
+            fullname: _fullnameController.text,
+            numphone: _numphoneController.text,
+          );
+
+          _formKey.currentState!.reset();
+          _passwordController.clear();
+          _confirmPasswordController.clear();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        } on FirebaseAuthException catch (e) {
+          _showErrorDialog(context, e.message ?? 'Error occurred');
+        }
+      } else {
+        // ผู้ใช้ไม่ได้ยอมรับเงื่อนไข
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('กรุณายอมรับเงื่อนไข')),
+          const SnackBar(
+              content: Text('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
         );
-        return;
-      }
-
-      try {
-        await _authService.registerUser(
-          email: _emailController.text,
-          password: _passwordController.text,
-          username: _usernameController.text,
-          fullname: _fullnameController.text,
-          numphone: _numphoneController.text,
-        );
-
-        _formKey.currentState!.reset();
-        _passwordController.clear();
-        _confirmPasswordController.clear();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-        );
-      } on FirebaseAuthException catch (e) {
-        _showErrorDialog(context, e.message ?? 'Error occurred');
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -178,8 +192,23 @@ class _RegisterFormState extends State<RegisterScreen> {
                 const SizedBox(height: 25),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
-                  decoration: _buildInputDecoration('รหัสผ่าน'),
+                  obscureText:
+                      !_isPasswordVisible, // ใช้ flag เพื่อตรวจสอบว่าจะแสดงรหัสผ่านหรือไม่
+                  decoration: _buildInputDecoration('รหัสผ่าน').copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible =
+                              !_isPasswordVisible; // สลับสถานะของการแสดงรหัสผ่าน
+                        });
+                      },
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกรหัสผ่าน';
@@ -193,31 +222,29 @@ class _RegisterFormState extends State<RegisterScreen> {
                 const SizedBox(height: 25),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  obscureText: true,
-                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน'),
+                  obscureText:
+                      !_isConfirmPasswordVisible, // ใช้ flag เพื่อตรวจสอบว่าจะแสดงรหัสผ่านหรือไม่
+                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน').copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible; // สลับสถานะของการแสดงรหัสผ่าน
+                        });
+                      },
+                    ),
+                  ),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'รหัสผ่านไม่ตรงกัน';
                     }
                     return null;
                   },
-                ),
-                const SizedBox(height: 25),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _acceptTerms,
-                      onChanged: (value) {
-                        setState(() {
-                          _acceptTerms = value!;
-                        });
-                      },
-                    ),
-                    const Text(
-                      'ฉันยอมรับเงื่อนไขและข้อตกลงการใช้บริการ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 25),
                 SizedBox(

@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:dorm_app/screen/login.dart';
 
-
 class RegisterownerScreen extends StatefulWidget {
   const RegisterownerScreen({super.key});
 
@@ -23,6 +22,9 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   final TextEditingController _emailController = TextEditingController();
   // ignore: unused_field
   bool _acceptTerms = false;
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   final auth = FirebaseAuth.instance;
   final usersCollection = FirebaseFirestore.instance.collection('users');
@@ -49,66 +51,68 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   }
 
   void _register() async {
-  if (_formKey.currentState!.validate()) {
-    bool? acceptTerms = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const TermsAndConditionsScreen(),
-      ),
-    );
+    if (_formKey.currentState!.validate()) {
+      bool? acceptTerms = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const TermsAndConditionsScreen(),
+        ),
+      );
 
-    // ตรวจสอบว่าผู้ใช้ยอมรับเงื่อนไขหรือไม่
-    if (acceptTerms == true) {
-      try {
-        UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-
-        var currentUser = FirebaseAuth.instance.currentUser;
-        if (currentUser != null) {
-          await usersCollection.doc(currentUser.uid).set({
-            'username': _usernameController.text,
-            'fullname': _fullnameController.text,
-            'numphone': _numphoneController.text,
-            'email': _emailController.text,
-            'profilePictureURL': '',
-            'role': 'owner',
-          });
-          _formKey.currentState!.reset();
-          _passwordController.clear();
-          _confirmPasswordController.clear();
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
+      // ตรวจสอบว่าผู้ใช้ยอมรับเงื่อนไขหรือไม่
+      if (acceptTerms == true) {
+        try {
+          UserCredential userCredential =
+              await auth.createUserWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
           );
-        }
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'email-already-in-use') {
+
+          var currentUser = FirebaseAuth.instance.currentUser;
+          if (currentUser != null) {
+            await usersCollection.doc(currentUser.uid).set({
+              'username': _usernameController.text,
+              'fullname': _fullnameController.text,
+              'numphone': _numphoneController.text,
+              'email': _emailController.text,
+              'profilePictureURL': '',
+              'role': 'owner',
+            });
+            _formKey.currentState!.reset();
+            _passwordController.clear();
+            _confirmPasswordController.clear();
+            Navigator.pushReplacement(
+              // ignore: use_build_context_synchronously
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          }
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'email-already-in-use') {
+            // ignore: use_build_context_synchronously
+            _showErrorDialog(
+                context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
+          } else {
+            // ignore: use_build_context_synchronously
+            _showErrorDialog(context, 'Registration error: ${e.message}');
+          }
+        } catch (e) {
           // ignore: use_build_context_synchronously
-          _showErrorDialog(context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
-        } else {
-          // ignore: use_build_context_synchronously
-          _showErrorDialog(context, 'Registration error: ${e.message}');
+          _showErrorDialog(context, 'Error: $e');
         }
-      } catch (e) {
+      } else {
         // ignore: use_build_context_synchronously
-        _showErrorDialog(context, 'Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
+        );
       }
     } else {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
+        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
-    );
   }
-}
-
 
   InputDecoration _buildInputDecoration(String labelText) {
     return InputDecoration(
@@ -208,12 +212,26 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _passwordController,
-                  decoration:
-                      _buildInputDecoration('รหัสผ่าน'), // Only one decoration
-                  obscureText: true,
+                  obscureText:
+                      !_isPasswordVisible, // ใช้ flag เพื่อตรวจสอบว่าจะแสดงรหัสผ่านหรือไม่
+                  decoration: _buildInputDecoration('รหัสผ่าน').copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible =
+                              !_isPasswordVisible; // สลับสถานะของการแสดงรหัสผ่าน
+                        });
+                      },
+                    ),
+                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'กรุณากรอกรหัสผ่าน';
@@ -224,12 +242,26 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 25),
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: _buildInputDecoration(
-                      'ยืนยันรหัสผ่าน'), // Only one decoration
-                  obscureText: true,
+                  obscureText:
+                      !_isConfirmPasswordVisible, // ใช้ flag เพื่อตรวจสอบว่าจะแสดงรหัสผ่านหรือไม่
+                  decoration: _buildInputDecoration('ยืนยันรหัสผ่าน').copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible; // สลับสถานะของการแสดงรหัสผ่าน
+                        });
+                      },
+                    ),
+                  ),
                   validator: (value) {
                     if (value != _passwordController.text) {
                       return 'รหัสผ่านไม่ตรงกัน';

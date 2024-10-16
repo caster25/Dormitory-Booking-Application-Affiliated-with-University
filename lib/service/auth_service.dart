@@ -31,7 +31,7 @@ class AuthService {
           username: username,
           fullname: fullname,
           numphone: numphone,
-          role: 'user',  // Assuming a default role of 'user'
+          role: 'user',
         );
 
         // Save user data to Firestore using UserProfile's toMap method
