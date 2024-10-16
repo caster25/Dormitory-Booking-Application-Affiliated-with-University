@@ -41,7 +41,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('เงื่อนไขและข้อตกลง'),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -137,6 +137,21 @@ class _RegisterFormState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 25),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: _buildInputDecoration('อีเมล'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'กรุณากรอกอีเมล';
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return 'รูปแบบอีเมลไม่ถูกต้อง';
+                    }
+                    return null;
+                  },
+                ),
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _usernameController,
@@ -170,21 +185,6 @@ class _RegisterFormState extends State<RegisterScreen> {
                     }
                     if (!RegExp(r'^\d{10}$').hasMatch(value)) {
                       return 'รูปแบบเบอร์โทรไม่ถูกต้อง';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 25),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: _buildInputDecoration('อีเมล'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'กรุณากรอกอีเมล';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'รูปแบบอีเมลไม่ถูกต้อง';
                     }
                     return null;
                   },
