@@ -70,11 +70,8 @@ class UserRoleScreen extends StatelessWidget {
           } else if (role == 'user') {
             return const Homepage();
           }
-        } else {
-          return const IndexScreen();
         }
-
-        return const Center(child: Text('No data available'));
+        return const IndexScreen();
       },
     );
   }

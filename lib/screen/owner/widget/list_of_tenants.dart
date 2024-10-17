@@ -9,7 +9,6 @@ import 'package:dorm_app/model/Dormitory.dart';
 class ListOfTenants extends StatelessWidget {
   final String dormitoryId;
 
-  // ignore: use_super_parameters
   const ListOfTenants({Key? key, required this.dormitoryId}) : super(key: key);
 
   Stream<List<Map<String, dynamic>>> _fetchTenantsStream() {
@@ -61,8 +60,7 @@ class ListOfTenants extends StatelessWidget {
       'tenants': FieldValue.arrayRemove([tenantId]),
     });
 
-    // อัปเดต currentDormitoryId ของผู้เช่าเป็น null
-
+    // อัปเดตจำนวนห้องว่าง
     DocumentSnapshot dormitoriesSnapshot = await FirebaseFirestore.instance
         .collection('dormitories')
         .doc(dormitoryId)
@@ -253,48 +251,59 @@ class ListOfTenants extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // รูปประจำตัวผู้เช่า (ตัวอย่าง: Icon)
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 30,
-                          backgroundColor: Colors.blueAccent,
-                          child:
-                              Icon(Icons.person, size: 30, color: Colors.white),
+                          backgroundColor: Colors.grey,
+                          backgroundImage:
+                              tenant['profilePictureURL'] != null &&
+                                      tenant['profilePictureURL'].isNotEmpty
+                                  ? NetworkImage(tenant['profilePictureURL'])
+                                  : null, // ใช้ backgroundImage เพื่อแสดงรูปภาพ
+                          child: tenant['profilePictureURL'] == null ||
+                                  tenant['profilePictureURL'].isEmpty
+                              ? const Icon(
+                                  Icons.person, // แสดงไอคอนผู้ใช้แทน
+                                  size: 30,
+                                  color: Colors.white,
+                                )
+                              : null, // ถ้ามีรูปภาพก็ไม่แสดงไอคอน
                         ),
-                        const SizedBox(width: 15),
-                        // ข้อมูลผู้เช่า
+
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                tenant['username'] ?? 'ไม่มีชื่อ',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                '${tenant['fullname']}',
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              Text(
+                                tenant['email'],
+                                style: const TextStyle(color: Colors.grey),
                               ),
                               const SizedBox(height: 5),
-                              Text(
-                                'อีเมล: ${tenant['email'] ?? 'ไม่มีข้อมูล'}',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'เบอร์โทร: ${tenant['numphone'] ?? 'ไม่มีข้อมูล'}',
-                                style: const TextStyle(fontSize: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      _openChat(context, tenantId);
+                                    },
+                                    child: const Text('ข้อความ'),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete),
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      _showPasswordDialog(context, tenantId);
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        ),
-                        // ปุ่มแชท
-                        IconButton(
-                          icon: const Icon(Icons.chat),
-                          onPressed: () => _openChat(context, tenantId),
-                        ),
-                        // ปุ่มลบผู้เช่า
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () =>
-                              _showPasswordDialog(context, tenantId),
                         ),
                       ],
                     ),

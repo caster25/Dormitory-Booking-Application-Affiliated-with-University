@@ -317,7 +317,7 @@ class _DormScreenState extends State<DormScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ห้องว่างที่เหลืออยู่ ${dorm['availableRooms']}ห้อง',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text('ราคา ${formatNumber.format(dorm['price'])} บาท',
@@ -327,6 +327,10 @@ class _DormScreenState extends State<DormScreen> {
                       ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
                       : 'ยังไม่มีการรีวิว',
                   style: const TextStyle(color: Colors.red),
+                ),
+                Text(
+                  'ห้องว่างที่ยังเหลือ ${dorm['availableRooms']}ห้อง',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 Row(

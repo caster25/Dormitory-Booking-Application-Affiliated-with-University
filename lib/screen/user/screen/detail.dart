@@ -443,6 +443,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                             dormitory['name'] ?? 'ไม่มีชื่อ',
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
+                          Text( 'จำนวนห้องว่างที่ยังเหลืออยู่  ${dormitory['availableRooms']} ห้อง'),
                           const SizedBox(height: 8),
                           Text(
                             'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',

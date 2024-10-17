@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_final_fields, unused_field
+
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -47,8 +49,8 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
   late final String _dormitoryId;
 
   List<String> _imageUrls = []; // List สำหรับเก็บ URL ของรูปภาพ
-  // ignore: prefer_final_fields
   List<File> _selectedImages = [];
+  List<File> _imagesToUpload = []; // สำหรับเก็บภาพที่ต้องการอัปโหลด
   final NumberFormat _formatter = NumberFormat('#,##0');
 
   @override
@@ -121,20 +123,9 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
       setState(() {
         // เพิ่มไฟล์ที่เลือกไปยังรายการของไฟล์ภาพที่เลือก
         _selectedImages.add(File(image.path));
+        // เพิ่ม URL ไฟล์ที่เลือกลงใน _imageUrls เพื่อใช้ในฟังก์ชันบันทึก
+        _imageUrls.add(image.path); // หรือใช้ image.path ตามความเหมาะสม
       });
-
-      // อัปโหลดภาพไปยัง Firebase Storage
-      String imageUrl = await _uploadImage(File(image.path));
-
-      // บันทึก URL ลงใน Firestore
-      setState(() {
-        _imageUrls.add(imageUrl);
-      });
-
-      await FirebaseFirestore.instance
-          .collection('dormitories')
-          .doc(widget.dormitoryId)
-          .update({'imageUrl': _imageUrls});
     }
   }
 
@@ -173,7 +164,6 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
       // ดึงข้อมูลปัจจุบันจาก Firestore
       final docSnapshot = await docRef.get();
-      // ignore: unnecessary_cast
       final currentData = docSnapshot.data() as Map<String, dynamic>?;
 
       if (currentData != null) {
@@ -194,7 +184,6 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
           'address': _addressController.text,
           'rule': _ruleController.text,
           'contaxt': _contaxtController.text,
-          'imageUrl': _imageUrls // เพิ่ม URL รูปภาพใหม่ใน newData
         };
 
         // เช็คว่ามีการเปลี่ยนแปลงข้อมูลหรือไม่
@@ -212,7 +201,6 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
         if (!isDataChanged) {
           // หากไม่มีการเปลี่ยนแปลงข้อมูล
-          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('ไม่มีการเปลี่ยนแปลงข้อมูล')),
           );
@@ -221,7 +209,6 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
         // ถ้ามีการเปลี่ยนแปลงข้อมูล แสดงกล่องยืนยันการบันทึก
         bool confirmSave = await showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -247,18 +234,27 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
         // ถ้า confirmSave เป็น true ถึงจะดำเนินการบันทึกข้อมูล
         if (confirmSave == true) {
+          // รักษา URL รูปภาพเก่าไว้
+          List<String> allImageUrls = List.from(currentData['imageUrl'] ?? []);
+
+          // อัปโหลดภาพที่เลือกทั้งหมดไปยัง Firebase Storage
+          for (var image in _selectedImages) {
+            String imageUrl = await _uploadImage(image);
+            allImageUrls.add(imageUrl);
+          }
+
+          // อัปเดตข้อมูลใหม่รวมทั้ง URL รูปภาพที่อัปโหลด
+          newData['imageUrl'] = allImageUrls;
+
           await docRef.update(newData);
-          // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('ข้อมูลหอพักได้รับการอัปเดต')),
           );
-          // ignore: use_build_context_synchronously
           Navigator.pop(context); // กลับไปหน้าก่อนหน้า
         }
       }
     } catch (e) {
       print('Error: $e'); // แสดงข้อผิดพลาดใน console
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกข้อมูล')),
       );
@@ -488,6 +484,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                                     const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
                                   setState(() {
+
                                     _selectedImages.removeAt(index);
                                   });
                                 },
@@ -496,6 +493,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                           ],
                         );
                       } else {
+                        // แสดงภาพที่ดึงมาจาก Firebase
                         return Stack(
                           children: [
                             Image.network(

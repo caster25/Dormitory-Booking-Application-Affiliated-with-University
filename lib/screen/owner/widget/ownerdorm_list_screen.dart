@@ -118,9 +118,8 @@ class OwnerDormListScreen extends StatelessWidget {
                           );
                         },
                       ),
-                      // Button to show bookings
                       IconButton(
-                        icon: const Icon(Icons.book_online),
+                        icon: const Icon(Icons.book),
                         tooltip: 'ผู้จอง',
                         onPressed: () {
                           if (currentUserId != null) {
