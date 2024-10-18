@@ -247,7 +247,7 @@ class _OwnerhomeState extends State<Ownerhome> {
         IconButton(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const NotificationOwnerScreen();
+              return NotificationOwnerScreen(user: _currentUser);
             }));
           },
           icon: const Icon(Icons.notifications),

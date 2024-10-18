@@ -1,10 +1,11 @@
-// ignore_for_file: library_private_types_in_public_api
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationUserScreen extends StatefulWidget {
-  const NotificationUserScreen({super.key});
+  final User user; // รับค่า User จาก constructor
+
+  const NotificationUserScreen({super.key, required this.user});
 
   @override
   _NotificationUserScreenState createState() => _NotificationUserScreenState();
@@ -12,19 +13,22 @@ class NotificationUserScreen extends StatefulWidget {
 
 class _NotificationUserScreenState extends State<NotificationUserScreen> {
   List<Map<String, dynamic>> _notifications = [];
+  late User _currentUser;
 
   @override
   void initState() {
     super.initState();
+    _currentUser = widget.user; // กำหนดค่าให้ _currentUser จาก widget.user
     _fetchNotifications();
+    print(_currentUser);
   }
 
   Future<void> _fetchNotifications() async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('notifications')
-          .where('type', whereIn: ['confirmBooking', 'rejectBooking'])
-          .get();
+          .where('userId', isEqualTo: _currentUser.uid) // เปรียบเทียบกับ uid
+          .where('type', whereIn: ['confirmBooking', 'rejectBooking']).get();
 
       List<Map<String, dynamic>> notifications = [];
       for (var doc in snapshot.docs) {
@@ -154,7 +158,8 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                           const SizedBox(height: 5),
                           Row(
                             children: [
-                              const Icon(Icons.access_time, color: Colors.orange),
+                              const Icon(Icons.access_time,
+                                  color: Colors.orange),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
