@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, prefer_final_fields
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,6 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final CollectionReference _messagesCollection =
       FirebaseFirestore.instance.collection('messages');
-  // ignore: prefer_final_fields
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
   FocusNode _focusNode = FocusNode();
@@ -107,7 +106,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: Text('ผู้เช่า'), // แสดงชื่อหอพัก
+        title: const Text('ผู้เช่า'), // แสดงชื่อหอพัก
       ),
       body: Builder(builder: (context) {
         return Column(

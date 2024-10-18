@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_final_fields, unused_field, use_build_context_synchronously
+// ignore_for_file: prefer_final_fields, unused_field, use_build_context_synchronously, unnecessary_cast
 
 import 'dart:async';
 import 'dart:io';

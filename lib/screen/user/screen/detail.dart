@@ -402,7 +402,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
                 double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
-                // แสดงรูปภาพหอพัก
                 List<String> imageUrls =
                     List<String>.from(dormitory['imageUrl'] ?? []);
 
@@ -417,15 +416,27 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       items: imageUrls.map((url) {
                         return Builder(
                           builder: (BuildContext context) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  url,
-                                  fit: BoxFit.cover,
+                            return GestureDetector(
+                              onTap: () {
+                                // เมื่อกดรูปจะนำทางไปยังหน้าจอแสดงรูปขนาดใหญ่
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        FullScreenImage(imageUrl: url),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    url,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             );
@@ -443,7 +454,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                             dormitory['name'] ?? 'ไม่มีชื่อ',
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
-                          Text( 'จำนวนห้องว่างที่ยังเหลืออยู่  ${dormitory['availableRooms']} ห้อง'),
+                          Text(
+                              'จำนวนห้องว่างที่ยังเหลืออยู่  ${dormitory['availableRooms']} ห้อง'),
                           const SizedBox(height: 8),
                           Text(
                             'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',
@@ -641,6 +653,29 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
           _bookDormitory(context, currentUser!.uid, selectedDormitory!['id']);
         },
         child: const Icon(Icons.book),
+      ),
+    );
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final String imageUrl;
+
+  const FullScreenImage({super.key, required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          panEnabled: true, // ให้ผู้ใช้สามารถเลื่อนดูภาพได้
+          boundaryMargin: const EdgeInsets.all(20),
+          minScale: 0.5,
+          maxScale: 4,
+          child: Image.network(imageUrl),
+        ),
       ),
     );
   }
