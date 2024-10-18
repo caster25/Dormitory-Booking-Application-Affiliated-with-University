@@ -14,7 +14,7 @@ class ProfileOwner extends StatefulWidget {
 }
 
 class _ProfileOwnerState extends State<ProfileOwner> {
-  User? currentUser; // เก็บข้อมูลผู้ใช้ที่ล็อกอิน
+  User? currentUser;
   Map<String, dynamic>? userData; // เก็บข้อมูลเพิ่มเติมจาก Firestore
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();

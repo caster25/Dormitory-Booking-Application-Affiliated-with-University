@@ -1,12 +1,12 @@
+// ignore_for_file: body_might_complete_normally_nullable, library_private_types_in_public_api
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationOwnerScreen extends StatefulWidget {
   const NotificationOwnerScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _NotificationOwnerScreenState createState() =>
       _NotificationOwnerScreenState();
 }
@@ -14,28 +14,66 @@ class NotificationOwnerScreen extends StatefulWidget {
 class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
   List<Map<String, dynamic>> _notifications = [];
   bool _isLoading = true;
-  String? _ownerId;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
-    _loadOwnerId();
+    _initializeUser();
   }
 
-  Future<void> _loadOwnerId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _ownerId = prefs.getString('ownerId');
-    });
-    _fetchNotifications();
+  Future<void> _initializeUser() async {
+    userId = await getDormitoryId();
+    if (userId != null) {
+      print(userId);
+      _fetchNotifications();
+    } else {
+      print('Current User ID is null');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<String> getDormitoryId() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      throw Exception('User not logged in');
+    }
+
+    // ดึงเอกสารของผู้ใช้
+    final userDoc =
+        await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc('submittedBy')
+        .get();
+
+    if (!userDoc.exists) {
+      throw Exception('User profile not found');
+    }
+
+    // ตรวจสอบว่าเอกสารมีฟิลด์ที่ต้องการ
+    if (!userDoc.data()!.containsKey('submittedBy')) {
+      throw Exception('Dormitory ID not found in user profile');
+    }
+
+    // ดึงค่า dormitoryId
+    final dormitoryId = userDoc.get('submittedBy');
+
+    if (dormitoryId == null) {
+      throw Exception('Dormitory ID is null');
+    }
+
+    return dormitoryId;
   }
 
   Future<void> _fetchNotifications() async {
     try {
+      print('Fetching notifications for userId: $userId');
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('notifications')
+          .where('dormitoryId', isEqualTo: userId)
           .where('type', isEqualTo: 'booking')
-          .where('ownerId', isEqualTo: _ownerId) // กรองโดย ownerId
           .get();
 
       List<Map<String, dynamic>> notifications = [];
@@ -43,7 +81,6 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-        // ดึงข้อมูล dormitory โดยใช้ dormitoryId
         DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
             .collection('dormitories')
             .doc(data['dormitoryId'])
@@ -53,7 +90,6 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
             ? dormitorySnapshot.get('name') ?? 'Unnamed Dormitory'
             : 'Unnamed Dormitory';
 
-        // ดึงข้อมูล user โดยใช้ userId
         DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(data['userId'])
@@ -78,7 +114,6 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
         });
       }
 
-      // จัดเรียง notifications ตามเวลา
       notifications.sort((a, b) {
         DateTime aTime =
             a['timestamp'] ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -89,13 +124,12 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
 
       setState(() {
         _notifications = notifications;
-        _isLoading =
-            false; // เปลี่ยน _isLoading เป็น false หลังจากโหลดข้อมูลเสร็จ
+        _isLoading = false;
       });
     } catch (e) {
       print('Error fetching notifications: $e');
       setState(() {
-        _isLoading = false; // เปลี่ยน _isLoading เป็น false เมื่อมีข้อผิดพลาด
+        _isLoading = false;
       });
     }
   }

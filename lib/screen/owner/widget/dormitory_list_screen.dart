@@ -94,6 +94,7 @@ class DormitoryListScreen extends StatelessWidget {
                         dormitory['roomType'] ?? 'ไม่มีประเภทห้อง';
                     String dormType =
                         dormitory['dormType'] ?? 'ไม่มีประเภทหอพัก';
+                    int totalRooms = dormitory['totalRooms'];
                     int dormPrice = dormitory['price']?.toInt() ?? 0;
                     int availableRooms =
                         dormitory['availableRooms']?.toInt() ?? 0;
@@ -123,6 +124,7 @@ class DormitoryListScreen extends StatelessWidget {
                           children: [
                             Text(
                                 'ราคา: ${formatNumber.format(dormPrice)}  บาท/เทอม'),
+                                 Text('ห้องทั้งหมด: $totalRooms ห้อง'),
                             Text('ห้องว่าง: $availableRooms ห้อง'),
                           ],
                         ),

@@ -74,7 +74,14 @@ class _FeedsScreenState extends State<FeedsScreen> {
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
+                            overflow:
+                                TextOverflow.ellipsis, // ป้องกันข้อความล้น
                           ),
+                          const SizedBox(height: 5),
+                          Text(
+                              'จำนวนห้องที่ว่าง ${dorm['availableRooms']} ห้อง'),
+                          const SizedBox(height: 5),
+                          Text('จำนวนห้องทั้งหมด ${dorm['totalRooms']} ห้อง'),
                           const SizedBox(height: 5),
                           Text(
                             'ราคา: ${formatNumber.format(dorm['price'])} บาท',
@@ -83,14 +90,13 @@ class _FeedsScreenState extends State<FeedsScreen> {
                           const SizedBox(height: 5),
                           Text(
                             dorm['rating'] != null && dorm['rating'] > 0
-                                ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
+                                ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5'
                                 : 'ยังไม่มีการรีวิว',
                             style: const TextStyle(color: Colors.red),
                           ),
                         ],
                       ),
                     ),
-                    // Icon button can be added here
                   ],
                 ),
               ),

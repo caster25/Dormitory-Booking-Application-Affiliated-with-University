@@ -1,3 +1,5 @@
+// ignore_for_file: collection_methods_unrelated_type
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ class LikeScreen extends StatefulWidget {
 
 class _LikeScreenState extends State<LikeScreen> {
   List<DocumentSnapshot> likedDorms = [];
+  List<DocumentSnapshot> favoritesList = [];
   final formatNumber = NumberFormat('#,##0');
 
   @override
@@ -22,7 +25,6 @@ class _LikeScreenState extends State<LikeScreen> {
 
   Future<void> _fetchLikedDorms() async {
     final user = FirebaseAuth.instance.currentUser;
-    final formatNumber = NumberFormat('#,##0');
 
     if (user != null) {
       final userFavoritesRef =
@@ -50,6 +52,31 @@ class _LikeScreenState extends State<LikeScreen> {
     }
   }
 
+  Future<void> _toggleFavorite(String dormId) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc =
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+      final userSnapshot = await userDoc.get();
+      if (userSnapshot.exists) {
+        List<dynamic> favoritesList = userSnapshot['favorites'] ?? [];
+        if (favoritesList.contains(dormId)) {
+          favoritesList.remove(dormId); // ลบหอพักออกจากรายการโปรด
+        } else {
+          favoritesList.add(dormId); // เพิ่มหอพักเข้ารายการโปรด
+        }
+
+        await userDoc.update({'favorites': favoritesList});
+        setState(() {
+          // Refresh liked dorms after toggling favorite
+          likedDorms = []; // Reset list
+          _fetchLikedDorms(); // Fetch updated liked dorms
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +90,7 @@ class _LikeScreenState extends State<LikeScreen> {
               itemCount: likedDorms.length,
               itemBuilder: (context, index) {
                 var dorm = likedDorms[index];
+                String dormId = dorm.id; // ดึง dormId จาก DocumentSnapshot
 
                 return Card(
                   margin: const EdgeInsets.all(8.0),
@@ -72,8 +100,7 @@ class _LikeScreenState extends State<LikeScreen> {
                       SizedBox(
                         height: 200, // Adjust height as needed
                         child: PageView.builder(
-                          itemCount:
-                              dorm['imageUrl'].length, // Use list of image URLs
+                          itemCount: dorm['imageUrl'].length,
                           itemBuilder: (context, imageIndex) {
                             return Image.network(
                               dorm['imageUrl'][imageIndex],
@@ -101,8 +128,18 @@ class _LikeScreenState extends State<LikeScreen> {
                             ),
                           ],
                         ),
-                        trailing:
-                            const Icon(Icons.favorite, color: Colors.pink),
+                        trailing: GestureDetector(
+                          onTap: () async {
+                            await _toggleFavorite(dormId);
+                            print('Icon tapped for ${dorm['name']}');
+                          },
+                          child: Icon(
+                            favoritesList.contains(dormId)
+                                ? Icons.favorite_border
+                                : Icons.favorite,
+                            color: Colors.pink,
+                          ),
+                        ),
                       ),
                     ],
                   ),

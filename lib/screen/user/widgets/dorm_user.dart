@@ -18,8 +18,8 @@ class _DormScreenState extends State<DormScreen> {
   TextEditingController searchController = TextEditingController();
   List<String> favorites = [];
   late String userId;
-  bool isSearching = false; // ตัวแปรสำหรับตรวจสอบสถานะการค้นหา
-  bool isFiltering = false; // ตัวแปรสำหรับตรวจสอบสถานะการกรอง
+  bool isSearching = false;
+  bool isFiltering = false;
   final formatNumber = NumberFormat('#,##0');
 
   @override
@@ -78,58 +78,63 @@ class _DormScreenState extends State<DormScreen> {
 
   Widget _buildFilterSection() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.end, // จัดตำแหน่งไปที่ด้านขวา
       children: [
-        const Spacer(),
-        DropdownButton<String>(
-          value: selectedFilterType.isEmpty ? null : selectedFilterType,
-          hint: const Text('เลือกการกรอง'),
-          onTap: () {
-            setState(() {
-              isFiltering = true;
-              isSearching = false;
-            });
-          },
-          items: const [
-            DropdownMenuItem(
-              value: 'price',
-              child: Text('กรองตามราคา'),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end, // จัดแนวในแนวนอนให้ชิดขวา
+          children: [
+            DropdownButton<String>(
+              value: selectedFilterType.isEmpty ? null : selectedFilterType,
+              hint: const Text('เลือกการกรอง'),
+              onTap: () {
+                setState(() {
+                  isFiltering = true;
+                  isSearching = false;
+                });
+              },
+              items: const [
+                DropdownMenuItem(
+                  value: 'price',
+                  child: Text('กรองตามราคา'),
+                ),
+                DropdownMenuItem(
+                  value: 'rating',
+                  child: Text('กรองตามคะแนน'),
+                ),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  selectedFilterType = value!;
+                  filterState = 0;
+                });
+              },
             ),
-            DropdownMenuItem(
-              value: 'rating',
-              child: Text('กรองตามคะแนน'),
-            ),
+            if (selectedFilterType.isNotEmpty) ...[
+              const SizedBox(
+                  height: 8), // ช่องว่างระหว่าง DropdownButton กับ FilterButton
+              FilterButton(
+                text: _getFilterText(),
+                icon: _getFilterIcon().icon!,
+                onPressed: () {
+                  setState(() {
+                    filterState = (filterState + 1) % 3;
+                  });
+                },
+              ),
+            ],
+            if (isFiltering) // เพิ่มปุ่มยกเลิกการกรอง
+              IconButton(
+                icon: const Icon(Icons.clear, color: Colors.grey),
+                onPressed: () {
+                  setState(() {
+                    isFiltering = false;
+                    selectedFilterType = '';
+                    filterState = 0;
+                  });
+                },
+              ),
           ],
-          onChanged: (value) {
-            setState(() {
-              selectedFilterType = value!;
-              filterState = 0;
-            });
-          },
         ),
-        if (selectedFilterType.isNotEmpty) ...[
-          const SizedBox(width: 8),
-          FilterButton(
-            text: _getFilterText(),
-            icon: _getFilterIcon().icon!,
-            onPressed: () {
-              setState(() {
-                filterState = (filterState + 1) % 3;
-              });
-            },
-          ),
-        ],
-        if (isFiltering) // เพิ่มปุ่มยกเลิกการกรอง
-          IconButton(
-            icon: const Icon(Icons.clear, color: Colors.grey),
-            onPressed: () {
-              setState(() {
-                isFiltering = false;
-                selectedFilterType = '';
-                filterState = 0;
-              });
-            },
-          ),
       ],
     );
   }
@@ -142,11 +147,12 @@ class _DormScreenState extends State<DormScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end, // จัดแนวให้ชิดขวา
             children: [
               // แสดงช่องค้นหาหรือช่องกรองอย่างใดอย่างหนึ่งเท่านั้น
               if (!isFiltering) _buildSearchBar(),
-              if (!isSearching) _buildFilterSection(),
+              if (!isSearching)
+                _buildFilterSection(), // ปรับให้ฟังก์ชันนี้อยู่ในด้านขวา
 
               const SizedBox(height: 8),
               const SizedBox(height: 16),
@@ -317,7 +323,7 @@ class _DormScreenState extends State<DormScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ห้องว่างที่เหลืออยู่ ${dorm['availableRooms']}ห้อง',
+                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ห้องทั้งหมด ${dorm['totalRooms']}ห้อง',
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text('ราคา ${formatNumber.format(dorm['price'])} บาท',
@@ -329,7 +335,7 @@ class _DormScreenState extends State<DormScreen> {
                   style: const TextStyle(color: Colors.red),
                 ),
                 Text(
-                  'ห้องว่างที่ยังเหลือ ${dorm['availableRooms']}ห้อง',
+                  'ห้องที่ยังว่างอยู่ ${dorm['availableRooms']}ห้อง',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
