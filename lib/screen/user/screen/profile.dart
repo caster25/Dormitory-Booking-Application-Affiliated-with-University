@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/Verification/phone_verification.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/screen/setting/detail_dromuser.dart';
 import 'package:dorm_app/screen/setting/setting.dart';
@@ -183,36 +184,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   GestureDetector(
                     onTap: _pickImage,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceBetween, // จัดเรียงให้มีระยะห่างระหว่างเนื้อหา
                       children: [
-                        CircleAvatar(
-                          backgroundImage: _tempImage != null
-                              ? FileImage(_tempImage!)
-                              : _profileImageUrl != null
-                                  ? NetworkImage(_profileImageUrl!)
-                                  : null, // เปลี่ยนเป็น null ถ้าไม่มีรูปภาพ
-                          radius: 40,
-                          child: _tempImage == null &&
-                                  _profileImageUrl == null // ตรวจสอบว่าไม่มีภาพ
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 40, // ขนาดของไอคอน
-                                  color: Colors.white, // สีของไอคอน
-                                )
-                              : null, // หากมีภาพให้ไม่แสดงไอคอน
-                        ),
-                        const SizedBox(width: 16),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(
-                              userProfile.username ?? 'Unknown User',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            CircleAvatar(
+                              backgroundImage: _tempImage != null
+                                  ? FileImage(_tempImage!)
+                                  : _profileImageUrl != null
+                                      ? NetworkImage(_profileImageUrl!)
+                                      : null, // เปลี่ยนเป็น null ถ้าไม่มีรูปภาพ
+                              radius: 40,
+                              child: _tempImage == null &&
+                                      _profileImageUrl ==
+                                          null // ตรวจสอบว่าไม่มีภาพ
+                                  ? const Icon(
+                                      Icons.person,
+                                      size: 40, // ขนาดของไอคอน
+                                      color: Colors.white, // สีของไอคอน
+                                    )
+                                  : null, // หากมีภาพให้ไม่แสดงไอคอน
                             ),
-                            Text(userProfile.fullname ?? 'No name provided'),
+                            const SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  userProfile.username ?? 'Unknown User',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                    userProfile.fullname ?? 'No name provided'),
+                              ],
+                            ),
                           ],
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            // นำผู้ใช้ไปยังหน้าจอการยืนยันตัวตน
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PhoneVerificationScreen(), // ไปยังหน้าจอยืนยันตัวตน
+                              ),
+                            );
+                          },
+                          child: const Text('ยืนยันตัวตน'),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blue, // สีข้อความของปุ่ม
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(8), // รูปทรงของปุ่ม
+                            ),
+                          ),
                         ),
                       ],
                     ),
