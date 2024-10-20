@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/model/Dormitory.dart';
 import 'package:dorm_app/screen/user/widgets/chat_user.dart';
 import 'package:flutter/material.dart';
 
@@ -71,8 +72,7 @@ class _BookDormState extends State<BookDorm> {
                   userId: widget.userId,
                   ownerId: ownerId,
                   dormitoryId: dormitoryId,
-                  chatRoomId:
-                      matchingChatRoomId!, 
+                  chatRoomId: matchingChatRoomId!,
                 ),
               ),
             );
@@ -153,7 +153,7 @@ class _BookDormState extends State<BookDorm> {
               String dormName = dormData['name'] ?? 'ไม่มีชื่อ';
               double price = dormData['price']?.toDouble() ?? 0;
 
-// ตรวจสอบว่า imageUrl เป็น List หรือไม่ และดึงรูปภาพแรก
+              // ตรวจสอบว่า imageUrl เป็น List หรือไม่ และดึงรูปภาพแรก
               List<dynamic> imageUrls = dormData['imageUrl'] ?? [];
               String imageUrl = imageUrls.isNotEmpty ? imageUrls[0] : '';
 
@@ -226,6 +226,23 @@ class _BookDormState extends State<BookDorm> {
                                           .update({
                                         'availableRooms': FieldValue.increment(
                                             1), // เพิ่มจำนวนห้องว่างขึ้น 1
+                                      });
+
+                                      // อัปเดต Firestore หลังจากยกเลิกการจอง
+                                      await FirebaseFirestore.instance
+                                          .collection('notifications')
+                                          .add({
+                                        'userId': widget
+                                            .userId, // ใช้ userId ของผู้ใช้ปัจจุบัน
+                                        'dormitoryId':
+                                            bookedDormitoryId, // ใช้ dormitoryId ของหอพักที่ถูกจอง
+                                        'type':
+                                            'cancellation', // ประเภทของการแจ้งเตือนเป็นการยกเลิก
+                                        'message': 'คุณได้ยกเลิกการจองหอพัก',
+                                        'timestamp': FieldValue
+                                            .serverTimestamp(), // บันทึกเวลาที่ทำการยกเลิก
+                                        'status':
+                                            'unread', // ตั้งค่าเป็นยังไม่ได้อ่านในตอนแรก
                                       });
 
                                       // แสดง SnackBar แจ้งการยกเลิกสำเร็จ

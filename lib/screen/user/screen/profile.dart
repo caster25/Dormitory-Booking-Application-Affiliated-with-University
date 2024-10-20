@@ -223,27 +223,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ],
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            // นำผู้ใช้ไปยังหน้าจอการยืนยันตัวตน
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PhoneVerificationScreen(), // ไปยังหน้าจอยืนยันตัวตน
-                              ),
-                            );
-                          },
-                          child: const Text('ยืนยันตัวตน'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.blue, // สีข้อความของปุ่ม
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(8), // รูปทรงของปุ่ม
-                            ),
-                          ),
-                        ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     // นำผู้ใช้ไปยังหน้าจอการยืนยันตัวตน
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //         builder: (context) =>
+                        //             EmailOtpVerificationScreen(), // ไปยังหน้าจอยืนยันตัวตน
+                        //       ),
+                        //     );
+                        //   },
+                        //   child: const Text('ยืนยันตัวตน'),
+                        //   style: ElevatedButton.styleFrom(
+                        //     foregroundColor: Colors.white,
+                        //     backgroundColor: Colors.blue, // สีข้อความของปุ่ม
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius:
+                        //           BorderRadius.circular(8), // รูปทรงของปุ่ม
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

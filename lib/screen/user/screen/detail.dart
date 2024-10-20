@@ -593,18 +593,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 16),
-
-                                // Dormitory description
-                                Text(
-                                  'คำอธิบายหอพัก:',
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  dormitory['description'] ?? 'ไม่มีคำอธิบาย',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
                               ],
                             ),
                           ),

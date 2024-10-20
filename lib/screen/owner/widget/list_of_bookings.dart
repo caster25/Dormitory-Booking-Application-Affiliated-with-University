@@ -149,26 +149,38 @@ class ListOfBookings extends StatelessWidget {
                       dormitorySnapshot.data() as Map<String, dynamic>?;
 
                   if (dormitoryData != null) {
+                    // ตรวจสอบว่ามีฟิลด์ tenants หรือไม่ ถ้าไม่มีจะสร้างเป็น array ว่าง
                     if (!dormitoryData.containsKey('tenants')) {
                       await dormitoryRef.update({
                         'tenants': [],
                       });
                     }
 
+                    // ตรวจสอบว่ามีฟิลด์ usersBooked หรือไม่
                     if (dormitoryData.containsKey('usersBooked')) {
                       List<dynamic> usersBooked =
                           dormitoryData['usersBooked'] as List<dynamic>;
 
-                      await dormitoryRef.update({
-                        'tenants': FieldValue.arrayUnion(usersBooked),
-                        'usersBooked': FieldValue.delete(),
-                      });
+                      // ตรวจสอบว่า userId นี้อยู่ใน usersBooked หรือไม่
+                      if (usersBooked.contains(userId)) {
+                        // เพิ่ม userId เข้าไปใน tenants
+                        await dormitoryRef.update({
+                          'tenants': FieldValue.arrayUnion(
+                              [userId]), // เพิ่ม user คนเดียว
+                          'usersBooked': FieldValue.arrayRemove(
+                              [userId]), // ลบ user ออกจาก usersBooked
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('ไม่พบผู้ใช้ในรายการจอง')),
+                        );
+                        Navigator.of(context).pop();
+                        return; // ออกจากฟังก์ชัน
+                      }
                     }
 
-                    await dormitoryRef.update({
-                      'tenants': FieldValue.arrayUnion([userId]),
-                    });
-
+                    // อัปเดตสถานะของผู้ใช้ในคอลเลคชัน users
                     await FirebaseFirestore.instance
                         .collection('users')
                         .doc(userId)

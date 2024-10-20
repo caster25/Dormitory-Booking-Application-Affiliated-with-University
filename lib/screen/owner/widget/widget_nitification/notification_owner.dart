@@ -60,7 +60,11 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
           .where('dormitoryId',
               whereIn:
                   _dormitoryIds) // ค้นหาแจ้งเตือนที่ตรงกับหอพักของเจ้าของหอ
-          .where('type', whereIn: ['booking']).get();
+          .where('type', whereIn: [
+        'booking',
+        'cancellation'
+      ]) // เพิ่ม 'cancellation' เพื่อดึงการยกเลิกด้วย
+          .get();
 
       List<Map<String, dynamic>> notifications = [];
       for (var doc in snapshot.docs) {
@@ -92,6 +96,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
             'message': data['message'] ?? 'No message',
             'timestamp': notificationTime,
             'type': data['type'], // เพิ่ม type เพื่อให้ใช้ในการแสดงผล
+            'reason': data['reason'] ?? '', // เหตุผลในการยกเลิก ถ้ามี
           });
         } else {
           print('Dormitory or User does not exist');
@@ -150,13 +155,17 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                                'New Booking Notification',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blueGrey[800],
-                                ),
-                              ),
+                            notification['type'] == 'booking'
+                                ? 'New Booking Notification'
+                                : 'Cancellation Notification', // ตรวจสอบว่าเป็นการจองหรือการยกเลิก
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: notification['type'] == 'booking'
+                                  ? Colors.green // สีสำหรับการจอง
+                                  : Colors.red, // สีสำหรับการยกเลิก
+                            ),
+                          ),
                           const SizedBox(height: 10),
                           Row(
                             children: [

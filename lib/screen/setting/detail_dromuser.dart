@@ -299,13 +299,14 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         .collection('reviews')
         .doc(userId) // ใช้ userId เป็น document ID
         .set({
-          'dormitoryId': dormitoryId,
+      'dormitoryId': dormitoryId,
       'reviewText': reviewText, // ข้อความรีวิว
       'rating': rating, // คะแนนรีวิว
       'userId': userId, // userId ที่ถูกต้อง
       'timestamp': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true)); 
-    await updateDormitoryRating(dormitoryId);// ใช้ merge เพื่ออัปเดตหากมีข้อมูลอยู่แล้ว
+    }, SetOptions(merge: true));
+    await updateDormitoryRating(
+        dormitoryId); // ใช้ merge เพื่ออัปเดตหากมีข้อมูลอยู่แล้ว
   }
 
   Future<void> updateDormitoryRating(String dormitoryId) async {
@@ -378,10 +379,10 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                         height:
                                             8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
 
-                                    // ปุ่มสำหรับเข้าสู่การสนทนา
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                    // จัดปุ่มในแนวตั้งโดยใช้ Column
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment
+                                          .stretch, // ให้ปุ่มขยายเต็มความกว้าง
                                       children: [
                                         ElevatedButton(
                                           onPressed: () {
@@ -393,22 +394,23 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                           child: const Text(
                                               'เข้าสู่การสนทนาเจ้าของหอพัก'),
                                         ),
+                                        const SizedBox(
+                                            height:
+                                                8), // เพิ่มระยะห่างระหว่างปุ่ม
                                         ElevatedButton(
                                           onPressed: () {
                                             _navigateToChat(
                                                 currentDormitoryId!, "",
-                                                isGroupChat:
-                                                    true); // ปรับให้ไม่มี ownerId สำหรับแชทกลุ่ม
+                                                isGroupChat: true);
                                           },
                                           child: const Text('เข้าสู่แชทกลุ่ม'),
                                         ),
                                       ],
                                     ),
+
                                     const SizedBox(
                                         height:
-                                            8), // เพิ่มช่องว่างระหว่างปุ่มและรีวิว
-
-                                    // ปุ่มรีวิว
+                                            8), // เพิ่มช่องว่างระหว่างปุ่มแชทกับปุ่มรีวิว
                                     Center(
                                       child: ElevatedButton(
                                         onPressed: () {

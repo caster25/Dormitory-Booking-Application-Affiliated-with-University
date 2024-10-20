@@ -1,149 +1,136 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+// ignore_for_file: library_private_types_in_public_api
 
-class PhoneVerificationScreen extends StatefulWidget {
-  const PhoneVerificationScreen({super.key});
+import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+
+
+class EmailOtpVerificationScreen extends StatefulWidget {
+  const EmailOtpVerificationScreen({super.key});
 
   @override
-  _PhoneVerificationScreenState createState() =>
-      _PhoneVerificationScreenState();
+  _EmailOtpVerificationScreenState createState() =>
+      _EmailOtpVerificationScreenState();
 }
 
-class _PhoneVerificationScreenState extends State<PhoneVerificationScreen> {
-  final _phoneController = TextEditingController();
+class _EmailOtpVerificationScreenState
+    extends State<EmailOtpVerificationScreen> {
+  final _emailController = TextEditingController();
   final _otpController = TextEditingController();
   bool otpSent = false;
-  String? verificationId;
   bool isLoading = false;
+  String generatedOtp = '';
 
-  String formatPhoneNumber(String phoneNumber) {
-    if (!phoneNumber.startsWith('+')) {
-      phoneNumber = '+66${phoneNumber.substring(1)}'; // สำหรับหมายเลขประเทศไทย
-    }
-    return phoneNumber;
+  // ฟังก์ชันสร้าง OTP
+  String generateOtp() {
+    var rng = Random();
+    return (rng.nextInt(900000) + 100000).toString(); // สร้างรหัส 6 หลัก
   }
 
-  void verifyPhoneNumber() async {
+  // ฟังก์ชันส่ง OTP ไปยังอีเมล
+  Future<void> sendOtpToEmail(String email, String otp) async {
+    String username = 'teerapat.phi@ku.th.com'; // อีเมลของคุณ
+    String password = 'teerapat1234'; // รหัสผ่านอีเมลของคุณ
+
+    final smtpServer = gmail(username, password); // สร้างเซิร์ฟเวอร์ SMTP
+
+    final message = Message() // สร้างข้อความ
+      ..from = Address(username, 'Your App Name')
+      ..recipients.add(email) // ผู้รับ
+      ..subject = 'รหัสยืนยัน OTP' // หัวข้ออีเมล
+      ..text = 'รหัส OTP ของคุณคือ $otp'; // ข้อความในอีเมล
+
+    try {
+      await send(message, smtpServer); // ส่งอีเมล
+      print('ส่ง OTP ไปยังอีเมลสำเร็จ');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('OTP ถูกส่งไปยังอีเมลแล้ว')),
+      );
+    } catch (e) {
+      print('ส่ง OTP ล้มเหลว: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ส่ง OTP ล้มเหลว: $e')),
+      );
+    }
+  }
+
+  // ฟังก์ชันในการส่ง OTP
+  void sendOtp() async {
     setState(() {
       isLoading = true;
     });
 
-    String phoneNumber = formatPhoneNumber(_phoneController.text.trim());
+    generatedOtp = generateOtp(); // สร้าง OTP ใหม่
+    String email = _emailController.text.trim();
 
-    FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        try {
-          await FirebaseAuth.instance.signInWithCredential(credential);
-          print('ยืนยันตัวตนสำเร็จ!');
-        } catch (e) {
-          print('เกิดข้อผิดพลาด: ${e.toString()}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('เกิดข้อผิดพลาด: ${e.toString()}')),
-          );
-        } finally {
-          setState(() {
-            isLoading = false;
-          });
-        }
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        String message = e.code == 'invalid-phone-number'
-            ? 'หมายเลขโทรศัพท์ไม่ถูกต้อง'
-            : 'การยืนยันล้มเหลว: ${e.message}';
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
-        print('การยืนยันล้มเหลว: ${e.message}');
-        setState(() {
-          isLoading = false;
-        });
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-          otpSent = true;
-          this.verificationId = verificationId;
-        });
-        print('OTP ถูกส่งไปยังหมายเลข: $phoneNumber');
-        setState(() {
-          isLoading = false;
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {
-        print('หมดเวลาการดึง OTP อัตโนมัติ');
-        setState(() {
-          otpSent = false;
-          isLoading = false;
-        });
-      },
-    );
+    try {
+      // บันทึกรหัส OTP ใน Firestore หรือฐานข้อมูล
+      await FirebaseFirestore.instance.collection('otps').doc(email).set({
+        'otp': generatedOtp,
+        'timestamp': Timestamp.now(),
+      });
+
+      await sendOtpToEmail(email, generatedOtp); // ส่ง OTP ไปยังอีเมล
+
+      setState(() {
+        otpSent = true;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('เกิดข้อผิดพลาด: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('เกิดข้อผิดพลาด: $e')),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
+  // ฟังก์ชันในการตรวจสอบ OTP
   void verifyOtp() async {
-    if (verificationId != null && _otpController.text.isNotEmpty) {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId!,
-        smsCode: _otpController.text.trim(),
-      );
+    String enteredOtp = _otpController.text.trim();
+    String email = _emailController.text.trim();
 
-      try {
-        await FirebaseAuth.instance.signInWithCredential(credential);
-        print('ยืนยัน OTP สำเร็จ!');
-      } on FirebaseAuthException catch (_, e) {
-        print('เกิดข้อผิดพลาดในการยืนยัน OTP: ${e.toString()}');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OTP ไม่ถูกต้อง กรุณาลองใหม่')),
-        );
-      }
+    if (enteredOtp == generatedOtp) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('ยืนยัน OTP สำเร็จ')),
+      );
+      // ดำเนินการต่อไป เช่น ลงทะเบียนผู้ใช้ใน Firebase
     } else {
-      print('กรุณากรอก OTP ที่ถูกต้อง');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('รหัส OTP ไม่ถูกต้อง')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ยืนยันตัวตนด้วย OTP')),
+      appBar: AppBar(title: const Text('ยืนยัน OTP ผ่านอีเมล')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            if (isLoading)
-              const CircularProgressIndicator(), // แสดง Loading
-            if (!otpSent && !isLoading) // แสดงฟิลด์กรอกเบอร์โทร หากยังไม่ได้ส่ง OTP
-              Column(
-                children: [
-                  TextField(
-                    controller: _phoneController,
-                    decoration:
-                        const InputDecoration(labelText: 'หมายเลขโทรศัพท์'),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      verifyPhoneNumber();
-                    },
-                    child: const Text('ส่ง OTP'),
-                  ),
-                ],
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'อีเมล'),
+            ),
+            const SizedBox(height: 20),
+            if (otpSent)
+              TextField(
+                controller: _otpController,
+                decoration: const InputDecoration(labelText: 'รหัส OTP'),
               ),
-            if (otpSent && !isLoading) // หาก OTP ถูกส่งแล้ว แสดงฟิลด์กรอก OTP
-              Column(
-                children: [
-                  TextField(
-                    controller: _otpController,
-                    decoration: const InputDecoration(labelText: 'กรอก OTP'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      verifyOtp(); // ยืนยัน OTP
-                    },
-                    child: const Text('ยืนยัน OTP'),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: otpSent ? verifyOtp : sendOtp,
+              child: isLoading
+                  ? const CircularProgressIndicator()
+                  : Text(otpSent ? 'ยืนยัน OTP' : 'ส่ง OTP'),
+            ),
           ],
         ),
       ),
