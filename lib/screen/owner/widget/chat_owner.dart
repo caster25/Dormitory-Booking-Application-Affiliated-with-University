@@ -32,7 +32,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
       FirebaseFirestore.instance.collection('messages');
   ScrollController _scrollController = ScrollController();
   String? currentUserId;
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {

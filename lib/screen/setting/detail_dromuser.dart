@@ -225,7 +225,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
 // ในฟังก์ชัน _showReviewDialog
   void _showReviewDialog(String dormitoryId) {
     TextEditingController reviewController = TextEditingController();
-    double _rating = 0;
+    double rating = 0;
 
     // ดึง userId จาก Firebase Authentication
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
@@ -262,7 +262,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (rating) {
-                  _rating = rating; // เก็บค่าคะแนนดาวที่ผู้ใช้กด
+                  rating = rating; // เก็บค่าคะแนนดาวที่ผู้ใช้กด
                 },
               ),
             ],
@@ -277,8 +277,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
             TextButton(
               onPressed: () async {
                 String reviewText = reviewController.text.trim();
-                if (reviewText.isNotEmpty && _rating > 0) {
-                  await _submitReview(dormitoryId, reviewText, _rating, userId);
+                if (reviewText.isNotEmpty && rating > 0) {
+                  await _submitReview(dormitoryId, reviewText, rating, userId);
                   Navigator.of(context).pop();
                 } else {
                   print('กรุณากรอกข้อความรีวิวและเลือกคะแนน');
