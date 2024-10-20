@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_final_fields, unused_field
+// ignore_for_file: prefer_final_fields, unused_field, use_build_context_synchronously, unnecessary_cast
 
 import 'dart:async';
 import 'dart:io';
@@ -32,6 +32,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
   final TextEditingController _availableRoomsController =
       TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
+  final TextEditingController _totalRoomsController = TextEditingController();
   final TextEditingController _electricityRateController =
       TextEditingController();
   final TextEditingController _waterRateController = TextEditingController();
@@ -66,6 +67,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
     _occupantsController.text = widget.dormitory['occupants'] ?? '';
     _electricityRateController.text =
         widget.dormitory['electricityRate']?.toString() ?? '0';
+    _totalRoomsController.text = widget.dormitory['totalRooms']?.toString() ?? '0';
     _waterRateController.text =
         widget.dormitory['waterRate']?.toString() ?? '0';
     _furnitureFeeController.text =
@@ -173,6 +175,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
           'availableRooms': int.parse(_availableRoomsController.text.trim()),
           'roomType': _selectedRoomType,
           'dormType': _selectedDormType,
+          'totalRooms':  _totalRoomsController.text,
           'occupants': _occupantsController.text,
           'electricityRate': int.parse(_electricityRateController.text.trim()),
           'waterRate': int.parse(_waterRateController.text.trim()),
@@ -400,9 +403,13 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
                   decoration: const InputDecoration(labelText: 'ห้องว่าง'),
                   keyboardType: TextInputType.number,
                 ),
+                TextField(
+                  controller: _totalRoomsController,
+                  decoration: const InputDecoration(labelText: 'จำนวนห้องทั้งหมด'),
+                  keyboardType: TextInputType.number,
+                ),
                 const SizedBox(height: 10),
                 _buildRoomTypeDropdown(),
-                const SizedBox(height: 10),
                 const SizedBox(height: 10),
                 _buildDormTypeDropdown(),
                 const SizedBox(height: 10),

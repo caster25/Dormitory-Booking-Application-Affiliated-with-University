@@ -3,13 +3,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/screen/index.dart';
-import 'package:dorm_app/screen/owner/widget/%E0%B8%B7widget_nitification/notification_owner.dart';
 import 'package:dorm_app/screen/owner/widget/ownerdorm_list_screen.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_list_screen.dart';
 import 'package:dorm_app/screen/owner/screen/profile_owner.dart';
 import 'package:dorm_app/screen/owner/widget/profile_owner.dart';
+import 'package:dorm_app/screen/owner/widget/widget_nitification/notification_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 
 class Ownerhome extends StatefulWidget {
   const Ownerhome({super.key, this.title = "Home"});
@@ -246,7 +247,7 @@ class _OwnerhomeState extends State<Ownerhome> {
         IconButton(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return const NotificationOwnerScreen();
+              return NotificationOwnerScreen(user: _currentUser);
             }));
           },
           icon: const Icon(Icons.notifications),

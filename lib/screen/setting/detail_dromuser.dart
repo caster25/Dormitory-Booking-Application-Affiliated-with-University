@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 
 import 'package:dorm_app/screen/user/widgets/chat_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -2,33 +2,65 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class NotificationUserScreen extends StatefulWidget {
+class NotificationOwnerScreen extends StatefulWidget {
   final User user; // รับค่า User จาก constructor
 
-  const NotificationUserScreen({super.key, required this.user});
+  const NotificationOwnerScreen({super.key, required this.user});
 
   @override
-  _NotificationUserScreenState createState() => _NotificationUserScreenState();
+  _NotificationOwnerScreenState createState() =>
+      _NotificationOwnerScreenState();
 }
 
-class _NotificationUserScreenState extends State<NotificationUserScreen> {
+class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
   List<Map<String, dynamic>> _notifications = [];
+  List<String> _dormitoryIds =
+      []; // เก็บ dormitoryIds ของหอพักที่เป็นของเจ้าของหอ
   late User _currentUser;
 
   @override
   void initState() {
     super.initState();
     _currentUser = widget.user; // กำหนดค่าให้ _currentUser จาก widget.user
-    _fetchNotifications();
-    print(_currentUser);
+    _fetchDormitoriesForOwner(); // ดึงหอพักที่เจ้าของหอนั้นเป็นเจ้าของ
+  }
+
+  Future<void> _fetchDormitoriesForOwner() async {
+    try {
+      // ดึงหอพักที่ submittedBy ตรงกับเจ้าของหอ
+      QuerySnapshot dormitoriesSnapshot = await FirebaseFirestore.instance
+          .collection('dormitories')
+          .where('submittedBy', isEqualTo: _currentUser.uid)
+          .get();
+
+      List<String> dormitoryIds = dormitoriesSnapshot.docs
+          .map((doc) => doc.id) // เก็บ id ของหอพักที่พบ
+          .toList();
+
+      setState(() {
+        _dormitoryIds = dormitoryIds; // เก็บ dormitoryIds ใน state
+      });
+
+      // หลังจากดึงหอพักแล้ว ดึงการแจ้งเตือนที่เกี่ยวข้อง
+      _fetchNotifications();
+    } catch (e) {
+      print('Error fetching dormitories: $e');
+    }
   }
 
   Future<void> _fetchNotifications() async {
     try {
+      // ตรวจสอบว่าเจ้าของหอนี้มีหอพักไหนบ้าง และดึงการแจ้งเตือนที่เกี่ยวข้องกับหอพักเหล่านั้น
+      if (_dormitoryIds.isEmpty) {
+        return; // ถ้าไม่มีหอพัก ไม่ต้องดึงการแจ้งเตือน
+      }
+
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('notifications')
-          .where('userId', isEqualTo: _currentUser.uid) // เปรียบเทียบกับ uid
-          .where('type', whereIn: ['confirmBooking', 'rejectBooking']).get();
+          .where('dormitoryId',
+              whereIn:
+                  _dormitoryIds) // ค้นหาแจ้งเตือนที่ตรงกับหอพักของเจ้าของหอ
+          .where('type', whereIn: ['booking']).get();
 
       List<Map<String, dynamic>> notifications = [];
       for (var doc in snapshot.docs) {
@@ -96,7 +128,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('User Notifications'),
+        title: const Text('Owner Notifications'),
       ),
       body: _notifications.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -118,17 +150,13 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            notification['type'] == 'confirmBooking'
-                                ? 'Booking Confirmed'
-                                : 'Booking Rejected',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: notification['type'] == 'confirmBooking'
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                          ),
+                                'New Booking Notification',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueGrey[800],
+                                ),
+                              ),
                           const SizedBox(height: 10),
                           Row(
                             children: [

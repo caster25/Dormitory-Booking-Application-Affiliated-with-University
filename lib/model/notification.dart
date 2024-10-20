@@ -1,13 +1,15 @@
-class Notification {
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class NotificationModel {
   final String id;
   final String dormitoryId;
   final String message;
   final String status;
-  final DateTime timestamp;
+  final Timestamp timestamp;
   final String type;
   final String userId;
 
-  Notification({
+  NotificationModel({
     required this.id,
     required this.dormitoryId,
     required this.message,
@@ -17,14 +19,13 @@ class Notification {
     required this.userId,
   });
 
-  // สร้างจาก Map
-  factory Notification.fromMap(Map<String, dynamic> data) {
-    return Notification(
-      id: data['id'],
+  factory NotificationModel.fromMap(Map<String, dynamic> data, String id) {
+    return NotificationModel(
+      id: id,
       dormitoryId: data['dormitoryId'],
       message: data['message'],
       status: data['status'],
-      timestamp: DateTime.parse(data['timestamp']),
+      timestamp: data['timestamp'],
       type: data['type'],
       userId: data['userId'],
     );

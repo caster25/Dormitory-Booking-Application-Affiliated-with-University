@@ -30,6 +30,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   final TextEditingController _availableRoomsController =
       TextEditingController();
   final TextEditingController _occupantsController = TextEditingController();
+  final TextEditingController _totalRoomsController = TextEditingController();
   final TextEditingController _ruleController = TextEditingController();
   final TextEditingController _electricityRateController =
       TextEditingController();
@@ -127,6 +128,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             'name': _dormNameController.text,
             'price': int.parse(_dormPriceController.text),
             'availableRooms': int.parse(_availableRoomsController.text),
+            'totalRooms' : _totalRoomsController,
             'roomType': _selectedRoomType,
             'dormType': _selectedDormType,
             'occupants': _occupantsController.text,
@@ -258,6 +260,9 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                     isNumber: true),
                 _buildTextField('จำนวนห้องว่าง', _availableRoomsController,
                     'กรุณากรอกจำนวนห้องว่าง',
+                    isNumber: true),
+                _buildTextField('จำนวนห้องทั้งหมด', _totalRoomsController,
+                    'กรุณากรอกจำนวนห้องทั้งหมด',
                     isNumber: true),
                 _buildRoomTypeDropdown(),
                 const SizedBox(height: 16),

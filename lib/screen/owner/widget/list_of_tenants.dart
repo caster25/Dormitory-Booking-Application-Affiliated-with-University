@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, use_super_parameters
 
 import 'package:dorm_app/screen/owner/widget/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';

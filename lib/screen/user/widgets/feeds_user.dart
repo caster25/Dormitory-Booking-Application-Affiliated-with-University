@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, unused_element
 
 import 'package:dorm_app/screen/user/screen/detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,7 +18,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
   List<String> favorites = []; // สร้างรายการ favorites ใน state
 
   Widget _buildDormitoryCard(DocumentSnapshot dorm, String dormId) {
-    bool isFavorite = favorites.contains(dormId); // ตรวจสอบสถานะของหัวใจ
+    bool isFavorite =
+        favorites.contains(dormId); // Check if the dormitory is a favorite
     List<dynamic> images = dorm['imageUrl'];
     final formatNumber = NumberFormat('#,##0');
 
@@ -31,71 +32,93 @@ class _FeedsScreenState extends State<FeedsScreen> {
         }));
       },
       child: Card(
-        margin: const EdgeInsets.symmetric(
-            vertical: 8.0), // เพิ่ม margin เพื่อให้มีระยะห่างระหว่าง card
+        margin:
+            const EdgeInsets.symmetric(vertical: 8.0), // Add margin for spacing
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // รูปร่างของ Card
+          borderRadius: BorderRadius.circular(10), // Card shape
         ),
-        elevation: 7, // เพิ่มเงาให้การ์ดดูเหมือนยกขึ้นมา
-        child: Column(
-          mainAxisSize: MainAxisSize.max, // ให้ Column ใช้ขนาดที่เหมาะสม
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(10)),
-              child: Container(
-                height: 130,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      images.isNotEmpty ? images[0] : 'URL_placeholder_image',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SingleChildScrollView(
-                // Allow scrolling if needed
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            dorm['rating'] != null && dorm['rating'] > 0
-                                ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
-                                : 'ยังไม่มีการรีวิว',
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ],
+        elevation: 7, // Add shadow to the card
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double fontSize = constraints.maxWidth < 200
+                ? 12
+                : 14; // Adjust font size based on card width
+
+            return Column(
+              mainAxisSize:
+                  MainAxisSize.max, // Use appropriate size for the Column
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(10)),
+                  child: Container(
+                    height: 130,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          images.isNotEmpty
+                              ? images[0]
+                              : 'URL_placeholder_image',
+                        ),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    // Icon button can be added here
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SingleChildScrollView(
+                    // Allow scrolling if needed
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                                style: TextStyle(
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                overflow: TextOverflow
+                                    .ellipsis, // Prevent text overflow
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'จำนวนห้องที่ว่าง ${dorm['availableRooms']} ห้อง',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'จำนวนห้องทั้งหมด ${dorm['totalRooms']} ห้อง',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                dorm['rating'] != null && dorm['rating'] > 0
+                                    ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5'
+                                    : 'ยังไม่มีการรีวิว',
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -310,7 +333,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
               ),
 
               const SizedBox(height: 16),
-              // Display the dormitory cards
+// Display the dormitory cards
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('dormitories')
@@ -320,8 +343,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final dormitories = snapshot
-                      .data!.docs; // This is where 'dormitories' is defined.
+                  // Accessing the dormitory data from Firestore
+                  final dormitories = snapshot.data!.docs;
 
                   return GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -333,13 +356,18 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       crossAxisSpacing: 10,
                       childAspectRatio: 0.7,
                     ),
-                    itemCount:
-                        dormitories.length, // Accessing 'dormitories' here.
+                    itemCount: dormitories.length,
                     itemBuilder: (context, index) {
-                      var dorm =
-                          dormitories[index]; // This line is causing the error.
-                      String dormId = dorm.id; // Get dormId from Document ID
-                      return _buildDormitoryCard(dorm, dormId);
+                      // Extract data for each dormitory
+                      var dorm = dormitories[index];
+                      Map<String, dynamic> dormData = dorm.data()
+                          as Map<String, dynamic>; // Cast the data properly
+                      String dormId =
+                          dorm.id; // Get the dormitory ID from the document ID
+
+                      // Build the dormitory card with the necessary data
+                      return _buildDormitoryCard(dorm,
+                          dormId); // Pass dormData instead of dorm directly
                     },
                   );
                 },

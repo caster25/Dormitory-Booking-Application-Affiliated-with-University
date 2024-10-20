@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, prefer_final_fields
+
 import 'package:dorm_app/screen/terms_and_conditions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -82,26 +84,21 @@ class _RegisterFormState extends State<RegisterownerScreen> {
             _passwordController.clear();
             _confirmPasswordController.clear();
             Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
               context,
               MaterialPageRoute(builder: (context) => const LoginScreen()),
             );
           }
         } on FirebaseAuthException catch (e) {
           if (e.code == 'email-already-in-use') {
-            // ignore: use_build_context_synchronously
             _showErrorDialog(
                 context, 'อีเมลนี้มีการใช้งานแล้ว กรุณาใช้อีเมลอื่น');
           } else {
-            // ignore: use_build_context_synchronously
             _showErrorDialog(context, 'Registration error: ${e.message}');
           }
         } catch (e) {
-          // ignore: use_build_context_synchronously
           _showErrorDialog(context, 'Error: $e');
         }
       } else {
-        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),

@@ -20,11 +20,10 @@ class OwnerDormListScreen extends StatelessWidget {
 
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
-        // Filter dormitories by the current owner's submittedBy ID
         stream: FirebaseFirestore.instance
             .collection('dormitories')
             .where('submittedBy',
-                isEqualTo: currentUserId) // Filter by submittedBy
+                isEqualTo: currentUserId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -48,6 +47,7 @@ class OwnerDormListScreen extends StatelessWidget {
               String dormName = dormitory['name'] ?? 'ไม่มีชื่อ';
               double dormPrice = dormitory['price']?.toDouble() ?? 0;
               int availableRooms = dormitory['availableRooms']?.toInt() ?? 0;
+              int totalRooms = dormitory['totalRooms'];
               String roomType = dormitory['roomType'] ?? 'ไม่มีประเภทห้อง';
               String dormType = dormitory['dormType'] ?? 'ไม่มีประเภทหอพัก';
 
@@ -96,6 +96,7 @@ class OwnerDormListScreen extends StatelessWidget {
                       Text(
                           'ราคา: ฿${formatNumber.format(dormPrice)} บาท/เทอม'),
                       Text('ห้องว่าง: $availableRooms ห้อง'),
+                      Text('ห้องทั้งหมด: $totalRooms ห้อง'),
                       Text(
                         'ผู้เช่า: ${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน',
                       ),

@@ -402,7 +402,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                 double? dormLat = (dormitory['latitude'] as num?)?.toDouble();
                 double? dormLon = (dormitory['longitude'] as num?)?.toDouble();
 
-                // แสดงรูปภาพหอพัก
                 List<String> imageUrls =
                     List<String>.from(dormitory['imageUrl'] ?? []);
 
@@ -417,15 +416,27 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       items: imageUrls.map((url) {
                         return Builder(
                           builder: (BuildContext context) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.network(
-                                  url,
-                                  fit: BoxFit.cover,
+                            return GestureDetector(
+                              onTap: () {
+                                // เมื่อกดรูปจะนำทางไปยังหน้าจอแสดงรูปขนาดใหญ่
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        FullScreenImage(imageUrl: url),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    url,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                             );
@@ -439,106 +450,163 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            dormitory['name'] ?? 'ไม่มีชื่อ',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                          ),
-                          Text( 'จำนวนห้องว่างที่ยังเหลืออยู่  ${dormitory['availableRooms']} ห้อง'),
-                          const SizedBox(height: 8),
-                          Text(
-                            'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Type of tenant
-                          Text(
-                              'ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}'),
-                          const SizedBox(height: 8),
-
-                          // Room type
-                          Text(
-                              'ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}'),
-                          const SizedBox(height: 8),
-
-                          // Number of occupants
-                          Text(
-                              'จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน'),
-                          const SizedBox(height: 8),
-
-                          // Electricity charge per unit
-                          Text(
-                              'ค่าไฟหน่วยละ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท'),
-                          const SizedBox(height: 8),
-
-                          // Water charge per unit
-                          Text(
-                              'ค่าน้ำหน่วยละ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท'),
-                          const SizedBox(height: 8),
-
-                          // Damage deposit
-                          Text(
-                              'ค่าประกันความเสียหาย: ${formatNumber.format(dormitory['securityDeposit'])} บาท'),
-                          const SizedBox(height: 8),
-
-                          Text(
-                            'กฎของหอพัก: ${dormitory['rule']}',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-
-                          // Equipment available in the room
-                          const SizedBox(height: 8),
-                          Text(
-                            'อุปกรณ์ที่มีในห้องพัก:',
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            (dormitory['equipment'] != null &&
-                                    dormitory['equipment'].isNotEmpty)
-                                ? dormitory['equipment']
-                                    .split('\n')
-                                    .map((e) => e.trim())
-                                    .join(', ')
-                                : 'ไม่มีข้อมูล',
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              RatingBarIndicator(
-                                rating: dormitory['rating']?.toDouble() ?? 0.0,
-                                itemBuilder: (context, index) => const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Dormitory Name
+                                Text(
+                                  dormitory['name'] ?? 'ไม่มีชื่อ',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium
+                                      ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
-                                itemCount: 5,
-                                itemSize: 20.0,
-                                direction: Axis.horizontal,
-                              ),
-                              Text(
-                                dormitory['rating'] != null
-                                    ? (dormitory['rating'] % 1 == 0
-                                            ? dormitory['rating']
-                                                .toInt()
-                                                .toString() // แสดงเป็นจำนวนเต็มหากไม่มีทศนิยม
-                                            : dormitory['rating'].toStringAsFixed(
-                                                1) // แสดงเป็นทศนิยม 1 ตำแหน่งถ้ามีทศนิยม
-                                        )
-                                    : '0',
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                              Text(
-                                ' (${dormitory['reviewCount']?.toString() ?? '0'} รีวิว)',
-                                style: const TextStyle(
-                                    fontSize: 16, color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            dormitory['description'] ?? '',
-                            style: const TextStyle(fontSize: 16),
+                                const SizedBox(height: 10),
+
+                                // Available rooms
+                                Text(
+                                  'จำนวนห้องว่าง: ${dormitory['availableRooms'] ?? 'ไม่มีข้อมูล'} ห้อง',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.grey[700]),
+                                ),
+                                const Divider(height: 20, thickness: 2),
+
+                                // Price per term
+                                Text(
+                                  'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',
+                                  style: const TextStyle(
+                                      fontSize: 18, color: Colors.black87),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Dormitory type
+                                Text(
+                                  'ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[600]),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Room type
+                                Text(
+                                  'ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[600]),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Number of occupants
+                                Text(
+                                  'จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[600]),
+                                ),
+                                const Divider(height: 20, thickness: 2),
+
+                                // Electricity charge
+                                Text(
+                                  'ค่าไฟ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท/หน่วย',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[700]),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Water charge
+                                Text(
+                                  'ค่าน้ำ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท/หน่วย',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[700]),
+                                ),
+                                const Divider(height: 20, thickness: 2),
+
+                                // Security deposit
+                                Text(
+                                  'ค่าประกันความเสียหาย: ${formatNumber.format(dormitory['securityDeposit'])} บาท',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[700]),
+                                ),
+                                const SizedBox(height: 10),
+
+                                // Dormitory rules
+                                Text(
+                                  'กฎของหอพัก:',
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                Text(
+                                  dormitory['rule'] ?? 'ไม่มีข้อมูล',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[600]),
+                                ),
+                                const Divider(height: 20, thickness: 2),
+
+                                // Equipment in the room
+                                Text(
+                                  'อุปกรณ์ในห้องพัก:',
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  dormitory['equipment'] != null &&
+                                          dormitory['equipment'].isNotEmpty
+                                      ? dormitory['equipment']
+                                          .split('\n')
+                                          .map((e) => '• $e')
+                                          .join('\n')
+                                      : 'ไม่มีข้อมูล',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[700]),
+                                ),
+                                const Divider(height: 20, thickness: 2),
+
+                                // Rating and Reviews
+                                Row(
+                                  children: [
+                                    RatingBarIndicator(
+                                      rating: dormitory['rating']?.toDouble() ??
+                                          0.0,
+                                      itemBuilder: (context, index) =>
+                                          const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                      itemCount: 5,
+                                      itemSize: 20.0,
+                                      direction: Axis.horizontal,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      dormitory['rating'] != null
+                                          ? dormitory['rating']
+                                              .toStringAsFixed(1)
+                                          : '0.0',
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                    Text(
+                                      ' (${dormitory['reviewCount'] ?? 0} รีวิว)',
+                                      style: const TextStyle(
+                                          fontSize: 16, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Dormitory description
+                                Text(
+                                  'คำอธิบายหอพัก:',
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  dormitory['description'] ?? 'ไม่มีคำอธิบาย',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -641,6 +709,28 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
           _bookDormitory(context, currentUser!.uid, selectedDormitory!['id']);
         },
         child: const Icon(Icons.book),
+      ),
+    );
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final String imageUrl;
+
+  const FullScreenImage({super.key, required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: InteractiveViewer(
+          panEnabled: true, // ให้ผู้ใช้สามารถเลื่อนดูภาพได้
+          boundaryMargin: const EdgeInsets.all(20),
+          minScale: 0.5,
+          maxScale: 4,
+          child: Image.network(imageUrl),
+        ),
       ),
     );
   }
