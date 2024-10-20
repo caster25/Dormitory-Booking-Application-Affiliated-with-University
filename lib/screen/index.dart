@@ -1,7 +1,7 @@
-import 'package:dorm_app/screen/user/screen/homepage.dart';
 import 'package:dorm_app/screen/login.dart';
-import 'package:dorm_app/screen/owner/screen/home_owner.dart';
 import 'package:dorm_app/screen/choose_role.dart';
+import 'package:dorm_app/screen/owner/screen/home_owner.dart';
+import 'package:dorm_app/screen/user/screen/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

@@ -8,7 +8,7 @@ class LanguageScreen extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 153, 85, 240),
+        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
         title: const Text('เลือกภาษา'),
       ),
       body: ListView(

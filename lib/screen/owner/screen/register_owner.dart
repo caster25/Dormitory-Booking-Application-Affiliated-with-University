@@ -21,7 +21,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
   final TextEditingController _numphoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   // ignore: unused_field
-  bool _acceptTerms = false;
+  final bool _acceptTerms = false;
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;

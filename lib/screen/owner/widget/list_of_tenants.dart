@@ -9,7 +9,7 @@ import 'package:dorm_app/model/Dormitory.dart';
 class ListOfTenants extends StatelessWidget {
   final String dormitoryId;
 
-  const ListOfTenants({Key? key, required this.dormitoryId}) : super(key: key);
+  const ListOfTenants({super.key, required this.dormitoryId});
 
   Stream<List<Map<String, dynamic>>> _fetchTenantsStream() {
     return FirebaseFirestore.instance

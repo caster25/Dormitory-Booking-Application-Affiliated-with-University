@@ -240,7 +240,7 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   AppBar getAppBar(int index) {
     return AppBar(
-      backgroundColor: Color.fromARGB(255, 153, 85, 240),
+      backgroundColor: const Color.fromARGB(255, 153, 85, 240),
       title: getTitle(index),
       actions: [
         IconButton(

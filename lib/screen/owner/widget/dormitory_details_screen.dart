@@ -164,7 +164,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
 
       // ดึงข้อมูลปัจจุบันจาก Firestore
       final docSnapshot = await docRef.get();
-      final currentData = docSnapshot.data() as Map<String, dynamic>?;
+      final currentData = docSnapshot.data();
 
       if (currentData != null) {
         final newData = {

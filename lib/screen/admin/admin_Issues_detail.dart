@@ -24,32 +24,32 @@ class AdminIssueDetailScreen extends StatelessWidget {
             children: [
               Text(
                 'Issue: ${issueData['issue']}',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               Text(
                 'Description: ${issueData['description']}',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
                 'Submitted by: ${issueData['fullname']} (${issueData['username']})',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
                 'Submitted by: ${issueData['role']} ',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
                 'User ID: ${issueData['userId']}',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
               Text(
                 'Submitted on: ${issueData['timestamp'].toDate()}',
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
               const Text('Attached Images:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -89,7 +89,7 @@ class AdminIssueDetailScreen extends StatelessWidget {
                             );
                           },
                           errorBuilder: (context, error, stackTrace) {
-                            return Center(child: Text('Error loading image'));
+                            return const Center(child: Text('Error loading image'));
                           },
                         ),
                       ),
@@ -97,7 +97,7 @@ class AdminIssueDetailScreen extends StatelessWidget {
                   }),
                 )
               else
-                Text('No images attached.', style: TextStyle(fontSize: 16)),
+                const Text('No images attached.', style: TextStyle(fontSize: 16)),
             ],
           ),
         ),
@@ -127,8 +127,8 @@ class ImageViewer extends StatelessWidget {
             maxScale: PhotoViewComputedScale.covered * 2,
           );
         },
-        scrollPhysics: BouncingScrollPhysics(),
-        backgroundDecoration: BoxDecoration(color: Colors.black),
+        scrollPhysics: const BouncingScrollPhysics(),
+        backgroundDecoration: const BoxDecoration(color: Colors.black),
         pageController: PageController(initialPage: initialIndex),
       ),
     );

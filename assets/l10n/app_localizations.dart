@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 
@@ -28,21 +27,23 @@ class AppLocalizations {
 }
 
 class MyWidget extends StatelessWidget {
+  const MyWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Example'),
+        title: const Text('Example'),
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
             // Correct usage of BuildContext
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Hello, World!')),
+              const SnackBar(content: Text('Hello, World!')),
             );
           },
-          child: Text('Show SnackBar'),
+          child: const Text('Show SnackBar'),
         ),
       ),
     );

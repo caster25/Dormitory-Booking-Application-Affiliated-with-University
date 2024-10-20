@@ -126,7 +126,7 @@ class _OwnerAllChatScreenState extends State<OwnerAllChatScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: Text('กลุ่มหอพัก'), // แสดงชื่อหอพัก
+        title: const Text('กลุ่มหอพัก'), // แสดงชื่อหอพัก
       ),
       body: Builder(builder: (context) {
         return Column(

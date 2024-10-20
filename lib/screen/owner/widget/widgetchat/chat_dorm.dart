@@ -224,7 +224,7 @@ class ChatRoomScreen extends StatelessWidget {
 class DormitoryDetailScreen extends StatelessWidget {
   final String dormitoryId;
 
-  DormitoryDetailScreen({required this.dormitoryId});
+  const DormitoryDetailScreen({super.key, required this.dormitoryId});
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +242,7 @@ class DormitoryDetailScreen extends StatelessWidget {
 class ChatGroupScreen extends StatelessWidget {
   final String groupId;
 
-  ChatGroupScreen({required this.groupId});
+  const ChatGroupScreen({super.key, required this.groupId});
 
   @override
   Widget build(BuildContext context) {
