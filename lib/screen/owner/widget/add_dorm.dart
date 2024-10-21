@@ -128,7 +128,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             'name': _dormNameController.text,
             'price': int.parse(_dormPriceController.text),
             'availableRooms': int.parse(_availableRoomsController.text),
-            'totalRooms' : _totalRoomsController,
+            'totalRooms': int.parse(_totalRoomsController.text),
             'roomType': _selectedRoomType,
             'dormType': _selectedDormType,
             'occupants': _occupantsController.text,

@@ -261,8 +261,10 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   Icons.star,
                   color: Colors.amber,
                 ),
-                onRatingUpdate: (rating) {
-                  rating = rating; // เก็บค่าคะแนนดาวที่ผู้ใช้กด
+                onRatingUpdate: (newRating) {
+                  setState(() {
+                    rating = newRating;
+                  });
                 },
               ),
             ],
@@ -281,7 +283,11 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   await _submitReview(dormitoryId, reviewText, rating, userId);
                   Navigator.of(context).pop();
                 } else {
-                  print('กรุณากรอกข้อความรีวิวและเลือกคะแนน');
+                  // แจ้งเตือนผู้ใช้กรณีที่ยังไม่ได้กรอกข้อมูลหรือคะแนนไม่ถูกต้อง
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('กรุณากรอกข้อความรีวิวและเลือกคะแนน')),
+                  );
                 }
               },
               child: const Text('ส่งรีวิว'),
@@ -294,19 +300,24 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
 
   Future<void> _submitReview(String dormitoryId, String reviewText,
       double rating, String userId) async {
-    // เก็บรีวิวใน Firestore โดยใช้ userId เป็น document ID
-    await FirebaseFirestore.instance
-        .collection('reviews')
-        .doc(userId) // ใช้ userId เป็น document ID
-        .set({
-      'dormitoryId': dormitoryId,
-      'reviewText': reviewText, // ข้อความรีวิว
-      'rating': rating, // คะแนนรีวิว
-      'userId': userId, // userId ที่ถูกต้อง
-      'timestamp': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
-    await updateDormitoryRating(
-        dormitoryId); // ใช้ merge เพื่ออัปเดตหากมีข้อมูลอยู่แล้ว
+    try {
+      // ตรวจสอบว่ามีการบันทึกรีวิวสำเร็จหรือไม่
+      await FirebaseFirestore.instance.collection('reviews').doc(userId).set({
+        'dormitoryId': dormitoryId,
+        'reviewText': reviewText,
+        'rating': rating,
+        'userId': userId,
+        'timestamp': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      // อัปเดตคะแนนรีวิวของหอพัก
+      await updateDormitoryRating(dormitoryId);
+    } catch (e) {
+      print('Error submitting review: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('เกิดข้อผิดพลาดในการบันทึกรีวิว')),
+      );
+    }
   }
 
   Future<void> updateDormitoryRating(String dormitoryId) async {
@@ -429,7 +440,6 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                     icon: const Icon(Icons
                                         .info_outline), // ไอคอนสำหรับดูรายละเอียด
                                     onPressed: () {
-                                      // ฟังก์ชันสำหรับดูรายละเอียดหอพัก
                                       _showDormitoryDetails(
                                           currentDormitoryId!);
                                     },

@@ -175,7 +175,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
           'availableRooms': int.parse(_availableRoomsController.text.trim()),
           'roomType': _selectedRoomType,
           'dormType': _selectedDormType,
-          'totalRooms':  _totalRoomsController.text,
+          'totalRooms': int.parse(_totalRoomsController.text),
           'occupants': _occupantsController.text,
           'electricityRate': int.parse(_electricityRateController.text.trim()),
           'waterRate': int.parse(_waterRateController.text.trim()),
