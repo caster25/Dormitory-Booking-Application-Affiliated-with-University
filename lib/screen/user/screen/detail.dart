@@ -33,6 +33,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   double? distanceInKm;
   final Completer<GoogleMapController> _mapController = Completer();
   Map<String, dynamic>? selectedDormitory;
+  Map<String, dynamic>? ownerData;
   final formatNumber = NumberFormat('#,##0');
 
   @override
@@ -41,6 +42,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     dormitoryData = _fetchDormitoryData();
     reviewsData = _fetchReviewsData();
     _loadUserData();
+    _fetchOwnerData();
     selectedDormitory = {
       'id': widget.dormId,
       'name': currentUser?.displayName,
@@ -66,6 +68,39 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         .doc(widget.dormId)
         .get();
     return doc.data() as Map<String, dynamic>;
+  }
+
+  Future<void> _fetchOwnerData() async {
+    // ดึงข้อมูลหอพักเพื่อรับ ownerId
+    DocumentSnapshot dormitoryDoc = await FirebaseFirestore.instance
+        .collection('dormitories')
+        .doc(widget.dormId)
+        .get();
+
+    // แปลงข้อมูลให้เป็น Map<String, dynamic>
+    Map<String, dynamic>? dormitoryData =
+        dormitoryDoc.data() as Map<String, dynamic>?;
+
+    // ตรวจสอบว่ามีข้อมูลใน dormitoryData หรือไม่
+    if (dormitoryData != null) {
+      String ownerId = dormitoryData['submittedBy'] ?? '';
+
+      if (ownerId.isNotEmpty) {
+        // ดึงข้อมูลเจ้าของหอพักจากคอลเลกชัน users
+        DocumentSnapshot ownerDoc = await FirebaseFirestore.instance
+            .collection('users') // คอลเลกชันที่เก็บข้อมูลเจ้าของ
+            .doc(ownerId)
+            .get();
+
+        if (ownerDoc.exists) {
+          // เก็บข้อมูลเจ้าของใน ownerData
+          setState(() {
+            ownerData = ownerDoc.data()
+                as Map<String, dynamic>; // ใช้แปลงให้เป็น Map<String, dynamic>
+          });
+        }
+      }
+    }
   }
 
   Future<List<Map<String, dynamic>>> _fetchReviewsData() async {
@@ -471,6 +506,11 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                   style: TextStyle(
                                       fontSize: 18, color: Colors.grey[700]),
                                 ),
+                                Text(
+                                  'จำนวนห้องทั้งหมด: ${dormitory['totalRooms'] ?? 'ไม่มีข้อมูล'} ห้อง',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.grey[700]),
+                                ),
                                 const Divider(height: 20, thickness: 2),
 
                                 // Price per term
@@ -561,6 +601,30 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                       fontSize: 16, color: Colors.grey[700]),
                                 ),
                                 const Divider(height: 20, thickness: 2),
+                                Text(
+                                  'ช่องทางการติดต่อ:',
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                const SizedBox(height: 8),
+                                ownerData != null
+                                    ? Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'อีเมล: ${ownerData?['email'] ?? 'ไม่พบข้อมูล'}',
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            'เบอร์โทร: ${ownerData?['numphone'] ?? 'ไม่พบข้อมูล'}',
+                                            style:
+                                                const TextStyle(fontSize: 16),
+                                          ),
+                                        ],
+                                      )
+                                    : const CircularProgressIndicator(), // แสดงวงกลมโหลดข้อมูลในขณะที่กำลังดึงข้อมูล
 
                                 // Rating and Reviews
                                 Row(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
+import 'package:dorm_app/screen/owner/widget/dorm_review.dart';
 import 'package:dorm_app/screen/owner/widget/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -106,41 +107,57 @@ class DormitoryListScreen extends StatelessWidget {
 
                     return Card(
                       margin: const EdgeInsets.all(10),
-                      child: ListTile(
-                        leading: imageUrl.isNotEmpty
-                            ? Image.network(
-                                imageUrl,
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                              )
-                            : const Icon(Icons.image, size: 50),
-                        title: Text(
-                          '$dormName ($roomType, $dormType)',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'ราคา: ${formatNumber.format(dormPrice)}  บาท/เทอม'),
-                                 Text('ห้องทั้งหมด: $totalRooms ห้อง'),
-                            Text('ห้องว่าง: $availableRooms ห้อง'),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.arrow_forward),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DormitoryDetailsScreen(
-                                  dormitory: dormitory,
-                                  dormitoryId: dormId,
-                                ),
+                      child: InkWell(
+                        onTap: () {
+                          // เมื่อกดที่การ์ดแล้วไปยังหน้าที่แตกต่างออกไป
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DormReview(
+                                dormitoryId: dormId,
+                                dormitory:
+                                    dormitory, // ส่งข้อมูลหอพักไปยังหน้าใหม่
                               ),
-                            );
-                          },
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          leading: imageUrl.isNotEmpty
+                              ? Image.network(
+                                  imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(Icons.image, size: 50),
+                          title: Text(
+                            '$dormName ($roomType, $dormType)',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'ราคา: ${formatNumber.format(dormPrice)}  บาท/เทอม'),
+                              Text('ห้องทั้งหมด: $totalRooms ห้อง'),
+                              Text('ห้องว่าง: $availableRooms ห้อง'),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // กดปุ่ม edit เพื่อแก้ไขหอพัก
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DormitoryDetailsScreen(
+                                    dormitoryId: dormId,
+                                    dormitory: dormitory,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     );

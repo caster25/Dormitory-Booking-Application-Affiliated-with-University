@@ -226,6 +226,7 @@ class _BookDormState extends State<BookDorm> {
                                           .update({
                                         'availableRooms': FieldValue.increment(
                                             1), // เพิ่มจำนวนห้องว่างขึ้น 1
+                                        'usersBooked': null
                                       });
 
                                       // อัปเดต Firestore หลังจากยกเลิกการจอง

@@ -174,8 +174,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                 mainAxisSize: MainAxisSize.min, // ปรับให้มีขนาดตามเนื้อหา
                 children: <Widget>[
                   Text('ที่อยู่: ${dormitoryData['address']}'),
-                  Text(
-                      'จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
+                  Text('จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
+                  Text('จำนวนห้องทั้งหมด: ${dormitoryData['totalRooms']} ห้อง'),
                   Text('ประเภทหอพัก: ${dormitoryData['dormType']}'),
                   Text('ราคาห้องพัก: ${dormitoryData['price']} บาท/เทอม'),
                   Text('เงินประกัน: ${dormitoryData['securityDeposit']} บาท'),

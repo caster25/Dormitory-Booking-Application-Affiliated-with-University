@@ -199,16 +199,31 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
             'chatGroupId': chatGroupId
           });
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('บันทึกข้อมูลหอพักและสร้างห้องแชทเรียบร้อยแล้ว')),
+          // แสดง popup ว่าการเพิ่มข้อมูลเสร็จสิ้น
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('สำเร็จ'),
+                content:
+                    const Text('เพิ่มข้อมูลหอพักและสร้างห้องแชทเรียบร้อยแล้ว'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      // เคลียร์ช่องข้อมูล
+                      _formKey.currentState!.reset();
+                      setState(() {
+                        _dormImages = [];
+                        _uploadedImageUrls = [];
+                      });
+                      Navigator.of(context).pop(); // ปิด dialog
+                    },
+                    child: const Text('ตกลง'),
+                  ),
+                ],
+              );
+            },
           );
-
-          _formKey.currentState!.reset();
-          setState(() {
-            _dormImages = [];
-            _uploadedImageUrls = [];
-          });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('กรุณาล็อกอินก่อนเพิ่มหอพัก')),
@@ -238,7 +253,36 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
         title: const Text('เพิ่มหอพัก'),
         actions: [
           IconButton(
-            onPressed: _submitForm,
+            onPressed: () {
+              // แสดง popup เพื่อยืนยันการเพิ่มข้อมูล
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('ยืนยันการเพิ่มข้อมูล'),
+                    content: const Text('คุณแน่ใจหรือไม่ว่าจะเพิ่มข้อมูลนี้?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          // ปิด dialog
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('ยกเลิก'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // เรียกใช้ฟังก์ชันเพิ่มข้อมูล
+                          _submitForm();
+                          // ปิด dialog
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('ยืนยัน'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
             icon: const Icon(Icons.save),
           ),
         ],
