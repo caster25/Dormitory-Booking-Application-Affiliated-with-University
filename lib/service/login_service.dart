@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/home/screen/index.dart';
-import 'package:dorm_app/home/screen/owner/screen/home_owner.dart';
-import 'package:dorm_app/home/screen/user/screen/homepage.dart';
+import 'package:dorm_app/screen/index.dart';
+import 'package:dorm_app/screen/owner/screen/home_owner.dart';
+import 'package:dorm_app/screen/user/screen/homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
