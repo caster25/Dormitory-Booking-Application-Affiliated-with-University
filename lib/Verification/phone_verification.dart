@@ -31,8 +31,8 @@ class _EmailOtpVerificationScreenState
 
   // ฟังก์ชันส่ง OTP ไปยังอีเมล
   Future<void> sendOtpToEmail(String email, String otp) async {
-    String username = 'teerapat.phi@ku.th.com'; // อีเมลของคุณ
-    String password = 'teerapat1234'; // รหัสผ่านอีเมลของคุณ
+    String username = 'teerapt.phi@ku.th'; // อีเมลของคุณ
+    String password = 'test1234'; // รหัสผ่านอีเมลของคุณ
 
     final smtpServer = gmail(username, password); // สร้างเซิร์ฟเวอร์ SMTP
 

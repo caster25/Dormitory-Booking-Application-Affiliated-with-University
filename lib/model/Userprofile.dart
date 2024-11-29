@@ -54,8 +54,8 @@ class UserProfile {
       'numphone': numphone,
       'role': role,
       'profilePictureURL': profilePictureURL,
-      'bookedDormitory': bookedDormitory, // เพิ่มการบันทึกค่า bookedDormitory
-      'currentDormitoryId': currentDormitoryId, // เพิ่มการบันทึกค่า currentDormitoryId
+      'bookedDormitory': bookedDormitory,
+      'currentDormitoryId': currentDormitoryId,
       'favorites': favorites,
       'isStaying': isStaying,
     };

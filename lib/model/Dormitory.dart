@@ -12,13 +12,13 @@ class Dormitory {
   int electricityRate;
   int waterRate;
   double rating;
-  List<String> imageUrl;// แก้ไขจาก imageUrls ให้ตรงกับข้อมูล
+  List<String> imageUrl;
   List<String> tenants;
   String equipment;
   String address;
-  String dormType; // เพิ่มฟิลด์ dormType
-  String rule; // เพิ่มฟิลด์ rule
-  String submittedBy; // เพิ่มฟิลด์ submittedBy
+  String dormType; 
+  String rule;
+  String submittedBy; 
 
   Dormitory({
     required this.id,
