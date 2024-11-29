@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/owner/screen/home_owner.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:flutter/material.dart';
 
 class EditOwnerProfile extends StatefulWidget {

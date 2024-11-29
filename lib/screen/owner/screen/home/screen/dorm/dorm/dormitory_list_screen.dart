@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/owner/widget/add_dorm.dart';
-import 'package:dorm_app/screen/owner/widget/dorm_review.dart';
-import 'package:dorm_app/screen/owner/widget/dormitory_details_screen.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/dorm/add_dorm.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/dorm/dorm_review.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/dorm/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

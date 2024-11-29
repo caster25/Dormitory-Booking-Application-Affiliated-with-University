@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:dorm_app/screen/owner/screen/home_owner.dart';
-import 'package:dorm_app/screen/owner/widget/edit_owner_profile.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/home_owner.dart';
+import 'package:dorm_app/screen/owner/screen/home/profile/edit_owner_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

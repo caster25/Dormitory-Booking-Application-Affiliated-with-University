@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, use_super_parameters
 
-import 'package:dorm_app/screen/owner/widget/chat_owner.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

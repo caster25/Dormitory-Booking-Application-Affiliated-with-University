@@ -1,5 +1,5 @@
 
-import 'package:dorm_app/screen/owner/widget/list_of_tenants.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/tenants/list_of_tenants.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

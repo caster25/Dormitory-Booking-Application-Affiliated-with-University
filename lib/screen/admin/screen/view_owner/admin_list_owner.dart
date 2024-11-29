@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/admin/admin_list_detail.dart';
+import 'package:dorm_app/screen/admin/screen/detail/admin_list_detail.dart';
 import 'package:flutter/material.dart';
 
 class OwnerListScreen extends StatelessWidget {

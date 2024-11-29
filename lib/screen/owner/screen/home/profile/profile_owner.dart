@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:dorm_app/model/Userprofile.dart';
-import 'package:dorm_app/screen/owner/widget/dormitory_list_edit.dart';
-import 'package:dorm_app/screen/setting/setting.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/dorm/dormitory_list_edit.dart';
+import 'package:dorm_app/screen/setting/setting/setting.dart';
 import 'package:dorm_app/screen/setting/submitIssue.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';

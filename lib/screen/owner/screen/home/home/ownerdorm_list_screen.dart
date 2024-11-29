@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dorm_app/screen/owner/widget/chat_gruop_dorm.dart';
-import 'package:dorm_app/screen/owner/widget/list_of_bookings.dart';
-import 'package:dorm_app/screen/owner/widget/list_of_tenants.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/widgetchat/chat_gruop_dorm.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/tenants/list_of_bookings.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/tenants/list_of_tenants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';

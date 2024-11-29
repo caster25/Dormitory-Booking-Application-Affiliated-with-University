@@ -1,7 +1,7 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/screen/admin/admin_issue_list.dart';
-import 'package:dorm_app/screen/admin/admin_list_owner.dart';
-import 'package:dorm_app/screen/admin/admin_list_user.dart';
+import 'package:dorm_app/screen/admin/screen/view_owner/admin_list_owner.dart';
+import 'package:dorm_app/screen/admin/screen/view_user/admin_list_user.dart';
 import 'package:dorm_app/screen/index.dart';
 import 'package:flutter/material.dart';
 

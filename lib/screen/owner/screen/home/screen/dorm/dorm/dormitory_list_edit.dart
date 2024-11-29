@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/model/Dormitory.dart';
-import 'package:dorm_app/screen/owner/widget/details_dorm.dart';
+import 'package:dorm_app/screen/owner/screen/home/screen/dorm/dorm/details_dorm.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';

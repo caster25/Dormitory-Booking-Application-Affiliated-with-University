@@ -1,6 +1,6 @@
 import 'package:dorm_app/screen/setting/about.dart';
-import 'package:dorm_app/screen/setting/account.dart';
-import 'package:dorm_app/screen/setting/language.dart';
+import 'package:dorm_app/screen/setting/setting/account.dart';
+import 'package:dorm_app/screen/setting/setting/language.dart';
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatelessWidget {
