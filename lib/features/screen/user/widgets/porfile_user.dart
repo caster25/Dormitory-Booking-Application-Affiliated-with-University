@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:dorm_app/features/screen/user/screen/homepage.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/buttons/button_widget.dart';
 import 'package:dorm_app/features/screen/user/widgets/edit_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,29 +74,8 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const Homepage()),
-          (route) => false,
-        );
-        return false;
-      },
-      child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-          elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const Homepage()),
-              (route) => false,
-            ),
-          ),
-        ),
+    return  Scaffold(
+        appBar: getAppBarUserProfile(title: '', context: context),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: currentUser == null
@@ -136,30 +116,20 @@ class _UserScreenState extends State<UserScreen> {
                         text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
                       ),
                       const SizedBox(height: 32),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    EditUser(userId: currentUser!.uid)),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 73, 177, 247),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: const Text('แก้ไขข้อมูล'),
-                      ),
+                      CustomButton(
+                          label: 'แก้ไขข้อมูล',
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        EditUser(userId: currentUser!.uid)));
+                          })
                     ],
                   ),
                 ),
         ),
-      ),
-    );
+      );
   }
 }
 

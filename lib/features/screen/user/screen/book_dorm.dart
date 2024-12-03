@@ -1,13 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/features/screen/user/data/src/service.dart';
+import 'package:dorm_app/features/screen/user/data/src/service_dorm.dart';
 import 'package:dorm_app/features/screen/user/widgets/chat_user.dart';
 import 'package:flutter/material.dart';
 
 class BookDorm extends StatefulWidget {
   final String userId; // Accept userId through constructor
 
-  const BookDorm({required this.userId, super.key});
+  BookDorm({required this.userId, super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -17,15 +20,15 @@ class BookDorm extends StatefulWidget {
 class _BookDormState extends State<BookDorm> {
   bool _isBookingCanceled =
       false; // State variable to track booking cancellation
+  final FirebaseServiceDorm firestoreServiceDorm = FirebaseServiceDorm();
+  final FirestoreServiceUser firestoreServiceUser = FirestoreServiceUser();
 
   // Function to navigate to chat screen
   // Inside your _navigateToChat function
   void _navigateToChat(String dormitoryId, String ownerId) async {
     // Get user data from Firestore
-    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .get();
+    DocumentSnapshot userSnapshot =
+        await firestoreServiceUser.getUserData(widget.userId);
 
     if (userSnapshot.exists) {
       // Cast the data to a Map<String, dynamic>
@@ -36,11 +39,8 @@ class _BookDormState extends State<BookDorm> {
       List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
 
       // Get dormitory data to check its chatRoomIds
-      DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-          .collection('dormitories')
-          .doc(dormitoryId)
-          .get();
-
+      DocumentSnapshot dormitorySnapshot =
+          await firestoreServiceDorm.getOwnerDataOnce(dormitoryId);
       if (dormitorySnapshot.exists) {
         // Cast the data to a Map<String, dynamic>
         Map<String, dynamic>? dormitoryData =
@@ -102,14 +102,9 @@ class _BookDormState extends State<BookDorm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('หอพักที่คุณจองไว้'),
-      ),
+      appBar: buildAppBar(title: 'หอพักที่คุณจองไว้', context: context),
       body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userId)
-            .snapshots(),
+        stream: firestoreServiceUser.getUserStream(widget.userId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -130,10 +125,7 @@ class _BookDormState extends State<BookDorm> {
           }
 
           return StreamBuilder<DocumentSnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('dormitories')
-                .doc(bookedDormId)
-                .snapshots(),
+            stream: firestoreServiceDorm.getDormData(bookedDormId),
             builder: (context, dormSnapshot) {
               if (dormSnapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -178,103 +170,25 @@ class _BookDormState extends State<BookDorm> {
                           Text('ราคา: ฿${price.toStringAsFixed(2)} บาท/เทอม'),
                     ),
                     // Render button only if the booking is not canceled
-                    if (!_isBookingCanceled)
+                    if (!_isBookingCanceled) ...[
                       ElevatedButton(
                         onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext content) {
-                              return AlertDialog(
-                                title: const Text('ยืนยันการยกเลิก'),
-                                content: const Text(
-                                    'แน่ใจหรือไม่ว่าต้องการยกเลิกการจอง'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pop(); // ปิด Dialog เมื่อเลือกยกเลิก
-                                    },
-                                    child: const Text('ยกเลิก'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      Navigator.of(context)
-                                          .pop(); // ปิด Dialog หลังจากการกดยืนยัน
-                                      // ดึงข้อมูลหอพักที่ถูกจอง
-                                      DocumentSnapshot userDoc =
-                                          await FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(widget.userId)
-                                              .get();
-
-                                      String bookedDormitoryId =
-                                          userDoc['bookedDormitory'];
-
-                                      // อัปเดตข้อมูลใน Firestore
-                                      await FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(widget.userId)
-                                          .update({'bookedDormitory': null});
-
-                                      // เพิ่ม availableRooms ในหอพัก
-                                      await FirebaseFirestore.instance
-                                          .collection('dormitories')
-                                          .doc(bookedDormitoryId)
-                                          .update({
-                                        'availableRooms': FieldValue.increment(
-                                            1), // เพิ่มจำนวนห้องว่างขึ้น 1
-                                        'usersBooked': null
-                                      });
-
-                                      // อัปเดต Firestore หลังจากยกเลิกการจอง
-                                      await FirebaseFirestore.instance
-                                          .collection('notifications')
-                                          .add({
-                                        'userId': widget
-                                            .userId, // ใช้ userId ของผู้ใช้ปัจจุบัน
-                                        'dormitoryId':
-                                            bookedDormitoryId, // ใช้ dormitoryId ของหอพักที่ถูกจอง
-                                        'type':
-                                            'cancellation', // ประเภทของการแจ้งเตือนเป็นการยกเลิก
-                                        'message': 'คุณได้ยกเลิกการจองหอพัก',
-                                        'timestamp': FieldValue
-                                            .serverTimestamp(), // บันทึกเวลาที่ทำการยกเลิก
-                                        'status':
-                                            'unread', // ตั้งค่าเป็นยังไม่ได้อ่านในตอนแรก
-                                      });
-
-                                      // แสดง SnackBar แจ้งการยกเลิกสำเร็จ
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              'ยกเลิกการจองหอพักเรียบร้อยแล้ว'),
-                                        ),
-                                      );
-
-                                      setState(() {
-                                        _isBookingCanceled = true;
-                                      });
-                                    },
-                                    child: const Text('ยืนยัน'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                          DocumentSnapshot userDoc = await firestoreServiceUser
+                              .getUserData(widget.userId);
+                          String bookedDormitoryId = userDoc['bookedDormitory'];
+                          _showConfirmationDialog(context,
+                              bookedDormitoryId); // เรียก Dialog ยืนยันการยกเลิก
                         },
-                        child: const Text('ยกเลิกการจองแล้ว'),
+                        child: const Text('ยกเลิกการจอง'),
                       ),
-
-                    // Button to navigate to chat screen
-                    if (!_isBookingCanceled)
                       ElevatedButton(
                         onPressed: () {
                           _navigateToChat(
-                              bookedDormId, ownerId); // Navigate to chat screen
+                              bookedDormId, ownerId); // ไปยังหน้าจอแชท
                         },
                         child: const Text('คุยกับเจ้าของหอพัก'),
                       ),
+                    ]
                   ],
                 ),
               );
@@ -283,5 +197,76 @@ class _BookDormState extends State<BookDorm> {
         },
       ),
     );
+  }
+
+  void _showConfirmationDialog(BuildContext context, String bookedDormitoryId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('ยืนยันการยกเลิก'),
+          content: const Text('แน่ใจหรือไม่ว่าต้องการยกเลิกการจอง'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog เมื่อเลือกยกเลิก
+              },
+              child: const Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); // ปิด Dialog หลังจากการกดยืนยัน
+                await _cancelBooking(
+                    context, bookedDormitoryId); // เรียกฟังก์ชันยกเลิกการจอง
+              },
+              child: const Text('ยืนยัน'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _cancelBooking(
+      BuildContext context, String bookedDormitoryId) async {
+    try {
+      // อัปเดตข้อมูลใน Firestore
+      await firestoreServiceUser.updateUserData(widget.userId, {
+        'bookedDormitory': null,
+      });
+      await firestoreServiceDorm.updateDormitory(bookedDormitoryId, {
+        'availableRooms': FieldValue.increment(1),
+        'usersBooked': null,
+      });
+
+      // บันทึกการแจ้งเตือน
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': widget.userId,
+        'dormitoryId': bookedDormitoryId,
+        'type': 'cancellation',
+        'message': 'คุณได้ยกเลิกการจองหอพัก',
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'unread',
+      });
+
+      // แสดง SnackBar แจ้งเตือนสำเร็จ
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ยกเลิกการจองหอพักเรียบร้อยแล้ว'),
+        ),
+      );
+
+      // อัปเดตสถานะ
+      setState(() {
+        _isBookingCanceled = true;
+      });
+    } catch (error) {
+      // แสดง SnackBar เมื่อเกิดข้อผิดพลาด
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('เกิดข้อผิดพลาด: ${error.toString()}'),
+        ),
+      );
+    }
   }
 }

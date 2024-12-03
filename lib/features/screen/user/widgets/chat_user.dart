@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, unused_field
 
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +14,7 @@ class ChatScreen extends StatefulWidget {
   final String ownerId;
   final String dormitoryId; // เพิ่ม dormitoryId
   final String chatRoomId;
+  
 
   const ChatScreen({
     required this.userId,
@@ -176,10 +178,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: Text(dormitoryName ?? 'Loading...'), // แสดงชื่อหอพัก
-      ),
+      appBar:
+          buildAppBar(title: dormitoryName ?? '', context: context),
       body: Builder(builder: (context) {
         return Column(
           children: [
@@ -212,7 +212,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               _showMessageOptions(context, messages[index]),
                           child: Container(
                             margin: const EdgeInsets.symmetric(
-                                vertical: 4.0, horizontal: 8.0),
+                                vertical: 4.0, horizontal: 9.0),
                             padding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 14.0),
                             decoration: BoxDecoration(
@@ -332,34 +332,63 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _showMessageOptions(
       BuildContext context, QueryDocumentSnapshot message) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return ListView(
-          children: [
-            ListTile(
-              title: const Text('Delete Message'),
-              onTap: () {
-                _deleteMessage(message.id);
-                Navigator.pop(context); // ปิด Bottom Sheet
-              },
-            ),
-          ],
-        );
-      },
-    );
+    // ตรวจสอบสิทธิ์ว่าข้อความนี้ส่งโดยผู้ใช้งานปัจจุบันหรือไม่
+    if (message['senderId'] == FirebaseAuth.instance.currentUser!.uid) {
+      showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return ListView(
+            children: [
+              ListTile(
+                title: const Text('Delete Message'),
+                onTap: () {
+                  _deleteMessage(message.id); // ลบข้อความ
+                  Navigator.pop(context); // ปิด Bottom Sheet
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+    }
   }
 
   Future<void> _deleteMessage(String messageId) async {
     try {
-      await _messagesCollection
+      // ดึงข้อมูลข้อความเพื่อเช็ค senderId
+      DocumentSnapshot messageDoc = await _messagesCollection
           .doc(widget.chatRoomId)
           .collection('messages')
           .doc(messageId)
-          .delete();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Message deleted')),
-      );
+          .get();
+
+      if (messageDoc.exists) {
+        Map<String, dynamic> messageData =
+            messageDoc.data() as Map<String, dynamic>;
+
+        // ตรวจสอบ senderId กับ currentUser.uid
+        if (messageData['senderId'] == FirebaseAuth.instance.currentUser!.uid) {
+          // ลบข้อความถ้า senderId ตรงกัน
+          await _messagesCollection
+              .doc(widget.chatRoomId)
+              .collection('messages')
+              .doc(messageId)
+              .delete();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Message deleted')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('You can only delete your own messages')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Message does not exist')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete message: $e')),

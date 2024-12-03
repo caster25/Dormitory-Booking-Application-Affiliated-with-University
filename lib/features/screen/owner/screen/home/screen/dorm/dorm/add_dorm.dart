@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -248,45 +249,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('เพิ่มหอพัก'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              // แสดง popup เพื่อยืนยันการเพิ่มข้อมูล
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('ยืนยันการเพิ่มข้อมูล'),
-                    content: const Text('คุณแน่ใจหรือไม่ว่าจะเพิ่มข้อมูลนี้?'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          // ปิด dialog
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('ยกเลิก'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // เรียกใช้ฟังก์ชันเพิ่มข้อมูล
-                          _submitForm();
-                          // ปิด dialog
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('ยืนยัน'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: const Icon(Icons.save),
-          ),
-        ],
-      ),
+      appBar: buildAddDormitoryAppBar(context: context, onSubmit: _submitForm,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

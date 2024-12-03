@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -369,16 +370,7 @@ class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-          title: const Text('แก้ไขข้อมูลหอพัก'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _saveDormitory,
-            ),
-          ],
-        ),
+        appBar: buildCustomAppBar(title: 'แก้ไขข้อมูลหอพัก', onSave: _saveDormitory, context: context),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

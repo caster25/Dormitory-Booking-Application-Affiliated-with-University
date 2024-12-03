@@ -1,3 +1,4 @@
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/setting/about.dart';
 import 'package:dorm_app/features/screen/setting/setting/account.dart';
 import 'package:dorm_app/features/screen/setting/setting/language.dart';
@@ -9,11 +10,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('การตั้งค่า'),
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        automaticallyImplyLeading: true,
-      ),
+      appBar: buildAppBar(title: 'การตั้งค่า', context: context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

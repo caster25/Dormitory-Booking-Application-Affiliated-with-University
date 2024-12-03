@@ -1,3 +1,4 @@
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -65,10 +66,7 @@ class _DormReviewState extends State<DormReview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('หน้ารายละเอียดหอพัก'),
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-      ),
+      appBar: buildAppBar(title: 'หน้ารายละเอียดหอพัก', context: context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(

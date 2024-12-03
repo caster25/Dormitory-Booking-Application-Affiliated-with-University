@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, unused_element
 
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
+import 'package:dorm_app/features/screen/user/utils/build_dorm_end.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -134,7 +135,9 @@ class _FeedsScreenState extends State<FeedsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userDoc =
-          FirebaseFirestore.instance.collection('users').doc(user.uid);
+          FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid);
       final userSnapshot = await userDoc.get();
       if (userSnapshot.exists) {
         setState(() {
@@ -333,45 +336,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
               ),
 
               const SizedBox(height: 16),
-// Display the dormitory cards
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('dormitories')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  // Accessing the dormitory data from Firestore
-                  final dormitories = snapshot.data!.docs;
-
-                  return GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 0.7,
-                    ),
-                    itemCount: dormitories.length,
-                    itemBuilder: (context, index) {
-                      // Extract data for each dormitory
-                      var dorm = dormitories[index];
-                      Map<String, dynamic> dormData = dorm.data()
-                          as Map<String, dynamic>; // Cast the data properly
-                      String dormId =
-                          dorm.id; // Get the dormitory ID from the document ID
-
-                      // Build the dormitory card with the necessary data
-                      return _buildDormitoryCard(dorm,
-                          dormId); // Pass dormData instead of dorm directly
-                    },
-                  );
-                },
-              ),
+              CardDorm()
             ],
           ),
         ),

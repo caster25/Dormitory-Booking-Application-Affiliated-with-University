@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:flutter/material.dart';
 
@@ -97,10 +98,7 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('แก้ไขข้อมูลส่วนตัว'),
-      ),
+      appBar: getAppBarOwnerProfile(title: 'แก้ไขข้อมูลส่วนตัว', context: context),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(

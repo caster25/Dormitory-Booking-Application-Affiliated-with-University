@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:flutter/material.dart';
 import 'package:dorm_app/model/Dormitory.dart';
@@ -32,10 +33,7 @@ class Details extends StatelessWidget {
     const secondaryColor = Colors.black;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('รายละเอียดหอพัก ${dormitory.name}'),
-        backgroundColor: primaryColor,
-      ),
+      appBar: buildAppBar(title: 'รายละเอียดหอพัก ${dormitory.name}', context: context),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

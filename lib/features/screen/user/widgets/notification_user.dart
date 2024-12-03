@@ -1,3 +1,4 @@
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,30 +28,42 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('notifications')
-          .where('userId', isEqualTo: _currentUser.uid) // เปรียบเทียบกับ uid
+          .where('userId', isEqualTo: _currentUser.uid)
           .where('type', whereIn: ['confirmBooking', 'rejectBooking']).get();
 
       List<Map<String, dynamic>> notifications = [];
+      print('Current User ID: ${_currentUser.uid}');
+      print('Querying notifications...');
+
+      if (snapshot.docs.isEmpty) {
+        print('No notifications found.');
+      }
+
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print('Fetched notification data: $data'); // ตรวจสอบข้อมูลที่ดึงมา
 
-        // Fetch dormitory and user details
-        DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
+        if (!data.containsKey('dormitoryId') || !data.containsKey('userId')) {
+          print('Missing dormitoryId or userId in notification: ${doc.id}');
+          continue;
+        }
+
+        var dormitoryFuture = FirebaseFirestore.instance
             .collection('dormitories')
             .doc(data['dormitoryId'])
             .get();
-        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        var userFuture = FirebaseFirestore.instance
             .collection('users')
             .doc(data['userId'])
             .get();
+
+        final dormitorySnapshot = await dormitoryFuture;
+        final userSnapshot = await userFuture;
 
         if (dormitorySnapshot.exists && userSnapshot.exists) {
           String dormitoryName =
               dormitorySnapshot.get('name') ?? 'Unnamed Dormitory';
           String userName = userSnapshot.get('username') ?? 'Unnamed User';
 
-          // Fetch timestamp
           Timestamp timestamp = data['timestamp'];
           DateTime notificationTime = timestamp.toDate();
 
@@ -59,14 +72,14 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
             'userName': userName,
             'message': data['message'] ?? 'No message',
             'timestamp': notificationTime,
-            'type': data['type'], // เพิ่ม type เพื่อให้ใช้ในการแสดงผล
+            'type': data['type'],
           });
         } else {
-          print('Dormitory or User does not exist');
+          print(
+              'Dormitory or User does not exist: dormitoryId=${data['dormitoryId']}, userId=${data['userId']}');
         }
       }
 
-      // เรียงลำดับการแจ้งเตือนตามเวลาล่าสุด
       notifications.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
 
       setState(() {
@@ -94,10 +107,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('User Notifications'),
-      ),
+      appBar: buildAppBar(title: 'การแจ้งเตือน', context: context),
       body: _notifications.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

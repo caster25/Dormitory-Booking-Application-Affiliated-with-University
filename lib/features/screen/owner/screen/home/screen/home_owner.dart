@@ -2,35 +2,33 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/index.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/profile/profile_owner.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_list_screen.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/home/ownerdorm_list_screen.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/home/profile_owner.dart';
-import 'package:dorm_app/features/screen/owner/screen/home/screen/widget_nitification/notification_owner.dart';
+import 'package:dorm_app/features/screen/user/data/src/service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 
 class Ownerhome extends StatefulWidget {
   const Ownerhome({super.key, this.title = "Home"});
 
-    final String title;
+  final String title;
 
   @override
   State<Ownerhome> createState() => _OwnerhomeState();
 }
 
 class NavigationDrawer extends StatelessWidget {
-  const NavigationDrawer({super.key, required this.user});
+  NavigationDrawer({super.key, required this.user});
+  final FirestoreServiceUser firestoreServiceUser = FirestoreServiceUser();
 
   final User user;
 
   Future<DocumentSnapshot> getUserData() async {
-    return await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    return await firestoreServiceUser.getUserData(user.uid);
   }
 
   @override
@@ -204,7 +202,14 @@ class _OwnerhomeState extends State<Ownerhome> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: index != 3 ? getAppBar(index) : null,
+        appBar: index != 3
+            ? getAppBar(
+                isOwner: true,
+                context: context,
+                currentUser: _currentUser,
+                index: index,
+              )
+            : null,
         drawer: index != 3 ? NavigationDrawer(user: _currentUser) : null,
         body: IndexedStack(
           index: index,
@@ -237,35 +242,5 @@ class _OwnerhomeState extends State<Ownerhome> {
         ),
       ),
     );
-  }
-
-  AppBar getAppBar(int index) {
-    return AppBar(
-      backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-      title: getTitle(index),
-      actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return NotificationOwnerScreen(user: _currentUser);
-            }));
-          },
-          icon: const Icon(Icons.notifications),
-        ),
-      ],
-    );
-  }
-
-  Text getTitle(int index) {
-    switch (index) {
-      case 0:
-        return const Text('หน้าแรก');
-      case 1:
-        return const Text('รายการหอพัก');
-      case 2:
-        return const Text('');
-      default:
-        return const Text('chat');
-    }
   }
 }

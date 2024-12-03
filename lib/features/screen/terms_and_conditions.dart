@@ -1,3 +1,4 @@
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/login.dart';
 import 'package:flutter/material.dart';
 
@@ -39,10 +40,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('เงื่อนไขและข้อตกลง'),
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-      ),
+      appBar: buildAppBar(title: 'เงื่อนไขและข้อตกลง', context: context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

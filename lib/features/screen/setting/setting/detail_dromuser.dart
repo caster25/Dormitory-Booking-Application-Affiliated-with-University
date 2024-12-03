@@ -1,5 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/features/screen/user/data/src/service.dart';
+import 'package:dorm_app/features/screen/user/data/src/service_dorm.dart';
 import 'package:dorm_app/features/screen/user/widgets/chat_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +21,8 @@ class DormitoryDetailsScreen extends StatefulWidget {
 class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
   final TextEditingController _currentDormController = TextEditingController();
   final TextEditingController _previousDormController = TextEditingController();
+  final FirebaseServiceDorm firestoreServiceDorm = FirebaseServiceDorm();
+  final FirestoreServiceUser firestoreServiceUser = FirestoreServiceUser();
 
   bool isLoading = true; // แสดงสถานะการโหลด
   String? currentDormitoryId; // เก็บ currentDormitoryId ถ้ามี
@@ -31,10 +36,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
 
   Future<void> _fetchDormitoryDetails() async {
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .get();
+      DocumentSnapshot userDoc =
+          await firestoreServiceUser.getUserData(widget.userId);
 
       if (userDoc.exists) {
         Map<String, dynamic>? userData =
@@ -76,86 +79,80 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
   }
 
   void _navigateToChat(String dormitoryId, String ownerId,
-      {bool isGroupChat = false}) async {
-    // Get user data from Firestore
-    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .get();
+    {bool isGroupChat = false}) async {
+  // Get user data from Firestore
+  DocumentSnapshot userSnapshot =
+      await firestoreServiceUser.getUserData(widget.userId);
 
-    if (userSnapshot.exists) {
-      Map<String, dynamic>? userData =
-          userSnapshot.data() as Map<String, dynamic>?;
+  if (userSnapshot.exists) {
+    Map<String, dynamic>? userData =
+        userSnapshot.data() as Map<String, dynamic>?;
 
-      List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
+    List<dynamic>? userChatRoomIds = userData?['chatRoomId'];
 
-      if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
-        DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-            .collection('dormitories')
-            .doc(dormitoryId)
-            .get();
+    if (userChatRoomIds != null && userChatRoomIds.isNotEmpty) {
+      DocumentSnapshot dormitorySnapshot =
+          await firestoreServiceDorm.getOwnerDataOnce(dormitoryId);
 
-        if (dormitorySnapshot.exists) {
-          Map<String, dynamic>? dormitoryData =
-              dormitorySnapshot.data() as Map<String, dynamic>?;
+      if (dormitorySnapshot.exists) {
+        Map<String, dynamic>? dormitoryData =
+            dormitorySnapshot.data() as Map<String, dynamic>?;
 
-          List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomId'];
-          String? chatId;
+        List<dynamic>? dormitoryChatRoomIds = dormitoryData?['chatRoomId'];
+        String? chatId;
 
-          if (isGroupChat) {
-            chatId = dormitoryData?[
-                'chatGroupId']; // Assuming chatGroupId exists in the dormitory data
-          } else {
-            // Find the matching chatRoomId
-            for (var chatRoomId in userChatRoomIds) {
-              if (dormitoryChatRoomIds?.contains(chatRoomId) == true) {
-                chatId = chatRoomId;
-                break;
-              }
+        if (isGroupChat) {
+          chatId = dormitoryData?['chatGroupId']; // Assuming chatGroupId exists
+        } else {
+          // Find the matching chatRoomId
+          for (var chatRoomId in userChatRoomIds) {
+            if (dormitoryChatRoomIds?.contains(chatRoomId) == true) {
+              chatId = chatRoomId;
+              break;
             }
           }
+        }
 
-          if (chatId != null) {
-            // Navigate to the chat screen
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                  userId: widget.userId,
-                  ownerId: ownerId,
-                  chatRoomId: chatId!,
-                  dormitoryId: dormitoryId,
-                ),
+        if (chatId != null) {
+          // Navigate to the chat screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(
+                userId: widget.userId,
+                ownerId: ownerId,
+                chatRoomId: chatId!,
+                dormitoryId: dormitoryId,
               ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
-            );
-          }
+            ),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
+            const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
+          const SnackBar(content: Text('ไม่พบข้อมูลหอพัก')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ไม่พบข้อมูลผู้ใช้')),
+        const SnackBar(content: Text('ยังไม่มีการสนทนาในห้องนี้')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('ไม่พบข้อมูลผู้ใช้')),
+    );
   }
+}
+
 
   void _showDormitoryDetails(String dormitoryId) async {
     // ดึงข้อมูลหอพักจาก Firebase
-    DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-        .collection('dormitories')
-        .doc(dormitoryId)
-        .get();
+    DocumentSnapshot dormitorySnapshot =
+        await firestoreServiceDorm.getOwnerDataOnce(dormitoryId);
 
     if (dormitorySnapshot.exists) {
       var dormitoryData = dormitorySnapshot.data() as Map<String, dynamic>;
@@ -174,7 +171,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                 mainAxisSize: MainAxisSize.min, // ปรับให้มีขนาดตามเนื้อหา
                 children: <Widget>[
                   Text('ที่อยู่: ${dormitoryData['address']}'),
-                  Text('จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
+                  Text(
+                      'จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
                   Text('จำนวนห้องทั้งหมด: ${dormitoryData['totalRooms']} ห้อง'),
                   Text('ประเภทหอพัก: ${dormitoryData['dormType']}'),
                   Text('ราคาห้องพัก: ${dormitoryData['price']} บาท/เทอม'),
@@ -338,10 +336,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
     double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
 
     // Update dormitory document
-    await FirebaseFirestore.instance
-        .collection('dormitories')
-        .doc(dormitoryId)
-        .update({
+    await firestoreServiceDorm.updateDormitory(dormitoryId, {
       'reviewCount': reviewCount,
       'rating': averageRating,
     });
@@ -350,10 +345,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายละเอียดหอพักของคุณ'),
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-      ),
+      appBar: buildAppBar(title: 'รายละเอียดหอพักของคุณ', context: context),
       body: isLoading
           ? const Center(
               child:

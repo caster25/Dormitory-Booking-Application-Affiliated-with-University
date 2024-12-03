@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/model/Dormitory.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/details_dorm.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +16,7 @@ class DormitoryListEditScreen extends StatelessWidget {
     final formatNumber = NumberFormat('#,##0');
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('รายการหอพัก'),
-        automaticallyImplyLeading: true,
-      ),
+      appBar: buildAppBar(title: 'รายการหอพัก', context: context),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('dormitories')

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
+import 'package:dorm_app/features/screen/user/utils/filter_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +34,7 @@ class _DormScreenState extends State<DormScreen> {
 
   Widget _buildSearchBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -111,7 +112,7 @@ class _DormScreenState extends State<DormScreen> {
             ),
             if (selectedFilterType.isNotEmpty) ...[
               const SizedBox(
-                  height: 8), // ช่องว่างระหว่าง DropdownButton กับ FilterButton
+                  height: 8), 
               FilterButton(
                 text: _getFilterText(),
                 icon: _getFilterIcon().icon!,
@@ -154,9 +155,7 @@ class _DormScreenState extends State<DormScreen> {
               // แสดงช่องค้นหาหรือช่องกรองอย่างใดอย่างหนึ่งเท่านั้น
               if (!isFiltering) _buildSearchBar(),
               if (!isSearching)
-                _buildFilterSection(), // ปรับให้ฟังก์ชันนี้อยู่ในด้านขวา
-
-              const SizedBox(height: 8),
+                _buildFilterSection(),
               const SizedBox(height: 16),
               _buildUserFavorites(),
               const SizedBox(height: 16),
@@ -400,30 +399,6 @@ class _DormScreenState extends State<DormScreen> {
   }
 }
 
-class FilterButton extends StatelessWidget {
-  final String text;
-  final IconData icon;
-  final VoidCallback onPressed;
 
-  const FilterButton({
-    super.key,
-    required this.text,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon),
-      label: Text(text),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
-        backgroundColor: const Color.fromARGB(255, 224, 224, 224),
-      ),
-    );
-  }
-}
 
 

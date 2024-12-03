@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/login.dart';
 import 'package:dorm_app/features/screen/terms_and_conditions.dart';
 import 'package:dorm_app/service/auth_service.dart';
@@ -112,14 +113,7 @@ class _RegisterFormState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: buildAppBar(title: '', context: context),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Form(

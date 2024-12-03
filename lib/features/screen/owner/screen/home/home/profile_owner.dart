@@ -1,7 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/profile/edit_owner_profile.dart';
+import 'package:dorm_app/features/screen/user/data/src/service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _ProfileOwnerState extends State<ProfileOwner> {
   Map<String, dynamic>? userData; // เก็บข้อมูลเพิ่มเติมจาก Firestore
   final TextEditingController _fullnameController = TextEditingController();
   final TextEditingController _numphoneController = TextEditingController();
+  final FirestoreServiceUser firestoreServiceUser = FirestoreServiceUser();
 
   @override
   void initState() {
@@ -30,10 +32,7 @@ class _ProfileOwnerState extends State<ProfileOwner> {
       currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser!.uid)
-            .get();
+        DocumentSnapshot userDoc = await firestoreServiceUser.getUserData(currentUser!.uid);
 
         if (userDoc.exists) {
           userData =
@@ -55,10 +54,7 @@ class _ProfileOwnerState extends State<ProfileOwner> {
   // ignore: unused_element
   Future<void> _updateUserData() async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser!.uid)
-          .update({
+      await firestoreServiceUser.updateUserData(currentUser!.uid,{
         'fullname': _fullnameController.text,
         'numphone': _numphoneController.text,
       });
@@ -74,28 +70,9 @@ class _ProfileOwnerState extends State<ProfileOwner> {
   @override
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const Ownerhome()),
-          (route) => false,
-        );
-        return false;
-      },
-      child: Scaffold(
+    return  Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-          elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.purple),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const Ownerhome()),
-              (route) => false,
-            ),
-          ),
-        ),
+        appBar: getAppBarOwnerProfile(title: '', context: context),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: currentUser == null
@@ -151,8 +128,7 @@ class _ProfileOwnerState extends State<ProfileOwner> {
                   ],
                 ),
         ),
-      ),
-    );
+      );
   }
 }
 

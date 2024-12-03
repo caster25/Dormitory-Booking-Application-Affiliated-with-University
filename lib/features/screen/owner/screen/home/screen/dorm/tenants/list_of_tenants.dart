@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, use_super_parameters
 
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -218,10 +219,7 @@ class ListOfTenants extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('รายชื่อผู้เช่า'),
-      ),
+      appBar: buildAppBar(title: 'รายชื่อผู้เช่า', context: context),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: _fetchTenantsStream(), // สร้าง stream สำหรับข้อมูลผู้เช่า
         builder: (context, snapshot) {

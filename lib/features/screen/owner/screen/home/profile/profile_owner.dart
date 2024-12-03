@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:dorm_app/components/dialogs/card_widget.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_list_edit.dart';
 import 'package:dorm_app/features/screen/setting/setting/setting.dart';
@@ -223,55 +224,19 @@ class _ProfileownerState extends State<Profileowner> {
 
                   const SizedBox(
                       height: 16), // เพิ่มระยะห่างระหว่างชื่อและการ์ด
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.info_outline),
-                      title: const Text('รายละเอียดหอพัก'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const DormitoryListEditScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  CardWidget(
+                      title: 'รายละเอียดหอพัก',
+                      leadingIcon: Icon(Icons.info_outline),
+                      nextScreen: DormitoryListEditScreen()),
 
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('การตั้งค่า'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.notifications_none),
-                      title: const Text('แจ้งระบบต่างๆ'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SubmitIssueScreen()),
-                        );
-                      },
-                    ),
-                  ),
+                  CardWidget(
+                      title: 'การตั้งค่า',
+                      leadingIcon: Icon(Icons.settings),
+                      nextScreen: SettingsScreen()),
+                  CardWidget(
+                      title: 'แจ้งระบบต่าง',
+                      leadingIcon: Icon(Icons.notifications_none),
+                      nextScreen: SubmitIssueScreen())
                 ],
               );
             }

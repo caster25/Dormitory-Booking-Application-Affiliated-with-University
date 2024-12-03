@@ -6,10 +6,13 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/features/screen/user/data/src/service.dart';
+import 'package:dorm_app/features/screen/user/data/src/service_dorm.dart';
+import 'package:dorm_app/features/screen/user/screen/featurres/image/image_full.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +29,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   late Future<Map<String, dynamic>> dormitoryData;
   late Future<List<Map<String, dynamic>>> reviewsData;
   final TextEditingController reviewController = TextEditingController();
+  final FirestoreServiceUser firestoreServiceUser = FirestoreServiceUser();
+  final FirebaseServiceDorm firestoreServiceDorm = FirebaseServiceDorm();
   // ignore: unused_field, prefer_final_fields
   double _rating = 0;
   User? currentUser;
@@ -52,10 +57,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   Future<void> _loadUserData() async {
     currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser != null) {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser!.uid)
-          .get();
+      DocumentSnapshot userDoc =
+          await firestoreServiceUser.getUserStream(currentUser!.uid).first;
       setState(() {
         userData = userDoc.data() as Map<String, dynamic>?;
       });
@@ -63,40 +66,30 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   }
 
   Future<Map<String, dynamic>> _fetchDormitoryData() async {
-    DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection('dormitories')
-        .doc(widget.dormId)
-        .get();
+    DocumentSnapshot doc =
+        await firestoreServiceDorm.getOwnerDataOnce(widget.dormId);
     return doc.data() as Map<String, dynamic>;
   }
 
   Future<void> _fetchOwnerData() async {
-    // ดึงข้อมูลหอพักเพื่อรับ ownerId
-    DocumentSnapshot dormitoryDoc = await FirebaseFirestore.instance
-        .collection('dormitories')
-        .doc(widget.dormId)
-        .get();
+    DocumentSnapshot dormitoryDoc =
+        await firestoreServiceDorm.getOwnerDataOnce(widget.dormId);
 
-    // แปลงข้อมูลให้เป็น Map<String, dynamic>
     Map<String, dynamic>? dormitoryData =
         dormitoryDoc.data() as Map<String, dynamic>?;
 
-    // ตรวจสอบว่ามีข้อมูลใน dormitoryData หรือไม่
     if (dormitoryData != null) {
       String ownerId = dormitoryData['submittedBy'] ?? '';
 
       if (ownerId.isNotEmpty) {
-        // ดึงข้อมูลเจ้าของหอพักจากคอลเลกชัน users
         DocumentSnapshot ownerDoc = await FirebaseFirestore.instance
-            .collection('users') // คอลเลกชันที่เก็บข้อมูลเจ้าของ
+            .collection('users')
             .doc(ownerId)
             .get();
 
         if (ownerDoc.exists) {
-          // เก็บข้อมูลเจ้าของใน ownerData
           setState(() {
-            ownerData = ownerDoc.data()
-                as Map<String, dynamic>; // ใช้แปลงให้เป็น Map<String, dynamic>
+            ownerData = ownerDoc.data() as Map<String, dynamic>;
           });
         }
       }
@@ -111,93 +104,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     return querySnapshot.docs
         .map((doc) => {...doc.data() as Map<String, dynamic>, 'id': doc.id})
         .toList();
-  }
-
-  // ignore: unused_element
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-
-  // ignore: unused_element
-  Future<void> _addReview() async {
-    if (reviewController.text.isEmpty || _rating == 0 || currentUser == null) {
-      return;
-    }
-
-    try {
-      await FirebaseFirestore.instance.collection('reviews').add({
-        'dormId': widget.dormId,
-        'user': currentUser!.email,
-        'date': DateTime.now().toString(),
-        'text': reviewController.text,
-        'rating': _rating,
-        'likes': 0,
-        'comments': 0
-      });
-
-      await _updateDormitoryReviews();
-
-      reviewController.clear();
-      setState(() {
-        _rating = 0;
-        reviewsData = _fetchReviewsData();
-      });
-    } catch (e) {
-      print('Error adding review: $e');
-    }
-  }
-
-  // ignore: unused_element
-  Future<void> _updateDormitoryReviews() async {
-    try {
-      QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
-          .collection('reviews')
-          .where('dormitoryId', isEqualTo: widget.dormId)
-          .get();
-
-      int reviewCount = reviewsSnapshot.size;
-      double totalRating = 0; // เปลี่ยน totalRating เป็น double
-
-      for (var doc in reviewsSnapshot.docs) {
-        totalRating +=
-            (doc.data() as Map<String, dynamic>)['rating']?.toDouble() ?? 0;
-      }
-
-      // คำนวณค่าเฉลี่ยคะแนนให้เป็น int
-      int averageRating =
-          reviewCount > 0 ? (totalRating / reviewCount).toInt() : 0;
-
-      await FirebaseFirestore.instance
-          .collection('dormitories')
-          .doc(widget.dormId)
-          .update({
-        'reviewCount': reviewCount,
-        'rating': averageRating,
-      });
-    } catch (e) {
-      print('Error updating dormitory reviews: $e');
-    }
   }
 
   String _createChatRoomId(String userId, String ownerId) {
@@ -217,10 +123,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
       BuildContext context, String userId, String dormitoryId) async {
     try {
       // Retrieve dormitory data to check available rooms
-      DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
-          .collection('dormitories')
-          .doc(dormitoryId)
-          .get();
+      DocumentSnapshot dormitorySnapshot =
+          await firestoreServiceDorm.getOwnerDataOnce(dormitoryId);
 
       if (!dormitorySnapshot.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -252,10 +156,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
       }
 
       // Retrieve user data to check for existing bookings
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
+      DocumentSnapshot userSnapshot =
+          await firestoreServiceUser.getUserStream(userId).first;
 
       if (!userSnapshot.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -342,61 +244,24 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   String chatRoomId = _createChatRoomId(userId, dormitoryId);
 
                   // Update dormitory data
-                  await FirebaseFirestore.instance
-                      .collection('dormitories')
-                      .doc(dormitoryId)
-                      .update({
-                    'availableRooms': availableRooms - 1,
-                    'usersBooked': FieldValue.arrayUnion([userId]),
-                    'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
-                  });
+                  await firestoreServiceUser.updateDormitoryBooking(
+                      dormitoryId, userId, availableRooms, chatRoomId);
 
                   // Update user data with booking information
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .update({
-                    'bookedDormitory': dormitoryId,
-                    'chatRoomId': FieldValue.arrayUnion([chatRoomId]),
-                    'chatGroupId': chatGroupId,
-                  });
+                  await firestoreServiceUser.updateUserBooking(
+                      userId, dormitoryId, chatRoomId, chatGroupId);
 
                   // Create chatRoom entry in chatRooms collection
-                  await FirebaseFirestore.instance
-                      .collection('chatRooms')
-                      .doc(chatRoomId)
-                      .set({
-                    'participants': [userId, dormitoryId],
-                    'createdAt': FieldValue.serverTimestamp(),
-                    'lastMessage': '',
-                    'lastMessageAt': FieldValue.serverTimestamp(),
-                  });
+                  await firestoreServiceUser.createChatRoom(
+                      chatRoomId, userId, dormitoryId);
 
                   // Add notification data to the notifications collection
-                  await FirebaseFirestore.instance
-                      .collection('notifications')
-                      .add({
-                    'userId': userId,
-                    'dormitoryId': dormitoryId,
-                    'type': 'booking',
-                    'message': 'การจองหอพักสำเร็จ',
-                    'timestamp': FieldValue.serverTimestamp(),
-                    'status': 'unread',
-                  });
+                  await firestoreServiceUser.addBookingNotification(
+                      userId, dormitoryId);
 
                   // Update user's notification field to track the notification
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .update({
-                    'notifications': FieldValue.arrayUnion([
-                      {
-                        'dormitoryId': dormitoryId,
-                        'type': 'booking',
-                        'timestamp': FieldValue.serverTimestamp(),
-                      }
-                    ]),
-                  });
+                  await firestoreServiceUser.updateUserNotifications(
+                      userId, dormitoryId);
                 },
                 child: const Text('ยืนยัน'),
               ),
@@ -436,10 +301,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('รายละเอียดหอพัก'),
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-      ),
+      appBar: buildAppBar(title: 'รายอะเอียดหอพัก', context: context),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,43 +321,51 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
                 return Column(
                   children: [
-                    // Section สำหรับเลื่อนรูปภาพ
-                    CarouselSlider(
-                      options: CarouselOptions(
-                        height: 200.0,
-                        autoPlay: true,
-                      ),
-                      items: imageUrls.map((url) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return GestureDetector(
-                              onTap: () {
-                                // เมื่อกดรูปจะนำทางไปยังหน้าจอแสดงรูปขนาดใหญ่
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FullScreenImage(imageUrl: url),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    url,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
-                    ),
+                    imageUrls.length == 1
+                        ? Image.network(
+                            imageUrls[0],
+                            height: 200.0,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        // Section สำหรับเลื่อนรูปภาพ
+                        : CarouselSlider(
+                            options: CarouselOptions(
+                              height: 200.0,
+                              autoPlay: true,
+                            ),
+                            items: imageUrls.map((url) {
+                              return Builder(
+                                builder: (BuildContext context) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      // เมื่อกดรูปจะนำทางไปยังหน้าจอแสดงรูปขนาดใหญ่
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FullScreenImage(imageUrl: url),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: Image.network(
+                                          url,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ),
 
                     Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -778,28 +648,6 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
           _bookDormitory(context, currentUser!.uid, selectedDormitory!['id']);
         },
         child: const Icon(Icons.book),
-      ),
-    );
-  }
-}
-
-class FullScreenImage extends StatelessWidget {
-  final String imageUrl;
-
-  const FullScreenImage({super.key, required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: InteractiveViewer(
-          panEnabled: true, // ให้ผู้ใช้สามารถเลื่อนดูภาพได้
-          boundaryMargin: const EdgeInsets.all(20),
-          minScale: 0.5,
-          maxScale: 4,
-          child: Image.network(imageUrl),
-        ),
       ),
     );
   }

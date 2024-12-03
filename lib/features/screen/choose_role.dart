@@ -1,4 +1,5 @@
 
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/auth/register_owner.dart';
 import 'package:dorm_app/features/screen/user/screen/register_user.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +11,7 @@ class RoleScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+      appBar: buildAppBar(title: 'เลือกประเภทการใช้งาน', context: context),
       body: Center(
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -44,7 +38,7 @@ class RoleScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30), // Space between buttons
+                const SizedBox(height: 30),
                 SizedBox(
                   width: 250,
                   height: 100,

@@ -1,6 +1,7 @@
 // ignore_for_file: collection_methods_unrelated_type
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -80,10 +81,7 @@ class _LikeScreenState extends State<LikeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('หอพักที่ถูกใจ'),
-      ),
+      appBar: buildAppBar(title: 'หอพักที่ถูกใจ', context: context),
       body: likedDorms.isEmpty
           ? const Center(child: Text('ไม่มีหอพักที่ถูกใจ'))
           : ListView.builder(

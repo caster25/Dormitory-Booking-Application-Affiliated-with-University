@@ -1,3 +1,4 @@
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,8 +15,7 @@ class NotificationOwnerScreen extends StatefulWidget {
 
 class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
   List<Map<String, dynamic>> _notifications = [];
-  List<String> _dormitoryIds =
-      []; // เก็บ dormitoryIds ของหอพักที่เป็นของเจ้าของหอ
+  List<String> _dormitoryIds = []; // เก็บ dormitoryIds ของหอพักที่เป็นของเจ้าของหอ
   late User _currentUser;
 
   @override
@@ -131,10 +131,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('Owner Notifications'),
-      ),
+      appBar: buildAppBar(title: 'การแจ้งเตือน', context: context),
       body: _notifications.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(

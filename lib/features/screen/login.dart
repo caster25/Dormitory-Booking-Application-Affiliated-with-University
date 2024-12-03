@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/buttons/button_widget.dart';
 import 'package:dorm_app/features/screen/admin/adminscreen.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:dorm_app/features/screen/user/screen/homepage.dart';
@@ -199,14 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
+            appBar: buildAppBar(title: '', context: context),
             body: Padding(
               padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(
@@ -284,13 +279,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 30),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _loginFunction,
-                          child: const Text('เข้าสู่ระบบ'),
-                        ),
-                      ),
+                      ButtonWidget(
+                        label: 'เข้าสู่ระบบ',
+                        onPressed: _loginFunction,
+                        backgroundColor: Colors.white, fontcolor: Colors.black,
+                      )
                     ],
                   ),
                 ),

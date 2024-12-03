@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/dialogs/card_widget.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/features/screen/setting/setting/detail_dromuser.dart';
 import 'package:dorm_app/features/screen/setting/setting/setting.dart';
@@ -246,87 +247,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  Card(
-                    elevation: 2, // ปรับความสูงเงา
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 8.0), // ขอบของการ์ด
-                    child: ListTile(
-                      leading: const Icon(Icons.info_outline),
-                      title: const Text('รายละเอียดหอพักของคุณ'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DormitoryDetailsScreen(userId: userId!),
-                          ),
-                        );
-                      },
-                    ),
+                  CardWidget(
+                    title: 'รายละเอียดหอพักของคุณ',
+                    leadingIcon: Icon(Icons.info_outline),
+                    nextScreen: DormitoryDetailsScreen(userId: userId!),
                   ),
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.domain_rounded),
-                      title: const Text('หอพักของคุณจองไว้'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BookDorm(userId: userId!),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.favorite_border),
-                      title: const Text('หอพักที่ถูกใจ'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LikeScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.settings),
-                      title: const Text('การตั้งค่า'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: ListTile(
-                      leading: const Icon(Icons.notifications_none),
-                      title: const Text('แจ้งระบบต่างๆ'),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SubmitIssueScreen()),
-                        );
-                      },
-                    ),
-                  ),
+                  CardWidget(
+                      title: 'หอพักของคุณ',
+                      leadingIcon: Icon(Icons.domain_add_rounded),
+                      nextScreen: BookDorm(userId: userId)),
+                  CardWidget(
+                      title: 'หอพักที่คุณถูกใจ',
+                      leadingIcon: Icon(Icons.favorite_border),
+                      nextScreen: LikeScreen()),
+                  CardWidget(
+                      title: 'การตั้งค่า',
+                      leadingIcon: Icon(Icons.settings),
+                      nextScreen: SettingsScreen()),
+                  CardWidget(
+                      title: 'แจ้งระบบต่างๆ',
+                      leadingIcon: Icon(Icons.notifications_none),
+                      nextScreen: SubmitIssueScreen()),
+                  
+                  
                 ],
               );
             }

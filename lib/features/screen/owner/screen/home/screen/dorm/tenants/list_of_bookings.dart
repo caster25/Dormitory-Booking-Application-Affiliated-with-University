@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -324,10 +325,7 @@ class ListOfBookings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
-        title: const Text('รายชื่อผู้จอง'),
-      ),
+      appBar: buildAppBar(title: 'รายชื่อผู้จอง', context: context),
       body: StreamBuilder<List<Map<String, dynamic>>>(
           stream: _fetchBookings(), // ใช้ StreamBuilder แทน FutureBuilder
           builder: (context, snapshot) {
