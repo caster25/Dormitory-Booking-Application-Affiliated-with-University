@@ -7,7 +7,7 @@ class AboutUsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // สีหลักและสีรอง
     const primaryColor = Color.fromARGB(255, 153, 85, 240);
-    const secondaryColor = Colors.black87;
+    const secondaryColor = Colors.black;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,7 +24,6 @@ class AboutUsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _buildCard(
               'แอปของเราถูกสร้างขึ้นเพื่อช่วยนักศึกษาในการจองหอพักในมหาวิทยาลัยโดยง่ายและสะดวก เรามีความมุ่งมั่นในการให้บริการที่ดีที่สุดแก่ผู้ใช้',
-              secondaryColor,
             ),
 
             const SizedBox(height: 16),
@@ -34,7 +33,6 @@ class AboutUsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _buildCard(
               'วิสัยทัศน์ของเราคือการทำให้การจองหอพักเป็นเรื่องง่ายและสะดวกสำหรับนักศึกษา โดยการให้บริการที่มีคุณภาพและตอบสนองความต้องการของผู้ใช้',
-              secondaryColor,
             ),
 
             const SizedBox(height: 16),
@@ -47,7 +45,6 @@ class AboutUsScreen extends StatelessWidget {
               '• การจองหอพักออนไลน์\n'
               '• การจัดการข้อมูลหอพัก\n'
               '• การติดต่อผู้ดูแลหอพักได้โดยตรง',
-              secondaryColor,
             ),
 
             const SizedBox(height: 16),
@@ -57,7 +54,6 @@ class AboutUsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _buildCard(
               'ทีมพัฒนาแอปของเราประกอบด้วยนักพัฒนาที่มีประสบการณ์และทีมออกแบบที่ทุ่มเทในการสร้างประสบการณ์ที่ดีที่สุดสำหรับผู้ใช้',
-              secondaryColor,
             ),
 
             const SizedBox(height: 16),
@@ -69,7 +65,6 @@ class AboutUsScreen extends StatelessWidget {
               '• อีเมล: support@dormapp.com\n'
               '• เบอร์โทร: 123-456-7890\n'
               '• ติดตามเราบนโซเชียลมีเดีย: Facebook, Twitter, Instagram',
-              secondaryColor,
             ),
           ],
         ),
@@ -95,7 +90,7 @@ class AboutUsScreen extends StatelessWidget {
   }
 
   // Widget สำหรับสร้างเนื้อหาแต่ละส่วนภายในการ์ด
-  Widget _buildCard(String content, Color textColor) {
+  Widget _buildCard(String content) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -103,7 +98,7 @@ class AboutUsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Text(
           content,
-          style: TextStyle(fontSize: 16, color: textColor),
+          style: TextStyle(fontSize: 16),
         ),
       ),
     );

@@ -108,7 +108,6 @@ class CardDorm extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: fontSize,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
                                 ),
                                 overflow: TextOverflow
                                     .ellipsis, // Prevent text overflow

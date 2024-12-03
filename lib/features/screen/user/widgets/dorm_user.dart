@@ -294,10 +294,10 @@ class _DormScreenState extends State<DormScreen> {
       QueryDocumentSnapshot dorm, String dormId, List<String> favorites) {
     bool isFavorite = favorites.contains(dormId); // ตรวจสอบสถานะของหัวใจ
     List<dynamic> images = dorm['imageUrl']; // ดึง list ของรูปภาพ
+
     return Container(
-      
       decoration: BoxDecoration(
-        
+        color: const Color.fromARGB(255, 241, 229, 255),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -307,7 +307,6 @@ class _DormScreenState extends State<DormScreen> {
           Container(
             height: 180,
             decoration: BoxDecoration(
-
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(10)),
               image: DecorationImage(
@@ -325,10 +324,10 @@ class _DormScreenState extends State<DormScreen> {
               children: [
                 Text(
                     '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ห้องทั้งหมด ${dorm['totalRooms']}ห้อง',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
                 const SizedBox(height: 4),
                 Text('ราคา ${formatNumber.format(dorm['price'])} บาท',
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
                 Text(
                   dorm['rating'] != null && dorm['rating'] > 0
                       ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
@@ -337,7 +336,7 @@ class _DormScreenState extends State<DormScreen> {
                 ),
                 Text(
                   'ห้องที่ยังว่างอยู่ ${dorm['availableRooms']}ห้อง',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 const SizedBox(height: 10),
                 Row(
