@@ -97,7 +97,6 @@ class NavigationDrawer extends StatelessWidget {
 
   Widget buildMenuItems(BuildContext context) => Container(
         padding: const EdgeInsets.all(24),
-        color: const Color.fromARGB(255, 252, 252, 252),
         child: Wrap(
           runSpacing: 16,
           children: [

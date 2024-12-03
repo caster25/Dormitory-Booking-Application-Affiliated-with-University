@@ -30,7 +30,6 @@ class Details extends StatelessWidget {
   Widget build(BuildContext context) {
     final formatNumber = NumberFormat('#,##0');
     const primaryColor = Color.fromARGB(255, 153, 85, 240);
-    const secondaryColor = Colors.black;
 
     return Scaffold(
       appBar: buildAppBar(title: 'รายละเอียดหอพัก ${dormitory.name}', context: context),
@@ -63,19 +62,19 @@ class Details extends StatelessWidget {
                       Text(
                         'ประเภทห้อง: ${dormitory.roomType}',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'ผู้พักอาศัย: ${dormitory.occupants} คน',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'ราคา: ${formatNumber.format(dormitory.price)} บาท/เทอม',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const Divider(
                           height: 20,
@@ -84,19 +83,19 @@ class Details extends StatelessWidget {
                       Text(
                         'ค่ามัดจำ: ${formatNumber.format(dormitory.securityDeposit)} บาท',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'ค่าบำรุงรักษา: ${formatNumber.format(dormitory.maintenanceFee)} บาท',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'ค่ารายเดือน: ${formatNumber.format(dormitory.monthlyRent)} บาท',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const Divider(
                           height: 20,
@@ -105,19 +104,19 @@ class Details extends StatelessWidget {
                       Text(
                         'ค่าบริการเฟอร์นิเจอร์: ${formatNumber.format(dormitory.furnitureFee)} บาท',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'อัตราค่าไฟฟ้า: ${dormitory.electricityRate} บาทต่อหน่วย',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'อัตราค่าน้ำ: ${dormitory.waterRate} บาทต่อหน่วย',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const Divider(
                           height: 20,
@@ -127,19 +126,19 @@ class Details extends StatelessWidget {
                       Text(
                         'ห้องว่าง: ${dormitory.availableRooms} ห้อง',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'ที่อยู่: ${dormitory.address.isNotEmpty ? dormitory.address : 'ไม่มีที่อยู่'}',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'อุปกรณ์ในห้อง: ${dormitory.equipment.isNotEmpty ? dormitory.equipment : 'ไม่มีข้อมูล'}',
                         style: const TextStyle(
-                            fontSize: 18, color: secondaryColor),
+                            fontSize: 18),
                       ),
                       const Divider(
                           height: 20,
@@ -167,13 +166,13 @@ class Details extends StatelessWidget {
                                 Text(
                                   'ผู้เช่า ($tenantCount คน):',
                                   style: const TextStyle(
-                                      fontSize: 18, color: secondaryColor),
+                                      fontSize: 18),
                                 ),
                                 for (var tenant in snapshot.data!)
                                   Text(
                                     '${tenant.fullname} ',
                                     style: const TextStyle(
-                                        fontSize: 18, color: secondaryColor),
+                                        fontSize: 18),
                                   ),
                               ],
                             );

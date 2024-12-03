@@ -71,7 +71,6 @@ class _ProfileOwnerState extends State<ProfileOwner> {
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return  Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         appBar: getAppBarOwnerProfile(title: '', context: context),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

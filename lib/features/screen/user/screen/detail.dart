@@ -403,8 +403,8 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                 // Price per term
                                 Text(
                                   'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',
-                                  style: const TextStyle(
-                                      fontSize: 18, color: Colors.black87),
+                                   style:
+                                      Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 const SizedBox(height: 10),
 

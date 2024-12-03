@@ -184,45 +184,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   GestureDetector(
                     onTap: _pickImage,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceBetween, // จัดเรียงให้มีระยะห่างระหว่างเนื้อหา
                       children: [
-                        Row(
+                        CircleAvatar(
+                          radius: 52,
+                          backgroundImage: (userProfile.profilePictureURL !=
+                                      null &&
+                                  userProfile.profilePictureURL!.isNotEmpty &&
+                                  Uri.tryParse(userProfile.profilePictureURL!)
+                                          ?.hasScheme ==
+                                      true)
+                              ? NetworkImage(userProfile.profilePictureURL!)
+                              : null, // Don't provide a NetworkImage if URL is invalid
+                          child: userProfile.profilePictureURL == null ||
+                                  userProfile.profilePictureURL!.isEmpty
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 52,
+                                  color: Colors.white,
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CircleAvatar(
-                              backgroundImage: _tempImage != null
-                                  ? FileImage(_tempImage!)
-                                  : _profileImageUrl != null
-                                      ? NetworkImage(_profileImageUrl!)
-                                      : null, // เปลี่ยนเป็น null ถ้าไม่มีรูปภาพ
-                              radius: 40,
-                              child: _tempImage == null &&
-                                      _profileImageUrl ==
-                                          null // ตรวจสอบว่าไม่มีภาพ
-                                  ? const Icon(
-                                      Icons.person,
-                                      size: 40, // ขนาดของไอคอน
-                                      color: Colors.white, // สีของไอคอน
-                                    )
-                                  : null, // หากมีภาพให้ไม่แสดงไอคอน
+                            Text(
+                              userProfile.username ?? 'Unknown User',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            const SizedBox(width: 16),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  userProfile.username ?? 'Unknown User',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                    userProfile.fullname ?? 'No name provided'),
-                              ],
-                            ),
+                            Text(userProfile.fullname ?? 'No name provided'),
                           ],
                         ),
+                      ],
+                    ),
+                  ),
                         // ElevatedButton(
                         //   onPressed: () {
                         //     // นำผู้ใช้ไปยังหน้าจอการยืนยันตัวตน
@@ -244,9 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         //     ),
                         //   ),
                         // ),
-                      ],
-                    ),
-                  ),
+                      
                   CardWidget(
                     title: 'รายละเอียดหอพักของคุณ',
                     leadingIcon: Icon(Icons.info_outline),
@@ -268,7 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'แจ้งระบบต่างๆ',
                       leadingIcon: Icon(Icons.notifications_none),
                       nextScreen: SubmitIssueScreen()),
-                ],
+                ]
               );
             }
           },
