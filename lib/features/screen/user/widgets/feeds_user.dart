@@ -171,7 +171,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
   Widget build(BuildContext context) {
     final formatNumber = NumberFormat('#,##0');
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 223, 212, 253),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0), // ปรับ padding ให้เหมาะสม

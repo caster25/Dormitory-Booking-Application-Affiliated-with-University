@@ -145,7 +145,6 @@ class _DormScreenState extends State<DormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -295,10 +294,10 @@ class _DormScreenState extends State<DormScreen> {
       QueryDocumentSnapshot dorm, String dormId, List<String> favorites) {
     bool isFavorite = favorites.contains(dormId); // ตรวจสอบสถานะของหัวใจ
     List<dynamic> images = dorm['imageUrl']; // ดึง list ของรูปภาพ
-
     return Container(
+      
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 241, 229, 255),
+        
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -308,6 +307,7 @@ class _DormScreenState extends State<DormScreen> {
           Container(
             height: 180,
             decoration: BoxDecoration(
+
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(10)),
               image: DecorationImage(

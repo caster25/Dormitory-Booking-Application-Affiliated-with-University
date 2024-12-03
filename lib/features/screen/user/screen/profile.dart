@@ -268,8 +268,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'แจ้งระบบต่างๆ',
                       leadingIcon: Icon(Icons.notifications_none),
                       nextScreen: SubmitIssueScreen()),
-                  
-                  
                 ],
               );
             }

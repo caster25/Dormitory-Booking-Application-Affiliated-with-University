@@ -2,6 +2,7 @@ import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/setting/about.dart';
 import 'package:dorm_app/features/screen/setting/setting/account.dart';
 import 'package:dorm_app/features/screen/setting/setting/language.dart';
+import 'package:dorm_app/features/screen/setting/setting/theme.dart';
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -52,18 +53,18 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
             ),
-            // MenuItem(
-            //   icon: Icons.info_outline,
-            //   text: 'theme',
-            //   onTap: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => const SettingsView(controller: ,),
-            //       ),
-            //     );
-            //   },
-            // ),
+            MenuItem(
+              icon: Icons.info_outline,
+              text: 'theme',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  SettingsScreenTheme(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
