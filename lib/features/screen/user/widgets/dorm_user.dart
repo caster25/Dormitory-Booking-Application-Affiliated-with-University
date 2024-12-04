@@ -340,8 +340,8 @@ class _DormScreenState extends State<DormScreen> {
                     '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
                   ),
                   const SizedBox(height: 4),
-                  TextWidget.buildSubSectionRed16(
-                    'ราคา ${dorm['price']} บาท/เดือน',
+                  TextWidget.buildSubSectionBold16(
+                    'ราคา: ${formatNumber.format(dorm['price'])} บาท',
                   ),
                   TextWidget.buildSubSectionRed16(
                     dorm['rating'] != null && dorm['rating'] > 0
