@@ -209,14 +209,6 @@ class _EditUserState extends State<EditUser> {
                     label: 'บันทึก',
                     onPressed: _confirmUpdate,
                   ),
-                  CustomButton(
-                      label: 'ยกเลิก',
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Homepage()));
-                      })
                 ],
               ),
             ],

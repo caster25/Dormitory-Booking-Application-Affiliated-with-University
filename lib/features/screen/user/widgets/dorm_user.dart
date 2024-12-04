@@ -336,7 +336,7 @@ class _DormScreenState extends State<DormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ชื่อและรายละเอียดหอพัก
-                  TextWidget.buildSubSectionBold16(
+                  TextWidget.buildSection18(
                     '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
                   ),
                   const SizedBox(height: 4),

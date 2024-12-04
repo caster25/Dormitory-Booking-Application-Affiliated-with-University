@@ -4,7 +4,6 @@ import 'package:dorm_app/common/res/size.dart';
 import 'package:flutter/material.dart';
 
 class TextWidget {
-  // ฟังก์ชันสำหรับสร้างหัวข้อหลัก
   static Widget buildHeader24(String text) {
     return Text(
       text,
@@ -30,7 +29,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างหัวข้อย่อย (หมายเลขข้อ)
   static Widget buildSection10(String text) {
     return Text(
       text,
@@ -42,7 +40,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างหัวข้อย่อย (หมายเลขข้อ)
   static Widget buildSection14(String text) {
     return Text(
       text,
@@ -54,7 +51,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างหัวข้อย่อย (หมายเลขข้อ)
   static Widget buildSection16(String text) {
     return Text(
       text,
@@ -66,7 +62,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างหัวข้อย่อย (หมายเลขข้อ)
   static Widget buildSection18(String text) {
     return Text(
       text,
@@ -89,7 +84,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างข้อความในแต่ละย่อย
   static Widget buildSubSection12(String text) {
     return Text(
       text,
@@ -101,7 +95,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างข้อความในแต่ละย่อย
   static Widget buildSubSection14(String text) {
     return Text(
       text,
@@ -113,7 +106,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างข้อความในแต่ละย่อย
   static Widget buildSubSection16(String text) {
     return Text(
       text,
@@ -125,7 +117,6 @@ class TextWidget {
     );
   }
 
-  // ฟังก์ชันสำหรับสร้างข้อความในแต่ละย่อย
   static Widget buildSubSection18(String text) {
     return Text(
       text,

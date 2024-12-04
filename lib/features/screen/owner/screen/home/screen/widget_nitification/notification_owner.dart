@@ -17,7 +17,8 @@ class NotificationOwnerScreen extends StatefulWidget {
 
 class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
   List<Map<String, dynamic>> _notifications = [];
-  List<String> _dormitoryIds = []; // เก็บ dormitoryIds ของหอพักที่เป็นของเจ้าของหอ
+  List<String> _dormitoryIds =
+      []; // เก็บ dormitoryIds ของหอพักที่เป็นของเจ้าของหอ
   late User _currentUser;
 
   @override
@@ -71,7 +72,8 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
       List<Map<String, dynamic>> notifications = [];
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        print('Fetched notification data: $data'); // ตรวจสอบข้อมูลที่ดึงมา
+        print('Current User ID: ${_currentUser.uid}');
+        print('Querying notifications...'); // ตรวจสอบข้อมูลที่ดึงมา
 
         // Fetch dormitory and user details
         DocumentSnapshot dormitorySnapshot = await FirebaseFirestore.instance
