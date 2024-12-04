@@ -100,7 +100,7 @@ class _DormScreenState extends State<DormScreen> {
           children: [
             DropdownButton<String>(
               value: selectedFilterType.isEmpty ? null : selectedFilterType,
-              hint: const Text('เลือกการกรอง'),
+              hint: TextWidget.buildSection14('เลือกการกรอง'),
               onTap: () {
                 setState(() {
                   isFiltering = true;
