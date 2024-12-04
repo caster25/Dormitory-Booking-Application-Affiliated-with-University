@@ -262,10 +262,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                     );
                                   },
                                 ),
-                                Text(
+                                TextWidget.buildSection10(
                                   _formatTimestamp(message['createdAt']),
-                                  style: const TextStyle(
-                                      color: Colors.black45, fontSize: 10.0),
                                 ),
                               ],
                             ),
