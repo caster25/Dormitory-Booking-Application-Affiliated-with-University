@@ -1,3 +1,4 @@
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:flutter/material.dart';
 
 class LanguageScreen extends StatelessWidget {
@@ -8,7 +9,7 @@ class LanguageScreen extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        backgroundColor: ColorsApp.primary01,
         title: const Text('เลือกภาษา'),
       ),
       body: ListView(

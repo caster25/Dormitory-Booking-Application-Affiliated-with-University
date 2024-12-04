@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, use_super_parameters
 
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -240,7 +241,7 @@ class ListOfTenants extends StatelessWidget {
                   margin: const EdgeInsets.all(10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15.0),
-                    side: const BorderSide(color: Colors.grey, width: 1),
+                    side: const BorderSide(color: ColorsApp.grey, width: 1),
                   ),
                   elevation: 3,
                   child: Padding(
@@ -251,7 +252,7 @@ class ListOfTenants extends StatelessWidget {
                         // รูปประจำตัวผู้เช่า (ตัวอย่าง: Icon)
                         CircleAvatar(
                           radius: 30,
-                          backgroundColor: Colors.grey,
+                          backgroundColor: ColorsApp.grey,
                           backgroundImage:
                               tenant['profilePictureURL'] != null &&
                                       tenant['profilePictureURL'].isNotEmpty
@@ -278,7 +279,7 @@ class ListOfTenants extends StatelessWidget {
                               ),
                               Text(
                                 tenant['email'],
-                                style: const TextStyle(color: Colors.grey),
+                                style: const TextStyle(color: ColorsApp.grey),
                               ),
                               const SizedBox(height: 5),
                               Row(
@@ -293,7 +294,7 @@ class ListOfTenants extends StatelessWidget {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.delete),
-                                    color: Colors.red,
+                                    color: ColorsApp.red,
                                     onPressed: () {
                                       _showPasswordDialog(context, tenantId);
                                     },

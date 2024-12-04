@@ -382,7 +382,6 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                         height:
                                             8), // เพิ่มช่องว่างระหว่าง ListTile และปุ่ม
 
-                                    // จัดปุ่มในแนวตั้งโดยใช้ Column
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment
                                           .stretch, // ให้ปุ่มขยายเต็มความกว้าง

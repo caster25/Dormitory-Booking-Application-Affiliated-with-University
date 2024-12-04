@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/index.dart';
 import 'package:dorm_app/features/screen/user/screen/profile.dart';
@@ -10,6 +11,7 @@ import 'package:dorm_app/features/screen/user/widgets/porfile_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/services.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key, this.title = "Home"});
@@ -48,7 +50,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context) => Container(
-        color: const Color.fromARGB(255, 153, 85, 240),
+        color: ColorsApp.primary01,
         padding: EdgeInsets.only(
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
@@ -179,6 +181,7 @@ class _HomepageState extends State<Homepage> {
   int index = 0;
   late User _currentUser;
 
+   DateTime? _lastPressedAt;
   final List<Widget> _screens = [
     const FeedsScreen(),
     const DormScreen(),
@@ -204,7 +207,17 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async {
+                final now = DateTime.now();
+        if (_lastPressedAt == null || now.difference(_lastPressedAt!) > const Duration(seconds: 2)) {
+          // ถ้ากด back ครั้งแรกจะอัพเดทเวลาปัจจุบัน
+          _lastPressedAt = now;
+          // แสดงข้อความให้ผู้ใช้ยืนยันการออกจากแอป
+          _showExitDialog();
+          return false; // หยุดการออกจากแอป
+        }
+        return true; // ถ้ากด back ครั้งที่สองแล้วให้ปิดแอป
+      },
       child: Scaffold(
         appBar: _buildAppBar(),
         drawer: _buildDrawer(),
@@ -245,8 +258,8 @@ class _HomepageState extends State<Homepage> {
           Icon(Icons.domain_rounded, size: 30),
           Icon(Icons.person, size: 30),
         ],
-        color: const Color.fromARGB(255, 153, 85, 240),
-        buttonBackgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        color: ColorsApp.primary01,
+        buttonBackgroundColor: ColorsApp.primary01,
         backgroundColor: Colors.transparent,
         animationCurve: Curves.easeInOut,
         animationDuration: const Duration(milliseconds: 600),
@@ -257,6 +270,34 @@ class _HomepageState extends State<Homepage> {
         },
         letIndexChange: (index) => true,
       ),
+    );
+  }
+
+  void _showExitDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // ทำให้ไม่สามารถปิด dialog ได้ด้วยการแตะนอก dialog
+      builder: (context) {
+        return AlertDialog(
+          title: Text('ยืนยันการออกจากแอป'),
+          content: Text('คุณต้องการออกจากแอปหรือไม่?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog
+                SystemNavigator.pop(); // ปิดแอป
+              },
+              child: Text('ออกจากแอป'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

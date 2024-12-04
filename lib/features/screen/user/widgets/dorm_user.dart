@@ -22,21 +22,31 @@ class _DormScreenState extends State<DormScreen> {
   bool isSearching = false;
   bool isFiltering = false;
   final formatNumber = NumberFormat('#,##0');
+   List<String> dormitories = [];
+  List<String> filteredDormitories = [];
 
   @override
   void initState() {
     super.initState();
+    filteredDormitories = dormitories; // กำหนดค่าเริ่มต้นให้แสดงทั้งหมด
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       userId = user.uid;
     }
   }
 
+  void filterDormitories() {
+    setState(() {
+      filteredDormitories = dormitories
+          .where((dorm) => dorm.toLowerCase().contains(searchQuery.toLowerCase()))
+          .toList();
+    });
+  }
+
   Widget _buildSearchBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: Colors.purple,
@@ -49,7 +59,7 @@ class _DormScreenState extends State<DormScreen> {
           hintText: 'ค้นหาหอพัก',
           border: InputBorder.none,
           prefixIcon: const Icon(Icons.search, color: Colors.purple),
-          suffixIcon: isSearching // เพิ่มไอคอนยกเลิกในช่องค้นหา
+          suffixIcon: isSearching
               ? IconButton(
                   icon: const Icon(Icons.clear, color: Colors.grey),
                   onPressed: () {
@@ -57,6 +67,7 @@ class _DormScreenState extends State<DormScreen> {
                       isSearching = false;
                       searchController.clear();
                       searchQuery = '';
+                      filteredDormitories = dormitories; // รีเซ็ตการกรอง
                     });
                   },
                 )
@@ -72,6 +83,7 @@ class _DormScreenState extends State<DormScreen> {
           setState(() {
             searchQuery = value;
           });
+          filterDormitories(); // เรียกใช้ฟังก์ชันกรองเมื่อพิมพ์
         },
       ),
     );
@@ -111,8 +123,7 @@ class _DormScreenState extends State<DormScreen> {
               },
             ),
             if (selectedFilterType.isNotEmpty) ...[
-              const SizedBox(
-                  height: 8), 
+              const SizedBox(height: 8),
               FilterButton(
                 text: _getFilterText(),
                 icon: _getFilterIcon().icon!,
@@ -140,8 +151,6 @@ class _DormScreenState extends State<DormScreen> {
     );
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,11 +162,9 @@ class _DormScreenState extends State<DormScreen> {
             children: [
               // แสดงช่องค้นหาหรือช่องกรองอย่างใดอย่างหนึ่งเท่านั้น
               if (!isFiltering) _buildSearchBar(),
-              if (!isSearching)
-                _buildFilterSection(),
+              if (!isSearching) _buildFilterSection(),
               const SizedBox(height: 16),
               _buildUserFavorites(),
-              const SizedBox(height: 16),
               _buildDormitoryStream(),
             ],
           ),
@@ -283,7 +290,7 @@ class _DormScreenState extends State<DormScreen> {
         String dormId = dorm.id;
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.all(8),
           child: _buildDormitoryCard(dorm, dormId, favorites),
         );
       },
@@ -300,79 +307,88 @@ class _DormScreenState extends State<DormScreen> {
         color: const Color.fromARGB(255, 241, 229, 255),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Dorm images - ดึงรูปแรกจาก list
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
+      child: Card(
+        margin: const EdgeInsets.all(1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 3,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
               borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(10)),
-              image: DecorationImage(
-                image: NetworkImage(images.isNotEmpty
-                    ? images[0]
-                    : ''), // ใช้รูปแรกใน list หรือใช้ '' หากไม่มีรูป
+                  const BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image.network(
+                images.isNotEmpty ? images[0] : '',
+                height: 180,
+                width: double.infinity,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.image_not_supported, size: 100),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ห้องทั้งหมด ${dorm['totalRooms']}ห้อง',
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-                const SizedBox(height: 4),
-                Text('ราคา ${formatNumber.format(dorm['price'])} บาท',
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-                Text(
-                  dorm['rating'] != null && dorm['rating'] > 0
-                      ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
-                      : 'ยังไม่มีการรีวิว',
-                  style: const TextStyle(color: Colors.red),
-                ),
-                Text(
-                  'ห้องที่ยังว่างอยู่ ${dorm['availableRooms']}ห้อง',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // View details button
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                DormallDetailScreen(dormId: dormId),
-                          ),
-                        );
-                      },
-                      child: const Text('ดูรายละเอียด'),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ชื่อและรายละเอียดหอพัก
+                  Text(
+                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                    // Favorite heart icon
-                    IconButton(
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.pink : Colors.grey,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'ราคา ${dorm['price']} บาท/เดือน',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  Text(
+                    dorm['rating'] != null && dorm['rating'] > 0
+                        ? 'คะแนน ${dorm['rating'].toStringAsFixed(1)}/5'
+                        : 'ยังไม่มีการรีวิว',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'ห้องว่าง ${dorm['availableRooms']} ห้อง',
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DormallDetailScreen(dormId: dormId),
+                            ),
+                          );
+                        },
+                        child: const Text('ดูรายละเอียด'),
                       ),
-                      onPressed: () async {
-                        // เปลี่ยนสถานะของหัวใจที่ UI และฐานข้อมูล
-                        await _toggleFavorite(dormId);
-                        setState(() {}); // อัปเดต UI
-                      },
-                    ),
-                  ],
-                ),
-              ],
+                      IconButton(
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.pink : Colors.grey,
+                        ),
+                        onPressed: () async {
+                          await _toggleFavorite(dormId);
+                          setState(() {});
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -397,7 +413,3 @@ class _DormScreenState extends State<DormScreen> {
     }
   }
 }
-
-
-
-

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,7 @@ class _LikeScreenState extends State<LikeScreen> {
                           ),
                         ),
                         ListTile(
-                          title: Text(
+                          title: TextWidget.buildSection18(
                             '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
                           ),
                           subtitle: Column(

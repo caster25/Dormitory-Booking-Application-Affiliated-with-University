@@ -1,4 +1,5 @@
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/login.dart';
 import 'package:flutter/material.dart';
 
@@ -46,96 +47,64 @@ class TermsAndConditionsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Expanded(
+            Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Text(
-                        'เงื่อนไขและข้อตกลงการใช้บริการ',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                    TextWidget.buildHeader24(
+                      'เงื่อนไขและข้อตกลงการใช้บริการ',
                     ),
                     SizedBox(height: 20),
                     Divider(thickness: 2),
-                    Text(
+                    TextWidget.buildSection18(
                       '1. ข้อมูลหอพักที่ถูกต้อง',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      '   1.1 ผู้ใช้จะต้องให้ข้อมูลเกี่ยวกับหอพักที่ถูกต้องและเป็นปัจจุบัน เช่น ชื่อหอพัก ที่อยู่หอพัก หมายเลขติดต่อ และเอกสารหลักฐานที่ยืนยันว่าผู้ใช้เป็นผู้ดูแลหอพักหรือได้รับอนุญาตในการจัดการหอพักนั้นๆ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '   1.2 ผู้ใช้ต้องรับรองว่าข้อมูลทั้งหมดที่ให้เป็นความจริงและไม่ได้มีเจตนาหลอกลวงหรือปกปิดข้อมูลที่สำคัญ',
-                      style: TextStyle(fontSize: 16),
+                    TextWidget.buildSection18(
+                      '  1.1 ผู้ใช้จะต้องให้ข้อมูลเกี่ยวกับหอพักที่ถูกต้องและเป็นปัจจุบัน เช่น ชื่อหอพัก ที่อยู่หอพัก หมายเลขติดต่อ และเอกสารหลักฐานที่ยืนยันว่าผู้ใช้เป็นผู้ดูแลหอพักหรือได้รับอนุญาตในการจัดการหอพักนั้นๆ \n'
+                      '  1.2 ผู้ใช้ต้องรับรองว่าข้อมูลทั้งหมดที่ให้เป็นความจริงและไม่ได้มีเจตนาหลอกลวงหรือปกปิดข้อมูลที่สำคัญ'
+                      ,
                     ),
                     SizedBox(height: 20),
-                    Text(
+                    TextWidget.buildSection18(
                       '2. การตรวจสอบข้อมูล',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      '   2.1 บริษัทมีสิทธิ์ในการตรวจสอบความถูกต้องของข้อมูลที่ผู้ใช้ให้มา โดยอาจมีการตรวจสอบเอกสารหรือการติดต่อสอบถามเพิ่มเติมกับหน่วยงานที่เกี่ยวข้อง',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '   2.2 หากพบว่ามีการให้ข้อมูลที่ไม่ถูกต้องหรือเป็นเท็จ บริษัทมีสิทธิ์ในการระงับบัญชีหอพักของผู้ใช้และดำเนินการตามกฏหมายที่เกี่ยวข้อง',
-                      style: TextStyle(fontSize: 16),
+                    TextWidget.buildSection18(
+                      '   2.1 บริษัทมีสิทธิ์ในการตรวจสอบความถูกต้องของข้อมูลที่ผู้ใช้ให้มา โดยอาจมีการตรวจสอบเอกสารหรือการติดต่อสอบถามเพิ่มเติมกับหน่วยงานที่เกี่ยวข้อง\n'
+                      '   2.2 หากพบว่ามีการให้ข้อมูลที่ไม่ถูกต้องหรือเป็นเท็จ บริษัทมีสิทธิ์ในการระงับบัญชีหอพักของผู้ใช้และดำเนินการตามกฏหมายที่เกี่ยวข้อง'
+                      ,
                     ),
                     SizedBox(height: 20),
-                    Text(
+                    TextWidget.buildSection18(
                       '3. ข้อกำหนดทางกฎหมาย',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      '   3.1 ผู้ใช้จะต้องปฏิบัติตามกฎหมายและข้อบังคับที่เกี่ยวข้องกับการจัดการหอพัก รวมถึงกฎหมายท้องถิ่นที่เกี่ยวกับการประกอบกิจการหอพัก',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '   3.2 หากพบว่าผู้ใช้ให้ข้อมูลเท็จหรือหลอกลวง บริษัทมีสิทธิ์ที่จะดำเนินการทางกฎหมายเพื่อฟ้องร้องผู้ใช้ในฐานความผิดการให้ข้อมูลอันเป็นเท็จต่อเจ้าพนักงานตามมาตรา 137 ประมวลกฎหมายอาญา ซึ่งมีโทษจำคุกไม่เกินหกเดือน หรือปรับไม่เกินหนึ่งหมื่นบาท หรือทั้งจำทั้งปรับ',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '   3.3 นอกจากนี้ บริษัทอาจดำเนินคดีเพื่อเรียกร้องค่าเสียหายที่เกิดขึ้นจากการกระทำดังกล่าว',
-                      style: TextStyle(fontSize: 16),
+                    TextWidget.buildSubSection16(
+                      '   3.1 ผู้ใช้จะต้องปฏิบัติตามกฎหมายและข้อบังคับที่เกี่ยวข้องกับการจัดการหอพัก รวมถึงกฎหมายท้องถิ่นที่เกี่ยวกับการประกอบกิจการหอพัก \n'
+                      '   3.2 หากพบว่าผู้ใช้ให้ข้อมูลเท็จหรือหลอกลวง บริษัทมีสิทธิ์ที่จะดำเนินการทางกฎหมายเพื่อฟ้องร้องผู้ใช้ในฐานความผิดการให้ข้อมูลอันเป็นเท็จต่อเจ้าพนักงานตามมาตรา 137 ประมวลกฎหมายอาญา ซึ่งมีโทษจำคุกไม่เกินหกเดือน หรือปรับไม่เกินหนึ่งหมื่นบาท หรือทั้งจำทั้งปรับ \n'
+                      '   3.3 นอกจากนี้ บริษัทอาจดำเนินคดีเพื่อเรียกร้องค่าเสียหายที่เกิดขึ้นจากการกระทำดังกล่าว'
+                      ,
                     ),
                     SizedBox(height: 20),
-                    Text(
+                    TextWidget.buildSection18(
                       '4. การยกเลิกหรือระงับบัญชี',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      '   4.1 บริษัทสงวนสิทธิ์ในการยกเลิกหรือระงับบัญชีหอพักของผู้ใช้ทันทีหากพบว่าผู้ใช้ละเมิดเงื่อนไขและข้อกำหนดเหล่านี้',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Text(
-                      '   4.2 การยกเลิกหรือระงับบัญชีจะส่งผลให้ผู้ใช้ไม่สามารถเข้าถึงบริการที่เกี่ยวข้องทั้งหมด และข้อมูลที่เกี่ยวข้องกับบัญชีจะถูกระงับหรือถูกลบตามนโยบายของบริษัท',
-                      style: TextStyle(fontSize: 16),
+                    TextWidget.buildSubSection16(
+                      '   4.1 บริษัทสงวนสิทธิ์ในการยกเลิกหรือระงับบัญชีหอพักของผู้ใช้ทันทีหากพบว่าผู้ใช้ละเมิดเงื่อนไขและข้อกำหนดเหล่านี้\n'
+                      '   4.2 การยกเลิกหรือระงับบัญชีจะส่งผลให้ผู้ใช้ไม่สามารถเข้าถึงบริการที่เกี่ยวข้องทั้งหมด และข้อมูลที่เกี่ยวข้องกับบัญชีจะถูกระงับหรือถูกลบตามนโยบายของบริษัท'
+
+                      ,
                     ),
                     SizedBox(height: 20),
-                    Text(
+                    TextWidget.buildSection18(
                       '5. การยอมรับเงื่อนไข',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
-                    Text(
+                    TextWidget.buildSubSection16(
                       '   5.1 การสมัครเปิดบัญชีหอพักถือว่าผู้ใช้ได้อ่านและยอมรับเงื่อนไขและข้อกำหนดทั้งหมดที่ระบุไว้ในเอกสารนี้',
-                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -166,7 +135,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                         vertical: 12, horizontal: 24),
                   ),
                   onPressed: () {
-                    Navigator.pop(context, true); // ส่งค่ายอมรับกลับ
+                    Navigator.pop(context, true);
                   },
                   child: const Text(
                     'ยอมรับ',

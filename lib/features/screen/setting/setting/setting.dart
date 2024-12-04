@@ -54,7 +54,7 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
             MenuItem(
-              icon: Icons.info_outline,
+              icon: Icons.brightness_4_rounded,
               text: 'theme',
               onTap: () {
                 Navigator.push(

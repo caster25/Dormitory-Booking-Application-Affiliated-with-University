@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/buttons/button_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/admin/adminscreen.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:dorm_app/features/screen/user/screen/homepage.dart';
@@ -210,19 +211,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
+                       Padding(
                         padding: EdgeInsets.all(20),
                         child: Center(
                           child: Column(
                             children: [
-                              Text('เข้าสู่ระบบ',
-                                  style: TextStyle(fontSize: 20)),
+                              TextWidget.buildHeader24('เข้าสู่ระบบ')
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      const Text('อีเมล', style: TextStyle(fontSize: 20)),
+                      TextWidget.buildSection18('อีเมล'),
                       TextFormField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -246,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 15),
-                      const Text('รหัสผ่าน', style: TextStyle(fontSize: 20)),
+                      TextWidget.buildSection18('รหัสผ่าน'),
                       TextFormField(
                         controller: passwordController,
                         obscureText: _isObscure,

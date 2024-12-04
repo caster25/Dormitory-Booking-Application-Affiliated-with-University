@@ -1,3 +1,4 @@
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widget_nitification/notification_owner.dart';
 import 'package:dorm_app/features/screen/user/screen/homepage.dart';
@@ -8,7 +9,7 @@ import 'package:flutter/material.dart';
 late User _currentUser;
 
 // กำหนดสีและธีมเริ่มต้น
-const Color defaultBackgroundColor = Color.fromARGB(255, 153, 85, 240);
+const Color defaultBackgroundColor = ColorsApp.primary01;
 const IconThemeData defaultIconTheme = IconThemeData(color: Colors.black);
 
 AppBar buildAppBar({

@@ -1,3 +1,4 @@
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -159,14 +160,14 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: notification['type'] == 'booking'
-                                  ? Colors.green // สีสำหรับการจอง
-                                  : Colors.red, // สีสำหรับการยกเลิก
+                                  ? ColorsApp.green // สีสำหรับการจอง
+                                  : ColorsApp.red, // สีสำหรับการยกเลิก
                             ),
                           ),
                           const SizedBox(height: 10),
                           Row(
                             children: [
-                              const Icon(Icons.home, color: Colors.blueAccent),
+                              const Icon(Icons.home, color: ColorsApp.blue),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -179,7 +180,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                           const SizedBox(height: 5),
                           Row(
                             children: [
-                              const Icon(Icons.person, color: Colors.green),
+                              const Icon(Icons.person, color: ColorsApp.green),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -193,7 +194,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                           Row(
                             children: [
                               const Icon(Icons.access_time,
-                                  color: Colors.orange),
+                                  color: ColorsApp.orange),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(

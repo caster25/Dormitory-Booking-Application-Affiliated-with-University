@@ -2,6 +2,7 @@
 
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/buttons/button_widget.dart';
+import 'package:dorm_app/features/screen/user/screen/homepage.dart';
 import 'package:dorm_app/features/screen/user/widgets/edit_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -72,64 +73,76 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const Homepage()),
+          (route) => false,
+        );
+        return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        appBar: getAppBarUserProfile(title: '', context: context),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: currentUser == null
-              ? const Center(
-                  child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
-              : SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 52,
-                        backgroundImage: userData?['profilePictureURL'] != null
-                            ? NetworkImage(userData!['profilePictureURL'])
-                            : null,
-                        child: userData?['profilePictureURL'] == null
-                            ? const Icon(
-                                Icons.person,
-                                size: 52,
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+    // ignore: deprecated_member_use
+    return  WillPopScope(
+      onWillPop: _onWillPop, 
+      child: Scaffold(
+          appBar: getAppBarUserProfile(title: '', context: context),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: currentUser == null
+                ? const Center(
+                    child: CircularProgressIndicator()) // ถ้ากำลังโหลดข้อมูล
+                : SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 52,
+                          backgroundImage: userData?['profilePictureURL'] != null
+                              ? NetworkImage(userData!['profilePictureURL'])
+                              : null,
+                          child: userData?['profilePictureURL'] == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 52,
+                                  color: Colors.white,
+                                )
+                              : null,
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      ProfileInfoRow(
-                        icon: Icons.person,
-                        text: userData?['fullname'] ?? 'ไม่มีข้อมูล',
-                      ),
-                      ProfileInfoRow(
-                        icon: Icons.phone,
-                        text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
-                      ),
-                      const SizedBox(height: 32),
-                      CustomButton(
-                          label: 'แก้ไขข้อมูล',
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditUser(userId: currentUser!.uid)));
-                          })
-                    ],
+                        const SizedBox(height: 16),
+                        Text(
+                          userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ProfileInfoRow(
+                          icon: Icons.person,
+                          text: userData?['fullname'] ?? 'ไม่มีข้อมูล',
+                        ),
+                        ProfileInfoRow(
+                          icon: Icons.phone,
+                          text: userData?['numphone'] ?? 'ไม่มีเบอร์โทร',
+                        ),
+                        const SizedBox(height: 32),
+                        CustomButton(
+                            label: 'แก้ไขข้อมูล',
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditUser(userId: currentUser!.uid)));
+                            })
+                      ],
+                    ),
                   ),
-                ),
+          ),
         ),
-      );
+    );
   }
 }
 

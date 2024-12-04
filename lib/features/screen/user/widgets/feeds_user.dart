@@ -1,5 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api, unused_element
-
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:dorm_app/features/screen/user/utils/build_dorm_end.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,113 +17,6 @@ class FeedsScreen extends StatefulWidget {
 
 class _FeedsScreenState extends State<FeedsScreen> {
   List<String> favorites = []; // สร้างรายการ favorites ใน state
-
-  Widget _buildDormitoryCard(DocumentSnapshot dorm, String dormId) {
-    bool isFavorite =
-        favorites.contains(dormId); // Check if the dormitory is a favorite
-    List<dynamic> images = dorm['imageUrl'];
-    final formatNumber = NumberFormat('#,##0');
-
-    return InkWell(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return DormallDetailScreen(
-            dormId: dormId, // Pass dormId to the detail screen
-          );
-        }));
-      },
-      child: Card(
-        margin:
-            const EdgeInsets.symmetric(vertical: 8.0), // Add margin for spacing
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // Card shape
-        ),
-        elevation: 7, // Add shadow to the card
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            double fontSize = constraints.maxWidth < 200
-                ? 12
-                : 14; // Adjust font size based on card width
-
-            return Column(
-              mainAxisSize:
-                  MainAxisSize.max, // Use appropriate size for the Column
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(10)),
-                  child: Container(
-                    height: 130,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          images.isNotEmpty
-                              ? images[0]
-                              : 'URL_placeholder_image',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SingleChildScrollView(
-                    // Allow scrolling if needed
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
-                                style: TextStyle(
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                                overflow: TextOverflow
-                                    .ellipsis, // Prevent text overflow
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'จำนวนห้องที่ว่าง ${dorm['availableRooms']} ห้อง',
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'จำนวนห้องทั้งหมด ${dorm['totalRooms']} ห้อง',
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                dorm['rating'] != null && dorm['rating'] > 0
-                                    ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5'
-                                    : 'ยังไม่มีการรีวิว',
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
 
   @override
   void initState() {
@@ -195,7 +88,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       options: CarouselOptions(
                         height: 350,
                         autoPlay: true,
-                        enlargeCenterPage: true,
                         viewportFraction: 0.8,
                         aspectRatio: 2.0,
                         onPageChanged: (index, reason) {},
@@ -245,44 +137,26 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                 left: 16,
                                 child: Container(
                                   padding: const EdgeInsets.all(
-                                      8), // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
-                                  color: Colors.black.withOpacity(
-                                      0.5), // เปลี่ยนสีพื้นหลังให้ทึบขึ้น
+                                      10), // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
+                                  color: Colors.white.withOpacity(
+                                      1), // เปลี่ยนสีพื้นหลังให้ทึบขึ้น
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      TextWidget.buildSubSectionBold16(
                                         '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 10.0,
-                                              color: Colors.black,
-                                              offset: Offset(2.0, 2.0),
-                                            ),
-                                          ],
-                                        ),
                                       ),
                                       const SizedBox(height: 4),
-                                      Text(
+                                      TextWidget.buildSubSection16(
                                         'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white,
-                                        ),
                                       ),
                                       const SizedBox(height: 2),
-                                      Text(
+                                      TextWidget.buildSubSection16(
                                         dorm['rating'] != null &&
                                                 dorm['rating'] > 0
                                             ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
                                             : 'ยังไม่มีการรีวิว',
-                                        style:
-                                            const TextStyle(color: Colors.red),
                                       ),
                                     ],
                                   ),
@@ -310,7 +184,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment:
                         MainAxisAlignment.start, // จัดให้อยู่กลาง
                     children: [
@@ -320,15 +194,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                         size: 24, // ขนาดของไอคอน
                       ),
                       SizedBox(width: 8), // เพิ่มระยะห่างระหว่างไอคอนกับข้อความ
-                      Text(
-                        'หอพักที่แนะนำ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      TextWidget.buildSection18(
+                        'หอพักที่แนะนำ',)
                     ],
                   ),
                 ),

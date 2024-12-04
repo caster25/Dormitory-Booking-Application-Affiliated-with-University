@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field, library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ข้อมูลบัญชี'),
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        backgroundColor: ColorsApp.primary01,
         automaticallyImplyLeading: true,
       ),
       body: FutureBuilder<UserProfile>(

@@ -1,3 +1,4 @@
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -244,7 +245,7 @@ class FullImageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 153, 85, 240),
+        backgroundColor: ColorsApp.primary01,
       ),
       body: Center(
         child: Image.network(imageUrl),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -66,9 +67,6 @@ class CardDorm extends StatelessWidget {
         elevation: 9, // Add shadow to the card
         child: LayoutBuilder(
           builder: (context, constraints) {
-            double fontSize = constraints.maxWidth < 300
-                ? 12
-                : 16; // Adjust font size based on card width
 
             return Column(
               mainAxisSize:
@@ -79,7 +77,7 @@ class CardDorm extends StatelessWidget {
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(10)),
                   child: Container(
-                    height: 130,
+                    height: 111,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: NetworkImage(
@@ -103,36 +101,26 @@ class CardDorm extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              TextWidget.buildSubSectionBold14(
                                 '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
-                                style: TextStyle(
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow
-                                    .ellipsis, // Prevent text overflow
                               ),
                               const SizedBox(height: 5),
-                              Text(
+                              TextWidget.buildSubSection12(
                                 'จำนวนห้องที่ว่าง ${dorm['availableRooms']} ห้อง',
-                                style: TextStyle(fontSize: fontSize),
                               ),
                               const SizedBox(height: 5),
-                              Text(
+                              TextWidget.buildSubSection12(
                                 'จำนวนห้องทั้งหมด ${dorm['totalRooms']} ห้อง',
-                                style: TextStyle(fontSize: fontSize),
                               ),
                               const SizedBox(height: 5),
-                              Text(
+                              TextWidget.buildSubSection12(
                                 'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                                style: TextStyle(fontSize: fontSize),
                               ),
                               const SizedBox(height: 5),
-                              Text(
+                              TextWidget.buildSubSection12(
                                 dorm['rating'] != null && dorm['rating'] > 0
                                     ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5'
                                     : 'ยังไม่มีการรีวิว',
-                                style: const TextStyle(color: Colors.red),
                               ),
                             ],
                           ),

@@ -591,7 +591,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
             const SizedBox(height: 10),
             const Padding(
               padding: EdgeInsets.all(10),
-              child: Text('รีวิว'),
+              child: Text('รีวิว', style: TextStyle(fontSize: 20),),
             ),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: reviewsData,

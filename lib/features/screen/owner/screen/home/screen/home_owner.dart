@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/index.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/profile/profile_owner.dart';
@@ -11,6 +12,7 @@ import 'package:dorm_app/features/screen/owner/screen/home/home/profile_owner.da
 import 'package:dorm_app/features/screen/user/data/src/service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Ownerhome extends StatefulWidget {
   const Ownerhome({super.key, this.title = "Home"});
@@ -47,7 +49,7 @@ class NavigationDrawer extends StatelessWidget {
   }
 
   Widget buildHeader(BuildContext context) => Container(
-        color: const Color.fromARGB(255, 153, 85, 240),
+        color: ColorsApp.primary01,
         padding: EdgeInsets.only(
           top: 24 + MediaQuery.of(context).padding.top,
           bottom: 24,
@@ -173,6 +175,7 @@ class NavigationDrawer extends StatelessWidget {
 class _OwnerhomeState extends State<Ownerhome> {
   int index = 0;
   late User _currentUser;
+   DateTime? _lastPressedAt;
 
   final List<Widget> _screens = [
     const DormitoryListScreen(),
@@ -199,7 +202,17 @@ class _OwnerhomeState extends State<Ownerhome> {
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return WillPopScope(
-      onWillPop: () async => false,
+      onWillPop: () async {
+        final now = DateTime.now();
+        if (_lastPressedAt == null || now.difference(_lastPressedAt!) > const Duration(seconds: 2)) {
+          // ถ้ากด back ครั้งแรกจะอัพเดทเวลาปัจจุบัน
+          _lastPressedAt = now;
+          // แสดงข้อความให้ผู้ใช้ยืนยันการออกจากแอป
+          _showExitDialog();
+          return false; // หยุดการออกจากแอป
+        }
+        return true; // ถ้ากด back ครั้งที่สองแล้วให้ปิดแอป
+      },
       child: Scaffold(
         appBar: index != 3
             ? getAppBar(
@@ -226,8 +239,8 @@ class _OwnerhomeState extends State<Ownerhome> {
               Icon(Icons.domain_rounded, size: 30),
               Icon(Icons.person, size: 30),
             ],
-            color: const Color.fromARGB(255, 153, 85, 240),
-            buttonBackgroundColor: const Color.fromARGB(255, 153, 85, 240),
+            color: ColorsApp.primary01,
+            buttonBackgroundColor: ColorsApp.primary01,
             backgroundColor: Colors.transparent,
             animationCurve: Curves.easeInOut,
             animationDuration: const Duration(milliseconds: 600),
@@ -240,6 +253,34 @@ class _OwnerhomeState extends State<Ownerhome> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showExitDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // ทำให้ไม่สามารถปิด dialog ได้ด้วยการแตะนอก dialog
+      builder: (context) {
+        return AlertDialog(
+          title: Text('ยืนยันการออกจากแอป'),
+          content: Text('คุณต้องการออกจากแอปหรือไม่?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog
+              },
+              child: Text('ยกเลิก'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog
+                SystemNavigator.pop(); // ปิดแอป
+              },
+              child: Text('ออกจากแอป'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

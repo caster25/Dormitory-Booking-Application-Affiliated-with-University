@@ -20,7 +20,6 @@ class FilterButton extends StatelessWidget {
       label: Text(text),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
-        backgroundColor: const Color.fromARGB(255, 224, 224, 224),
       ),
     );
   }

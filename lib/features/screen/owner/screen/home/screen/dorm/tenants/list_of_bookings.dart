@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:flutter/material.dart';
@@ -396,7 +397,7 @@ class ListOfBookings extends StatelessWidget {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          Colors.green, // สีปุ่มยืนยัน
+                                          ColorsApp.green, // สีปุ่มยืนยัน
                                     ),
                                     child: const Text('ยืนยันการเข้าหอพัก'),
                                   ),
@@ -407,7 +408,7 @@ class ListOfBookings extends StatelessWidget {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          Colors.red, // สีปุ่มปฏิเสธ
+                                          ColorsApp.red, // สีปุ่มปฏิเสธ
                                     ),
                                     child: const Text('ปฏิเสธการจอง'),
                                   ),
@@ -417,7 +418,7 @@ class ListOfBookings extends StatelessWidget {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                          Colors.blue, // สีปุ่มสนทนา
+                                          ColorsApp.blue, // สีปุ่มสนทนา
                                     ),
                                     child: const Text('เปิดการสนทนา'),
                                   ),
