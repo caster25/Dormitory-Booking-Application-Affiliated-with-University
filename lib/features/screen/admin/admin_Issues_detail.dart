@@ -109,9 +109,7 @@ class ImageViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Image Viewer'),
-      ),
+      appBar: buildAppBar(title: 'Image Viewer', context: context),
       body: PhotoViewGallery.builder(
         itemCount: images.length,
         builder: (context, index) {

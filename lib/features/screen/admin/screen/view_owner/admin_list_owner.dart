@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/admin/screen/detail/admin_list_detail.dart';
 import 'package:flutter/material.dart';
 
@@ -8,10 +9,7 @@ class OwnerListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Owner List'),
-        centerTitle: true,
-      ),
+      appBar: buildAppBar(title: 'Owner List', context: context),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')

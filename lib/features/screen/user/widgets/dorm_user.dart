@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:dorm_app/features/screen/user/utils/filter_button.dart';
@@ -50,7 +51,7 @@ class _DormScreenState extends State<DormScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: Colors.purple,
+          color: ColorsApp.primary01,
           width: 2.0,
         ),
       ),
@@ -59,7 +60,7 @@ class _DormScreenState extends State<DormScreen> {
         decoration: InputDecoration(
           hintText: 'ค้นหาหอพัก',
           border: InputBorder.none,
-          prefixIcon: const Icon(Icons.search, color: Colors.purple),
+          prefixIcon: const Icon(Icons.search, color: ColorsApp.primary01),
           suffixIcon: isSearching
               ? IconButton(
                   icon: const Icon(Icons.clear, color: Colors.grey),
@@ -68,7 +69,7 @@ class _DormScreenState extends State<DormScreen> {
                       isSearching = false;
                       searchController.clear();
                       searchQuery = '';
-                      filteredDormitories = dormitories; // รีเซ็ตการกรอง
+                      filteredDormitories = dormitories; 
                     });
                   },
                 )
