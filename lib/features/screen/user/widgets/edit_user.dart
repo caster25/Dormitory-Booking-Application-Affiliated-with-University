@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/buttons/button_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/homepage.dart';
 import 'package:flutter/material.dart';
 
@@ -46,22 +47,22 @@ class _EditUserState extends State<EditUser> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('ยืนยันการเปลี่ยนแปลงข้อมูล'),
+          title: TextWidget.buildHeader24('ยืนยันการเปลี่ยนแปลงข้อมูล'),
           content:
-              const Text('คุณแน่ใจว่าต้องการบันทึกการเปลี่ยนแปลงข้อมูลนี้?'),
+              TextWidget.buildSubSection14('คุณแน่ใจว่าต้องการบันทึกการเปลี่ยนแปลงข้อมูลนี้?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด dialog
                 _updateUserData();
               },
-              child: const Text('ใช่'),
+              child: TextWidget.buildSection16('ใช่'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด dialog
               },
-              child: const Text('ไม่'),
+              child: TextWidget.buildSection16('ไม่'),
             ),
           ],
         );
@@ -70,27 +71,57 @@ class _EditUserState extends State<EditUser> {
   }
 
   Future<void> _updateUserData() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .update({
-      'username': nameController.text,
-      'fullname': fullNameController.text,
-      'numphone': phoneController.text,
-    }).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ข้อมูลได้รับการอัปเดตแล้ว')),
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .update({
+        'username': nameController.text,
+        'fullname': fullNameController.text,
+        'numphone': phoneController.text,
+      });
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title:  TextWidget.buildHeader24('สำเร็จ'),
+            content:  TextWidget.buildSection16('ข้อมูลได้รับการอัปเดตแล้ว'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // ปิด Dialog
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Homepage()),
+                    (route) => false,
+                  );
+                },
+                child: TextWidget.buildSubSection16('ตกลง'),
+              ),
+            ],
+          );
+        },
       );
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const Homepage()),
-        (route) => false,
+    } catch (error) {
+      // แสดง Popup Dialog เมื่อเกิดข้อผิดพลาด
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('ข้อผิดพลาด'),
+            content: Text('เกิดข้อผิดพลาด: $error'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // ปิด Dialog
+                },
+                child: const Text('ตกลง'),
+              ),
+            ],
+          );
+        },
       );
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาด: $error')),
-      );
-    });
+    }
   }
 
   @override
@@ -111,7 +142,7 @@ class _EditUserState extends State<EditUser> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('ชื่อโปรไฟล์', style: TextStyle(fontSize: 20)),
+              TextWidget.buildSubSectionBold20('ชื่อโปรไฟล์'),
               const SizedBox(height: 10),
               TextFormField(
                 controller: nameController,
@@ -128,11 +159,10 @@ class _EditUserState extends State<EditUser> {
                     borderSide: const BorderSide(color: Colors.blue),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
+              TextWidget.buildSubSectionBold20('ชื่อ-นามสกุล'),
               const SizedBox(height: 10),
               TextFormField(
                 controller: fullNameController,
@@ -149,11 +179,10 @@ class _EditUserState extends State<EditUser> {
                     borderSide: const BorderSide(color: Colors.blue),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
+              TextWidget.buildSubSectionBold20('เบอร์โทร'),
               const SizedBox(height: 10),
               TextFormField(
                 controller: phoneController,
@@ -170,7 +199,6 @@ class _EditUserState extends State<EditUser> {
                     borderSide: const BorderSide(color: Colors.blue),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 30),

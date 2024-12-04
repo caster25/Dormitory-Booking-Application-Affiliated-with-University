@@ -1,5 +1,6 @@
 import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -81,43 +82,39 @@ class _DormReviewState extends State<DormReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      TextWidget.buildHeader24(
                         'ชื่อหอพัก: ${widget.dormitory['name']}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                       const SizedBox(height: 10),
-                      Text('ที่อยู่: ${widget.dormitory['address']}'),
+                      TextWidget.buildSubSection16('ที่อยู่: ${widget.dormitory['address']}'),
                       const SizedBox(height: 10),
-                      Text(
+                      TextWidget.buildSubSection16(
                           'จำนวนห้องว่าง: ${widget.dormitory['availableRooms']}'),
                       const SizedBox(height: 10),
-                      Text('ประเภทหอพัก: ${widget.dormitory['dormType']}'),
+                      TextWidget.buildSubSection16('ประเภทหอพัก: ${widget.dormitory['dormType']}'),
                       const SizedBox(height: 10),
-                      Text(
+                      TextWidget.buildSubSection16(
                           'ราคาห้อง: ${widget.dormitory['price']} บาทต่อเดือน'),
                       const SizedBox(height: 10),
-                      Text(
+                      TextWidget.buildSubSection16(
                           'ค่าไฟต่อหน่วย: ${widget.dormitory['electricityRate']} บาท'),
                       const SizedBox(height: 10),
-                      Text(
+                      TextWidget.buildSubSection16(
                           'ค่าอัตราน้ำต่อหน่วย: ${widget.dormitory['waterRate']} บาท'),
                       const SizedBox(height: 10),
-                      Text(
+                      TextWidget.buildSubSection16(
                           'เงินมัดจำ: ${widget.dormitory['securityDeposit']} บาท'),
                       const SizedBox(height: 10),
-                      Text('อุปกรณ์ในห้อง: ${widget.dormitory['equipment']}'),
+                      TextWidget.buildSubSection16('อุปกรณ์ในห้อง: ${widget.dormitory['equipment']}'),
                       const SizedBox(height: 10),
-                      Text('ผู้เข้าพัก: ${widget.dormitory['occupants']} คน'),
+                      TextWidget.buildSubSection16('ผู้เข้าพัก: ${widget.dormitory['occupants']} คน'),
                       const SizedBox(height: 10),
-                      Text('กฏของหอพัก: ${widget.dormitory['rule']} คน'),
+                      TextWidget.buildSubSection16('กฏของหอพัก: ${widget.dormitory['rule']} คน'),
                       const SizedBox(height: 10),
-                      Text(
+                      TextWidget.buildSubSection16(
                           'จำนวนห้องทั้งหมด: ${widget.dormitory['totalRooms']}'),
                       const SizedBox(height: 10),
-                      const Text('รูปภาพ:'),
+                      TextWidget.buildHeader24('รูปภาพ:'),
                       const SizedBox(height: 10),
                       SizedBox(
                         height: 200,
@@ -157,10 +154,8 @@ class _DormReviewState extends State<DormReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      TextWidget.buildHeader24(
                         'รีวิวหอพัก: คะแนน ${widget.dormitory['rating'].toDouble().toStringAsFixed(1).replaceAll('.0', '')}',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder<Map<String, String>>(
@@ -204,15 +199,15 @@ class _DormReviewState extends State<DormReview> {
                                     elevation: 2,
                                     margin: const EdgeInsets.only(top: 10),
                                     child: ListTile(
-                                      title: Text('ผู้ใช้: $userName'),
+                                      title: TextWidget.buildSection16('ผู้ใช้: $userName'),
                                       subtitle: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text('คะแนน: ${review['rating']}'),
-                                          Text(
+                                           TextWidget.buildSection16('คะแนน: ${review['rating']}'),
+                                           TextWidget.buildSection16(
                                               'รีวิว: ${review['reviewText']}'),
-                                          Text(
+                                           TextWidget.buildSection16(
                                               'วันที่: ${review['timestamp']}'),
                                         ],
                                       ),

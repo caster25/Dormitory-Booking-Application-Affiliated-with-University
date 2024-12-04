@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, prefer_final_fields
 
 import 'package:dorm_app/common/res/colors.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -105,10 +106,7 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
   Widget build(BuildContext context) {
     final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: ColorsApp.primary01,
-        title: const Text('ผู้เช่า'), // แสดงชื่อหอพัก
-      ),
+      appBar: buildAppBar(title: 'ผู้เช่า', context: context),
       body: Builder(builder: (context) {
         return Column(
           children: [
@@ -220,7 +218,6 @@ class _OwnerChatScreenState extends State<OwnerChatScreen> {
                       decoration: InputDecoration(
                         labelText: 'Send a message...',
                         filled: true,
-                        fillColor: Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
                           borderSide: BorderSide.none,

@@ -138,8 +138,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(
                                       10), // เพิ่ม padding เพื่อให้ข้อความไม่ติดขอบ
-                                  color: Colors.white.withOpacity(
-                                      1), // เปลี่ยนสีพื้นหลังให้ทึบขึ้น
+                                  color: Colors.black.withOpacity(
+                                      0.6), // เปลี่ยนสีพื้นหลังให้ทึบขึ้น
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -152,7 +152,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                         'ราคา: ${formatNumber.format(dorm['price'])} บาท',
                                       ),
                                       const SizedBox(height: 2),
-                                      TextWidget.buildSubSection16(
+                                      TextWidget.buildSubSectionRed16(
                                         dorm['rating'] != null &&
                                                 dorm['rating'] > 0
                                             ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
@@ -168,8 +168,8 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       },
                     );
                   } else {
-                    return const Center(
-                        child: Text("No dormitories available."));
+                    return Center(
+                        child: TextWidget.buildSection16("No dormitories available."));
                   }
                 },
               ),

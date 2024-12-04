@@ -1,3 +1,4 @@
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:flutter/material.dart';
 
 class FilterButton extends StatelessWidget {
@@ -17,9 +18,8 @@ class FilterButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon),
-      label: Text(text),
+      label: TextWidget.buildSection18(text),
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black,
       ),
     );
   }

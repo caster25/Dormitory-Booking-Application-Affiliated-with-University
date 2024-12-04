@@ -84,7 +84,7 @@ class _LikeScreenState extends State<LikeScreen> {
     return Scaffold(
       appBar: buildAppBar(title: 'หอพักที่ถูกใจ', context: context),
       body: likedDorms.isEmpty
-          ? const Center(child: Text('ไม่มีหอพักที่ถูกใจ'))
+          ? Center(child: TextWidget.buildHeader24('ไม่มีหอพักที่ถูกใจ'))
           : ListView.builder(
               itemCount: likedDorms.length,
               itemBuilder: (context, index) {
@@ -130,14 +130,13 @@ class _LikeScreenState extends State<LikeScreen> {
                             crossAxisAlignment: CrossAxisAlignment
                                 .start,
                             children: [
-                              Text(
+                              TextWidget.buildSection16(
                                 'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม',
                               ),
-                              Text(
+                              TextWidget.buildSubSectionRed16(
                                 dorm['rating'] != null && dorm['rating'] > 0
                                     ? 'คะแนน: ${dorm['rating'] % 1 == 0 ? dorm['rating'].toInt() : dorm['rating'].toStringAsFixed(1)}/5'
                                     : 'ยังไม่มีการรีวิว',
-                                style: const TextStyle(color: Colors.red),
                               ),
                             ],
                           ),

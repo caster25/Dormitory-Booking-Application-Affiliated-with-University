@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/model/Dormitory.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/details_dorm.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-class DormitoryListEditScreen extends StatelessWidget {
-  const DormitoryListEditScreen({super.key});
+class DormitoryListOwnerScreen extends StatelessWidget {
+  const DormitoryListOwnerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -92,19 +93,15 @@ class DormitoryListEditScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            TextWidget.buildSection16(
                               '${dormitory.name} (${dormitory.dormType})',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 16),
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            TextWidget.buildSubSection14(
                               'ราคา: ฿${formatNumber.format(dormitory.price)} บาท/เทอม',
-                              style: const TextStyle(fontSize: 14),
                             ),
-                            Text(
+                            TextWidget.buildSubSection14(
                               'ห้องว่าง: ${dormitory.availableRooms} ห้อง',
-                              style: const TextStyle(fontSize: 14),
                             ),
                           ],
                         ),

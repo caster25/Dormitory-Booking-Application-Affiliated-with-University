@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:dorm_app/components/dialogs/card_widget.dart';
 import 'package:dorm_app/model/Userprofile.dart';
-import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_list_edit.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_list_owner.dart';
 import 'package:dorm_app/features/screen/setting/setting/setting.dart';
 import 'package:dorm_app/features/screen/setting/submitIssue.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -227,7 +227,7 @@ class _ProfileownerState extends State<Profileowner> {
                   CardWidget(
                       title: 'รายละเอียดหอพัก',
                       leadingIcon: Icon(Icons.info_outline),
-                      nextScreen: DormitoryListEditScreen()),
+                      nextScreen: DormitoryListOwnerScreen()),
 
                   CardWidget(
                       title: 'การตั้งค่า',

@@ -3,6 +3,7 @@
 
 import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -131,7 +132,7 @@ class ListOfBookings extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('ยืนยันการจอง'),
-        content: const Text('คุณแน่ใจว่าต้องการจองหอพักนี้หรือไม่?'),
+        content: const Text('คุณแน่ใจว่าต้องการรับผู้เช่ารายนี้หรือไม่?'),
         actions: [
           TextButton(
             onPressed: () {
@@ -241,7 +242,7 @@ class ListOfBookings extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('ยืนยันการปฏิเสธการจอง'),
-        content: const Text('คุณแน่ใจว่าต้องการปฏิเสธการจองนี้หรือไม่?'),
+        content: const Text('คุณแน่ใจว่าต้องการปฏิเสธผู้เช่ารายนี้หรือไม่?'),
         actions: [
           TextButton(
             onPressed: () {
@@ -369,22 +370,17 @@ class ListOfBookings extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              TextWidget.buildHeader24(
                                 booking['username'] ?? 'ไม่มีชื่อ',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                
                               ),
                               const SizedBox(height: 5),
-                              Text(
+                              TextWidget.buildSubSection14(
                                 'อีเมล: ${booking['email'] ?? 'ไม่มีอีเมล'}',
-                                style: const TextStyle(fontSize: 14),
                               ),
                               const SizedBox(height: 5),
-                              Text(
+                              TextWidget.buildSubSection14(
                                 'เบอร์โทรศัพท์: ${booking['numphone'] ?? 'ไม่มีเบอร์'}',
-                                style: const TextStyle(fontSize: 14),
                               ),
                               const SizedBox(height: 10),
                               Wrap(
@@ -399,7 +395,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           ColorsApp.green, // สีปุ่มยืนยัน
                                     ),
-                                    child: const Text('ยืนยันการเข้าหอพัก'),
+                                    child: TextWidget.buildSubSection14('ยืนยันการเข้าหอพัก'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -410,7 +406,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           ColorsApp.red, // สีปุ่มปฏิเสธ
                                     ),
-                                    child: const Text('ปฏิเสธการจอง'),
+                                    child: TextWidget.buildSubSection14('ปฏิเสธการจอง'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -420,7 +416,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           ColorsApp.blue, // สีปุ่มสนทนา
                                     ),
-                                    child: const Text('เปิดการสนทนา'),
+                                    child: TextWidget.buildSubSection14('เปิดการสนทนา'),
                                   ),
                                 ],
                               ),

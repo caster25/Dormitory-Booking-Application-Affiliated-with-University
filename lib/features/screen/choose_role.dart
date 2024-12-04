@@ -1,5 +1,6 @@
 
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/owner/screen/auth/register_owner.dart';
 import 'package:dorm_app/features/screen/user/screen/register_user.dart';
 import 'package:flutter/material.dart';
@@ -32,9 +33,8 @@ class RoleScreen extends StatelessWidget {
                       ));
                     },
                     icon: const Icon(Icons.person),
-                    label: const Text(
+                    label: TextWidget.buildSection16(
                       'ผู้ใช้งานทั่วไป',
-                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                 ),
@@ -51,9 +51,8 @@ class RoleScreen extends StatelessWidget {
                       ));
                     },
                     icon: const Icon(Icons.business),
-                    label: const Text(
+                    label: TextWidget.buildSection16(
                       'ผู้ให้บริการหอพัก',
-                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                 ),

@@ -1,4 +1,5 @@
 import 'package:dorm_app/components/buttons/button_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/login.dart';
 import 'package:dorm_app/features/screen/choose_role.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
@@ -32,13 +33,8 @@ class IndexScreen extends StatelessWidget {
                 backgroundImage: AssetImage('assets/images/dorm/1 (1).jpg'),
               ),
               const SizedBox(height: 20),
-              const Text(
+              TextWidget.buildSubSectionBold36(
                 "AccommoEase",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple),
               ),
               const SizedBox(height: 40),
               ButtonWidget(

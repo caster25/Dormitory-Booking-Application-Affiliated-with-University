@@ -2,6 +2,7 @@
 
 import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_owner.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -273,13 +274,11 @@ class ListOfTenants extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              TextWidget.buildSubSection18(
                                 '${tenant['fullname']}',
-                                style: const TextStyle(fontSize: 18),
                               ),
-                              Text(
+                              TextWidget.buildSubSection14(
                                 tenant['email'],
-                                style: const TextStyle(color: ColorsApp.grey),
                               ),
                               const SizedBox(height: 5),
                               Row(

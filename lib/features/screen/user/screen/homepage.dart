@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/index.dart';
 import 'package:dorm_app/features/screen/user/screen/profile.dart';
 import 'package:dorm_app/features/screen/user/widgets/dorm_user.dart';
@@ -80,13 +81,11 @@ class NavigationDrawer extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  TextWidget.buildHeader24(
                     userData['username'] ?? 'User Name',
-                    style: const TextStyle(fontSize: 28, color: Colors.white),
                   ),
-                  Text(
+                  TextWidget.buildSection16(
                     user.email ?? 'user@example.com',
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ],
               );
@@ -126,13 +125,13 @@ class NavigationDrawer extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('ยืนยันการออกจากระบบ'),
-                    content: const Text('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
+                    title: TextWidget.buildSection16('ยืนยันการออกจากระบบ'),
+                    content: TextWidget.buildSection16('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
                     actions: <Widget>[
                       // ปุ่มยกเลิก
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('ยกเลิก'),
+                        child: TextWidget.buildSection16('ยกเลิก'),
                       ),
                       // ปุ่มยืนยันการล็อกเอาต์
                       TextButton(
@@ -154,7 +153,7 @@ class NavigationDrawer extends StatelessWidget {
                             );
                           }
                         },
-                        child: const Text('ยืนยัน'),
+                        child: TextWidget.buildSection16('ยืนยัน'),
                       ),
                     ],
                   );
@@ -171,7 +170,7 @@ class NavigationDrawer extends StatelessWidget {
       required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(text),
+      title: TextWidget.buildSection16(text),
       onTap: onTap,
     );
   }
@@ -279,21 +278,21 @@ class _HomepageState extends State<Homepage> {
       barrierDismissible: false, // ทำให้ไม่สามารถปิด dialog ได้ด้วยการแตะนอก dialog
       builder: (context) {
         return AlertDialog(
-          title: Text('ยืนยันการออกจากแอป'),
-          content: Text('คุณต้องการออกจากแอปหรือไม่?'),
+          title: TextWidget.buildSection16('ยืนยันการออกจากแอป'),
+          content: TextWidget.buildSection16('คุณต้องการออกจากแอปหรือไม่?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด Dialog
               },
-              child: Text('ยกเลิก'),
+              child: TextWidget.buildSection16('ยกเลิก'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด Dialog
                 SystemNavigator.pop(); // ปิดแอป
               },
-              child: Text('ออกจากแอป'),
+              child: TextWidget.buildSection16('ออกจากแอป'),
             ),
           ],
         );

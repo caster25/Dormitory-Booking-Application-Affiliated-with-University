@@ -82,7 +82,7 @@ class _ProfileOwnerState extends State<ProfileOwner> {
     return  WillPopScope(
       onWillPop: _onWillPop, 
       child: Scaffold(
-          appBar: getAppBarOwnerProfile(title: '', context: context),
+          appBar: getAppBarOwnerProfile(title: 'ข้อมูลส่วนตัว', context: context),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: currentUser == null
@@ -104,7 +104,6 @@ class _ProfileOwnerState extends State<ProfileOwner> {
                             ? const Icon(
                                 Icons.person,
                                 size: 52,
-                                color: Colors.white,
                               )
                             : null,
                       ),
@@ -127,8 +126,6 @@ class _ProfileOwnerState extends State<ProfileOwner> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color.fromARGB(255, 73, 177, 247),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

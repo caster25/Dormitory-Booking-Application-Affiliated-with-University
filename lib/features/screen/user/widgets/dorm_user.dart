@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:dorm_app/features/screen/user/utils/filter_button.dart';
 import 'package:flutter/material.dart';
@@ -334,26 +335,20 @@ class _DormScreenState extends State<DormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ชื่อและรายละเอียดหอพัก
-                  Text(
+                  TextWidget.buildSubSectionBold16(
                     '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  TextWidget.buildSubSectionRed16(
                     'ราคา ${dorm['price']} บาท/เดือน',
-                    style: const TextStyle(color: Colors.red),
                   ),
-                  Text(
+                  TextWidget.buildSubSectionRed16(
                     dorm['rating'] != null && dorm['rating'] > 0
                         ? 'คะแนน ${dorm['rating'].toStringAsFixed(1)}/5'
                         : 'ยังไม่มีการรีวิว',
-                    style: const TextStyle(color: Colors.red),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  TextWidget.buildSection16(
                     'ห้องว่าง ${dorm['availableRooms']} ห้อง',
                   ),
                   const SizedBox(height: 10),
@@ -370,7 +365,7 @@ class _DormScreenState extends State<DormScreen> {
                             ),
                           );
                         },
-                        child: const Text('ดูรายละเอียด'),
+                        child: TextWidget.buildSubSection16('ดูรายละเอียด'),
                       ),
                       IconButton(
                         icon: Icon(

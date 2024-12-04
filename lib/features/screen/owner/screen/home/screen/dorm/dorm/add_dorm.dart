@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
-import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_details_screen.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_edit_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';

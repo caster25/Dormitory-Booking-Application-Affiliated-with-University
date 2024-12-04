@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/add_dorm.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dorm_review.dart';
-import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_details_screen.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_edit_details_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -34,7 +35,7 @@ class DormitoryListScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('ยังไม่มีข้อมูลหอพัก'),
+                  TextWidget.buildHeader24('ยังไม่มีข้อมูลหอพัก'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
@@ -46,7 +47,7 @@ class DormitoryListScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text('เพิ่มหอพัก +'),
+                    child: TextWidget.buildHeader24('เพิ่มหอพัก +'),
                   ),
                 ],
               ),
@@ -62,12 +63,8 @@ class DormitoryListScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    TextWidget.buildSection18(
                       'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
@@ -130,17 +127,17 @@ class DormitoryListScreen extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 )
                               : const Icon(Icons.image, size: 50),
-                          title: Text(
+                          title: TextWidget.buildSection18(
                             '$dormName ($roomType, $dormType)',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              TextWidget.buildSection14(
                                   'ราคา: ${formatNumber.format(dormPrice)}  บาท/เทอม'),
-                              Text('ห้องทั้งหมด: $totalRooms ห้อง'),
-                              Text('ห้องว่าง: $availableRooms ห้อง'),
+                              TextWidget.buildSection14('ห้องทั้งหมด: $totalRooms ห้อง'),
+                              TextWidget.buildSection14('ห้องว่าง: $availableRooms ห้อง'),
                             ],
                           ),
                           trailing: IconButton(
@@ -150,7 +147,7 @@ class DormitoryListScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => DormitoryDetailsScreen(
+                                  builder: (context) => DormitoryEditDetailsScreen(
                                     dormitoryId: dormId,
                                     dormitory: dormitory,
                                   ),

@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/data/src/service.dart';
 import 'package:dorm_app/features/screen/user/data/src/service_dorm.dart';
 import 'package:dorm_app/features/screen/user/widgets/chat_user.dart';
@@ -204,8 +205,8 @@ class _BookDormState extends State<BookDorm> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('ยืนยันการยกเลิก'),
-          content: const Text('แน่ใจหรือไม่ว่าต้องการยกเลิกการจอง'),
+          title: TextWidget.buildHeader24('ยืนยันการยกเลิก'),
+          content: TextWidget.buildSubSection16('แน่ใจหรือไม่ว่าต้องการยกเลิกการจอง'),
           actions: <Widget>[
             TextButton(
               onPressed: () {

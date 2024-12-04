@@ -2,6 +2,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/common/res/colors.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +30,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ข้อมูลบัญชี'),
-        backgroundColor: ColorsApp.primary01,
-        automaticallyImplyLeading: true,
-      ),
+      appBar: buildAppBar(title: 'ข้อมูลบัญชี', context: context),
       body: FutureBuilder<UserProfile>(
         future: _userProfile,
         builder: (context, snapshot) {
@@ -64,9 +62,8 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                       _showPasswordChangeDialog(context);
                     },
                     icon: const Icon(Icons.lock, size: 18),
-                    label: const Text('เปลี่ยนรหัสผ่าน'),
+                    label: TextWidget.buildSubSection14('เปลี่ยนรหัสผ่าน'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 239, 239, 239),
                       minimumSize: const Size(double.infinity, 50),
                     ),
                   ),
@@ -83,13 +80,12 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        TextWidget.buildSubSectionBold16(
           label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          
         ),
-        Text(
+        TextWidget.buildSubSection16(
           value,
-          style: const TextStyle(fontSize: 16),
         ),
       ],
     );
@@ -126,7 +122,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('เปลี่ยนรหัสผ่าน'),
+          title: TextWidget.buildSubSectionBold16('เปลี่ยนรหัสผ่าน'),
           content: TextField(
             controller: _newPasswordController,
             obscureText: true,

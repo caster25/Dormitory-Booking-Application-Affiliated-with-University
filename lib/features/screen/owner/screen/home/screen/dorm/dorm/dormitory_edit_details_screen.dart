@@ -11,11 +11,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class DormitoryDetailsScreen extends StatefulWidget {
+class DormitoryEditDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> dormitory;
   final String dormitoryId;
 
-  const DormitoryDetailsScreen({
+  const DormitoryEditDetailsScreen({
     super.key,
     required this.dormitory,
     required this.dormitoryId,
@@ -26,7 +26,7 @@ class DormitoryDetailsScreen extends StatefulWidget {
   _EditDormitoryScreenState createState() => _EditDormitoryScreenState();
 }
 
-class _EditDormitoryScreenState extends State<DormitoryDetailsScreen> {
+class _EditDormitoryScreenState extends State<DormitoryEditDetailsScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();

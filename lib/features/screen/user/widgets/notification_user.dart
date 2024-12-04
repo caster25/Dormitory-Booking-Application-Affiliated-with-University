@@ -1,4 +1,5 @@
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -145,9 +146,8 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                               const Icon(Icons.home, color: Colors.blueAccent),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
+                                child: TextWidget.buildSection16(
                                   'Dormitory: ${notification['dormitoryName']}',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
@@ -158,9 +158,8 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                               const Icon(Icons.person, color: Colors.green),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
+                                child: TextWidget.buildSection16(
                                   'User: ${notification['userName']}',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
@@ -172,9 +171,8 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                                   color: Colors.orange),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
+                                child: TextWidget.buildSection16(
                                   'Time: ${_timeAgo(notification['timestamp'])}',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],

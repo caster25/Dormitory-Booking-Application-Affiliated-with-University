@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/login.dart';
 import 'package:dorm_app/features/screen/terms_and_conditions.dart';
 import 'package:dorm_app/service/auth_service.dart';
@@ -63,13 +64,12 @@ class _RegisterFormState extends State<RegisterScreen> {
       } else {
         // ผู้ใช้ไม่ได้ยอมรับเงื่อนไข
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
+          SnackBar(content: TextWidget.buildSection18('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+        SnackBar(content: TextWidget.buildSection18('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
       );
     }
   }
@@ -80,14 +80,14 @@ class _RegisterFormState extends State<RegisterScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('เกิดข้อผิดพลาด'),
-          content: Text(message),
+          title: TextWidget.buildSection18('เกิดข้อผิดพลาด'),
+          content: TextWidget.buildSection18(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('ตกลง'),
+              child: TextWidget.buildSection18('ตกลง'),
             ),
           ],
         );

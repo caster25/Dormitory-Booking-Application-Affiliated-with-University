@@ -3,11 +3,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/dialogs/card_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/model/Userprofile.dart';
 import 'package:dorm_app/features/screen/setting/setting/detail_dromuser.dart';
 import 'package:dorm_app/features/screen/setting/setting/setting.dart';
 import 'package:dorm_app/features/screen/setting/submitIssue.dart';
-import 'package:dorm_app/features/screen/user/screen/book_dorm.dart';
+import 'package:dorm_app/features/screen/user/screen/featurres/book_dorm/book_dorm.dart';
 import 'package:dorm_app/features/screen/user/widgets/like_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -86,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('ยืนยันการเปลี่ยนรูปโปรไฟล์'),
+          title: TextWidget.buildSection16('ยืนยันการเปลี่ยนรูปโปรไฟล์'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -99,12 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     )
                   : const SizedBox.shrink(),
               const SizedBox(height: 10),
-              const Text('คุณแน่ใจว่าจะเปลี่ยนรูปโปรไฟล์?'),
+              TextWidget.buildSection16('คุณแน่ใจว่าจะเปลี่ยนรูปโปรไฟล์?'),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: TextWidget.buildSection16('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog without saving
                 setState(() {
@@ -113,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ElevatedButton(
-              child: const Text('Save'),
+              child: TextWidget.buildSection16('Save'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
                 _uploadProfileImage(); // Upload the image if confirmed
@@ -208,14 +209,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            TextWidget.buildSubSectionBold16(
                               userProfile.username ?? 'Unknown User',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
                             ),
-                            Text(userProfile.fullname ?? 'No name provided'),
+                          TextWidget.buildSection18(userProfile.fullname ?? 'No name provided'),
                           ],
                         ),
                       ],

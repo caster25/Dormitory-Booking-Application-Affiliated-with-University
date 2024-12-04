@@ -33,4 +33,20 @@ class CardWidget extends StatelessWidget {
       ),
     );
   }
+
+    Widget buildTextField({
+    required TextEditingController controller,
+    required Widget label,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        label: label,
+      ),
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+    );
+  }
 }

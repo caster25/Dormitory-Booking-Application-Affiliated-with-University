@@ -1,5 +1,6 @@
 import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -170,9 +171,8 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const Icon(Icons.home, color: ColorsApp.blue),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
+                                child: TextWidget.buildSubSection16(
                                   'Dormitory: ${notification['dormitoryName']}',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
@@ -183,9 +183,8 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const Icon(Icons.person, color: ColorsApp.green),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
+                                child: TextWidget.buildSubSection16(
                                   'User: ${notification['userName']}',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],
@@ -197,9 +196,8 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                                   color: ColorsApp.orange),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(
+                                child: TextWidget.buildSubSection16(
                                   'Time: ${_timeAgo(notification['timestamp'])}',
-                                  style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                             ],

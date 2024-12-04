@@ -7,6 +7,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/data/src/service.dart';
 import 'package:dorm_app/features/screen/user/data/src/service_dorm.dart';
 import 'package:dorm_app/features/screen/user/screen/featurres/image/image_full.dart';
@@ -128,7 +129,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
       if (!dormitorySnapshot.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('หอพักไม่พบในระบบ')),
+          SnackBar(content: TextWidget.buildSection16('หอพักไม่พบในระบบ')),
         );
         return;
       }
@@ -140,14 +141,14 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('ห้องพักเต็ม'),
-            content: const Text('หอพักนี้ไม่มีห้องว่างแล้ว'),
+            title: TextWidget.buildSection14('ห้องพักเต็ม'),
+            content: TextWidget.buildSection14('หอพักนี้ไม่มีห้องว่างแล้ว'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('ตกลง'),
+                child: TextWidget.buildSection14('ตกลง'),
               ),
             ],
           ),
@@ -161,7 +162,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
 
       if (!userSnapshot.exists) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('ผู้ใช้นี้ไม่พบในระบบ')),
+          SnackBar(content: TextWidget.buildSection16('ผู้ใช้นี้ไม่พบในระบบ')),
         );
         return;
       }
@@ -177,14 +178,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('แจ้งเตือน'),
-            content: const Text('คุณมีการจองหอพักแล้วไม่สามารถจองเพิ่มได้'),
+            title: TextWidget.buildSection14('แจ้งเตือน'),
+            content: TextWidget.buildSection14(
+                'คุณมีการจองหอพักแล้วไม่สามารถจองเพิ่มได้'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('ตกลง'),
+                child: TextWidget.buildSection14('ตกลง'),
               ),
             ],
           ),
@@ -193,14 +195,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('แจ้งเตือน'),
-            content: const Text('คุณมีหอพักอยู่แล้ว ไม่สามารถทำการจองใหม่ได้'),
+            title: TextWidget.buildHeader24('แจ้งเตือน'),
+            content: TextWidget.buildSection14(
+                'คุณมีหอพักอยู่แล้ว ไม่สามารถทำการจองใหม่ได้'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('ตกลง'),
+                child: TextWidget.buildSection14('ตกลง'),
               ),
             ],
           ),
@@ -210,14 +213,14 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('จองหอพัก'),
-            content: const Text('คุณต้องการจองหอพักนี้หรือไม่?'),
+            title: TextWidget.buildHeader24('จองหอพัก'),
+            content: TextWidget.buildSection16('คุณต้องการจองหอพักนี้หรือไม่?'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close dialog if canceled
                 },
-                child: const Text('ยกเลิก'),
+                child: TextWidget.buildSection16('ยกเลิก'),
               ),
               TextButton(
                 onPressed: () async {
@@ -225,15 +228,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('การจองสำเร็จ'),
-                      content: const Text(
+                      title: TextWidget.buildSection16('การจองสำเร็จ'),
+                      content: TextWidget.buildSection16(
                           'คุณได้จองหอพักเรียบร้อยแล้ว\nรอการยืนยันจากเจ้าของหอพัก\nหรือทำการติดต่อกับเจ้าของหอพัก'),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(); // Close dialog
                           },
-                          child: const Text('ตกลง'),
+                          child: TextWidget.buildSection16('ตกลง'),
                         ),
                       ],
                     ),
@@ -263,7 +266,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                   await firestoreServiceUser.updateUserNotifications(
                       userId, dormitoryId);
                 },
-                child: const Text('ยืนยัน'),
+                child: TextWidget.buildSection16('ยืนยัน'),
               ),
             ],
           ),
@@ -273,7 +276,7 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
       // Handle errors
       print('Error booking dormitory: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('เกิดข้อผิดพลาดในการจองหอพัก')),
+        SnackBar(content: TextWidget.buildSection16('เกิดข้อผิดพลาดในการจองหอพัก')),
       );
     }
   }
@@ -283,14 +286,14 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
+        title: TextWidget.buildSection16(title),
+        content: TextWidget.buildSection16(content),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('ตกลง'),
+            child: TextWidget.buildSection16('ตกลง'),
           ),
         ],
       ),
@@ -378,105 +381,85 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Dormitory Name
-                                Text(
+                                TextWidget.buildHeader24(
                                   dormitory['name'] ?? 'ไม่มีชื่อ',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium
-                                      ?.copyWith(fontWeight: FontWeight.bold),
+                                  // style: Theme.of(context)
+                                  //     .textTheme
+                                  //     .headlineMedium
+                                  //     ?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Available rooms
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'จำนวนห้องว่าง: ${dormitory['availableRooms'] ?? 'ไม่มีข้อมูล'} ห้อง',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.grey[700]),
+
                                 ),
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'จำนวนห้องทั้งหมด: ${dormitory['totalRooms'] ?? 'ไม่มีข้อมูล'} ห้อง',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.grey[700]),
                                 ),
                                 const Divider(height: 20, thickness: 2),
 
                                 // Price per term
-                                Text(
+                                TextWidget.buildHeader24(
                                   'ราคา: ${formatNumber.format(dormitory['price'])} บาท/เทอม',
-                                   style:
-                                      Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Dormitory type
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'ประเภทหอพัก: ${dormitory['dormType'] ?? 'ไม่มีข้อมูล'}',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[600]),
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Room type
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'ประเภทห้อง: ${dormitory['roomType'] ?? 'ไม่มีข้อมูล'}',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[600]),
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Number of occupants
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'จำนวนคนพัก: ${dormitory['occupants'] ?? 'ไม่มีข้อมูล'} คน',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[600]),
                                 ),
                                 const Divider(height: 20, thickness: 2),
 
                                 // Electricity charge
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'ค่าไฟ: ${dormitory['electricityRate'] ?? 'ไม่มีข้อมูล'} บาท/หน่วย',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[700]),
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Water charge
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'ค่าน้ำ: ${dormitory['waterRate'] ?? 'ไม่มีข้อมูล'} บาท/หน่วย',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[700]),
+
                                 ),
                                 const Divider(height: 20, thickness: 2),
 
                                 // Security deposit
-                                Text(
+                                TextWidget.buildSubSection18(
                                   'ค่าประกันความเสียหาย: ${formatNumber.format(dormitory['securityDeposit'])} บาท',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[700]),
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Dormitory rules
-                                Text(
+                                TextWidget.buildHeader24(
                                   'กฎของหอพัก:',
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
+
                                 ),
-                                Text(
+                                TextWidget.buildSubSection18(
                                   dormitory['rule'] ?? 'ไม่มีข้อมูล',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[600]),
                                 ),
                                 const Divider(height: 20, thickness: 2),
 
                                 // Equipment in the room
-                                Text(
+                                TextWidget.buildHeader24(
                                   'อุปกรณ์ในห้องพัก:',
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
+
                                 ),
                                 const SizedBox(height: 5),
-                                Text(
+                                TextWidget.buildSubSection16(
                                   dormitory['equipment'] != null &&
                                           dormitory['equipment'].isNotEmpty
                                       ? dormitory['equipment']
@@ -484,14 +467,10 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                           .map((e) => '• $e')
                                           .join('\n')
                                       : 'ไม่มีข้อมูล',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[700]),
                                 ),
                                 const Divider(height: 20, thickness: 2),
-                                Text(
+                                TextWidget.buildHeader24(
                                   'ช่องทางการติดต่อ:',
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 const SizedBox(height: 8),
                                 ownerData != null
@@ -499,15 +478,13 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
+                                          TextWidget.buildSubSection16(
                                             'อีเมล: ${ownerData?['email'] ?? 'ไม่พบข้อมูล'}',
-                                            style:
-                                                const TextStyle(fontSize: 16),
+
                                           ),
-                                          Text(
+                                          TextWidget.buildSubSection16(
                                             'เบอร์โทร: ${ownerData?['numphone'] ?? 'ไม่พบข้อมูล'}',
-                                            style:
-                                                const TextStyle(fontSize: 16),
+
                                           ),
                                         ],
                                       )
@@ -529,17 +506,15 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                                       direction: Axis.horizontal,
                                     ),
                                     const SizedBox(width: 8),
-                                    Text(
+                                    TextWidget.buildSubSection18(
                                       dormitory['rating'] != null
                                           ? dormitory['rating']
                                               .toStringAsFixed(1)
                                           : '0.0',
-                                      style: const TextStyle(fontSize: 18),
                                     ),
-                                    Text(
+                                    TextWidget.buildSubSection16(
                                       ' (${dormitory['reviewCount'] ?? 0} รีวิว)',
-                                      style: const TextStyle(
-                                          fontSize: 16, color: Colors.grey),
+
                                     ),
                                   ],
                                 ),
@@ -576,11 +551,10 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
                         ),
                       ),
                     ] else ...[
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(16.0),
-                        child: Text(
+                        child: TextWidget.buildSubSectionRed16(
                           'ข้อมูลหอพักนี้ยังไม่ครบท้วน',
-                          style: TextStyle(fontSize: 18, color: Colors.red),
                         ),
                       ),
                     ],
@@ -591,7 +565,10 @@ class _DormallDetailScreenState extends State<DormallDetailScreen> {
             const SizedBox(height: 10),
             const Padding(
               padding: EdgeInsets.all(10),
-              child: Text('รีวิว', style: TextStyle(fontSize: 20),),
+              child: Text(
+                'รีวิว',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: reviewsData,

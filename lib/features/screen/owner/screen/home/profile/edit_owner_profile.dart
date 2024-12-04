@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:flutter/material.dart';
 
@@ -98,14 +99,14 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBarOwnerProfile(title: 'แก้ไขข้อมูลส่วนตัว', context: context),
+      appBar: buildAppBar(title: 'แก้ไขข้อมูลส่วนตัว', context: context),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('ชื่อโปรไฟล์', style: TextStyle(fontSize: 20)),
+              TextWidget.buildSubSectionBold20('ชื่อโปรไฟล์'),
               const SizedBox(height: 10),
               TextFormField(
                 controller: nameController,
@@ -121,11 +122,10 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                     borderSide: const BorderSide(color: Colors.blue),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('ชื่อ-นามสกุล', style: TextStyle(fontSize: 20)),
+              TextWidget.buildSubSectionBold20('ชื่อ-นามสกุล'),
               const SizedBox(height: 10),
               TextFormField(
                 controller: fullNameController,
@@ -141,11 +141,10 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                     borderSide: const BorderSide(color: Colors.blue),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('เบอร์โทร', style: TextStyle(fontSize: 20)),
+              TextWidget.buildSubSectionBold20('เบอร์โทร'),
               const SizedBox(height: 10),
               TextFormField(
                 controller: phoneController,
@@ -161,7 +160,6 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                     borderSide: const BorderSide(color: Colors.blue),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 30),

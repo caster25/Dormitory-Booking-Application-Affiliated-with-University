@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -13,46 +15,38 @@ class AdminIssueDetailScreen extends StatelessWidget {
     List<String> imageUrls = List<String>.from(issueData['images'] ?? []);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Issue Details'),
-      ),
+      appBar: buildAppBar(title: 'Issue Details', context: context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              TextWidget.buildSection18(
                 'Issue: ${issueData['issue']}',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              Text(
+              TextWidget.buildSubSection16(
                 'Description: ${issueData['description']}',
-                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
-              Text(
+              TextWidget.buildSubSection16(
                 'Submitted by: ${issueData['fullname']} (${issueData['username']})',
-                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
-              Text(
+              TextWidget.buildSubSection16(
                 'Submitted by: ${issueData['role']} ',
-                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
-              Text(
+              TextWidget.buildSubSection16(
                 'User ID: ${issueData['userId']}',
-                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 10),
-              Text(
+              TextWidget.buildSubSection16(
                 'Submitted on: ${issueData['timestamp'].toDate()}',
-                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
-              const Text('Attached Images:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              TextWidget.buildSubSection18('Attached Images:'),
               const SizedBox(height: 10),
               // Display images
               if (imageUrls.isNotEmpty)

@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, unused_field
 
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -138,7 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
         _messageController.clear();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send message: $e')),
+          SnackBar(content: TextWidget.buildSection18('Failed to send message: $e')),
         );
       }
     }
@@ -340,7 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
           return ListView(
             children: [
               ListTile(
-                title: const Text('Delete Message'),
+                title: TextWidget.buildSection18('Delete Message'),
                 onTap: () {
                   _deleteMessage(message.id); // ลบข้อความ
                   Navigator.pop(context); // ปิด Bottom Sheet
@@ -376,22 +377,21 @@ class _ChatScreenState extends State<ChatScreen> {
               .doc(messageId)
               .delete();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Message deleted')),
+            SnackBar(content: TextWidget.buildSection18('Message deleted')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('You can only delete your own messages')),
+            SnackBar(content: TextWidget.buildSection18('You can only delete your own messages')),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Message does not exist')),
+          SnackBar(content: TextWidget.buildSection18('Message does not exist')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete message: $e')),
+       SnackBar(content: TextWidget.buildSection18('Failed to delete message: $e')),
       );
     }
   }

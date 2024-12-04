@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/admin/admin_Issues_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // For date formatting
@@ -9,10 +10,7 @@ class AdminIssueListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Submitted Issues'),
-        centerTitle: true,
-      ),
+      appBar: buildAppBar(title: 'Submitted Issues', context: context),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('issues').snapshots(),
         builder: (context, snapshot) {
@@ -59,7 +57,6 @@ class AdminIssueListScreen extends StatelessWidget {
                           'Description: ${issue['description']}',
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -69,7 +66,6 @@ class AdminIssueListScreen extends StatelessWidget {
                           'Submitted by: ${issue['fullname']}',
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.black54,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -77,13 +73,12 @@ class AdminIssueListScreen extends StatelessWidget {
                         // Timestamp with icon
                         Row(
                           children: [
-                            const Icon(Icons.access_time, size: 16, color: Colors.black54),
+                            const Icon(Icons.access_time, size: 16),
                             const SizedBox(width: 4),
                             Text(
                               formattedDate,
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: Colors.black54,
                               ),
                             ),
                           ],

@@ -117,7 +117,7 @@ class CardDorm extends StatelessWidget {
                                 'ราคา: ${formatNumber.format(dorm['price'])} บาท',
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSection12(
+                              TextWidget.buildSubSectionRed12(
                                 dorm['rating'] != null && dorm['rating'] > 0
                                     ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5'
                                     : 'ยังไม่มีการรีวิว',

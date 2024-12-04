@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/widgetchat/chat_gruop_dorm.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/tenants/list_of_bookings.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/tenants/list_of_tenants.dart';
@@ -22,8 +23,7 @@ class OwnerDormListScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('dormitories')
-            .where('submittedBy',
-                isEqualTo: currentUserId)
+            .where('submittedBy', isEqualTo: currentUserId)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -75,101 +75,116 @@ class OwnerDormListScreen extends StatelessWidget {
 
               return Card(
                 margin: const EdgeInsets.all(10),
-                child: ListTile(
-                  leading: firstImageUrl != null
-                      ? Image.network(
-                          firstImageUrl,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(Icons.error, size: 50),
-                        )
-                      : const Icon(Icons.image, size: 50),
-                  title: Text(
-                    '$dormName ($roomType, $dormType)',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          'ราคา: ฿${formatNumber.format(dormPrice)} บาท/เทอม'),
-                      Text('ห้องว่าง: $availableRooms ห้อง'),
-                      Text('ห้องทั้งหมด: $totalRooms ห้อง'),
-                      Text(
-                        'ผู้เช่า: ${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน',
-                      ),
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Button to show tenants
-                      IconButton(
-                        icon: const Icon(Icons.people),
-                        tooltip: 'ผู้เช่า',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ListOfTenants(dormitoryId: dormId),
-                            ),
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.book),
-                        tooltip: 'ผู้จอง',
-                        onPressed: () {
-                          if (currentUserId != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ListOfBookings(
-                                  dormitoryId: dormId,
-                                  ownerId: currentUserId,
-                                  chatRoomId:
-                                      chatRooomId, // Use chatGroupId from dormitorytest
-                                ),
+                child: Column(
+                  children: [
+                    TextWidget.buildHeader24(
+                      '$dormName ($roomType, $dormType)',
+                    ),
+                    Column(
+                      children: [
+                        ListTile(
+                          leading: firstImageUrl != null
+                              ? Image.network(
+                                  firstImageUrl,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Icon(Icons.error, size: 50),
+                                )
+                              : const Icon(Icons.image, size: 50),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextWidget.buildSubSection14(
+                                      'ราคา: ฿${formatNumber.format(dormPrice)} บาท/เทอม'),
+                                  TextWidget.buildSubSection14(
+                                      'ห้องว่าง: $availableRooms ห้อง'),
+                                  TextWidget.buildSubSection14(
+                                      'ห้องทั้งหมด: $totalRooms ห้อง'),
+                                  TextWidget.buildSubSection14(
+                                    'ผู้เช่า: ${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน',
+                                  ),
+                                ],
                               ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('ไม่สามารถดึงข้อมูลผู้ใช้ได้')),
-                            );
-                          }
-                        },
-                      ),
-                      // Button to access the all chat screen
-                      IconButton(
-                        icon: const Icon(Icons.chat),
-                        tooltip: 'แชททั้งหมด',
-                        onPressed: () {
-                          if (currentUserId != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OwnerAllChatScreen(
-                                  ownerId: currentUserId,
-                                  chatGroupId:
-                                      chatGroupId, // Use chatGroupId from dormitory
-                                  userId: getUserId(),
-                                ),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Button to show tenants
+                              IconButton(
+                                icon: const Icon(Icons.people),
+                                tooltip: 'ผู้เช่า',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ListOfTenants(dormitoryId: dormId),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('ไม่สามารถดึงข้อมูลผู้ใช้ได้')),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                              IconButton(
+                                icon: const Icon(Icons.book),
+                                tooltip: 'ผู้จอง',
+                                onPressed: () {
+                                  if (currentUserId != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ListOfBookings(
+                                          dormitoryId: dormId,
+                                          ownerId: currentUserId,
+                                          chatRoomId: chatRooomId,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'ไม่สามารถดึงข้อมูลผู้ใช้ได้')),
+                                    );
+                                  }
+                                },
+                              ),
+                              // Button to access the all chat screen
+                              IconButton(
+                                icon: const Icon(Icons.chat),
+                                tooltip: 'แชททั้งหมด',
+                                onPressed: () {
+                                  if (currentUserId != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            OwnerAllChatScreen(
+                                          ownerId: currentUserId,
+                                          chatGroupId: chatGroupId,
+                                          userId: getUserId(),
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'ไม่สามารถดึงข้อมูลผู้ใช้ได้')),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               );
             },

@@ -1,9 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/index.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/profile/profile_owner.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_list_screen.dart';
@@ -83,13 +84,11 @@ class NavigationDrawer extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  TextWidget.buildHeader24(
                     userData['username'] ?? 'User Name',
-                    style: const TextStyle(fontSize: 28, color: Colors.white),
                   ),
-                  Text(
+                  TextWidget.buildSubSectionBold16(
                     user.email ?? 'user@example.com',
-                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ],
               );
@@ -166,7 +165,7 @@ class NavigationDrawer extends StatelessWidget {
       required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(text),
+      title: TextWidget.buildSubSectionBold16(text),
       onTap: onTap,
     );
   }
@@ -175,7 +174,7 @@ class NavigationDrawer extends StatelessWidget {
 class _OwnerhomeState extends State<Ownerhome> {
   int index = 0;
   late User _currentUser;
-   DateTime? _lastPressedAt;
+  DateTime? _lastPressedAt;
 
   final List<Widget> _screens = [
     const DormitoryListScreen(),
@@ -200,18 +199,16 @@ class _OwnerhomeState extends State<Ownerhome> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         final now = DateTime.now();
-        if (_lastPressedAt == null || now.difference(_lastPressedAt!) > const Duration(seconds: 2)) {
-          // ถ้ากด back ครั้งแรกจะอัพเดทเวลาปัจจุบัน
+        if (_lastPressedAt == null ||
+            now.difference(_lastPressedAt!) > const Duration(seconds: 2)) {
           _lastPressedAt = now;
-          // แสดงข้อความให้ผู้ใช้ยืนยันการออกจากแอป
           _showExitDialog();
-          return false; // หยุดการออกจากแอป
+          return false;
         }
-        return true; // ถ้ากด back ครั้งที่สองแล้วให้ปิดแอป
+        return true;
       },
       child: Scaffold(
         appBar: index != 3
@@ -259,7 +256,7 @@ class _OwnerhomeState extends State<Ownerhome> {
   void _showExitDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // ทำให้ไม่สามารถปิด dialog ได้ด้วยการแตะนอก dialog
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           title: Text('ยืนยันการออกจากแอป'),
@@ -267,7 +264,7 @@ class _OwnerhomeState extends State<Ownerhome> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // ปิด Dialog
+                Navigator.of(context).pop();
               },
               child: Text('ยกเลิก'),
             ),
