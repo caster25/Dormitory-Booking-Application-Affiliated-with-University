@@ -82,39 +82,39 @@ class _DormReviewState extends State<DormReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextWidget.buildHeader24(
-                        'ชื่อหอพัก: ${widget.dormitory['name']}',
+                      TextWidget.buildText(text: 
+                        'ชื่อหอพัก: ${widget.dormitory['name']}',fontSize: 18, isBold: true
                       ),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16('ที่อยู่: ${widget.dormitory['address']}'),
+                      TextWidget.buildText(text: 'ที่อยู่: ${widget.dormitory['address']}',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16(
-                          'จำนวนห้องว่าง: ${widget.dormitory['availableRooms']}'),
+                      TextWidget.buildText(text: 
+                          'จำนวนห้องว่าง: ${widget.dormitory['availableRooms']}',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16('ประเภทหอพัก: ${widget.dormitory['dormType']}'),
+                      TextWidget.buildText(text: 'ประเภทหอพัก: ${widget.dormitory['dormType']}',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16(
-                          'ราคาห้อง: ${widget.dormitory['price']} บาทต่อเดือน'),
+                      TextWidget.buildText(text: 
+                          'ราคาห้อง: ${widget.dormitory['price']} บาทต่อเดือน',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16(
-                          'ค่าไฟต่อหน่วย: ${widget.dormitory['electricityRate']} บาท'),
+                      TextWidget.buildText(text: 
+                          'ค่าไฟต่อหน่วย: ${widget.dormitory['electricityRate']} บาท',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16(
-                          'ค่าอัตราน้ำต่อหน่วย: ${widget.dormitory['waterRate']} บาท'),
+                      TextWidget.buildText(text: 
+                          'ค่าอัตราน้ำต่อหน่วย: ${widget.dormitory['waterRate']} บาท',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16(
-                          'เงินมัดจำ: ${widget.dormitory['securityDeposit']} บาท'),
+                      TextWidget.buildText(text: 
+                          'เงินมัดจำ: ${widget.dormitory['securityDeposit']} บาท',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16('อุปกรณ์ในห้อง: ${widget.dormitory['equipment']}'),
+                      TextWidget.buildText(text: 'อุปกรณ์ในห้อง: ${widget.dormitory['equipment']}',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16('ผู้เข้าพัก: ${widget.dormitory['occupants']} คน'),
+                      TextWidget.buildText(text: 'ผู้เข้าพัก: ${widget.dormitory['occupants']} คน',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16('กฏของหอพัก: ${widget.dormitory['rule']} คน'),
+                      TextWidget.buildText(text: 'กฏของหอพัก: ${widget.dormitory['rule']} คน',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildSubSection16(
-                          'จำนวนห้องทั้งหมด: ${widget.dormitory['totalRooms']}'),
+                      TextWidget.buildText(text: 
+                          'จำนวนห้องทั้งหมด: ${widget.dormitory['totalRooms']}',fontSize: 16),
                       const SizedBox(height: 10),
-                      TextWidget.buildHeader24('รูปภาพ:'),
+                      TextWidget.buildText(text: 'รูปภาพ:',fontSize: 18),
                       const SizedBox(height: 10),
                       SizedBox(
                         height: 200,
@@ -154,8 +154,8 @@ class _DormReviewState extends State<DormReview> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextWidget.buildHeader24(
-                        'รีวิวหอพัก: คะแนน ${widget.dormitory['rating'].toDouble().toStringAsFixed(1).replaceAll('.0', '')}',
+                      TextWidget.buildText(text: 
+                        'รีวิวหอพัก: คะแนน ${widget.dormitory['rating'].toDouble().toStringAsFixed(1).replaceAll('.0', '')}',fontSize: 18
                       ),
                       const SizedBox(height: 10),
                       FutureBuilder<Map<String, String>>(
@@ -199,15 +199,15 @@ class _DormReviewState extends State<DormReview> {
                                     elevation: 2,
                                     margin: const EdgeInsets.only(top: 10),
                                     child: ListTile(
-                                      title: TextWidget.buildSection16('ผู้ใช้: $userName'),
+                                      title: TextWidget.buildText(text: 'ผู้ใช้: $userName',fontSize: 16),
                                       subtitle: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                           TextWidget.buildSection16('คะแนน: ${review['rating']}'),
-                                           TextWidget.buildSection16(
+                                           TextWidget.buildText(text: 'คะแนน: ${review['rating']}'),
+                                           TextWidget.buildText(text: 
                                               'รีวิว: ${review['reviewText']}'),
-                                           TextWidget.buildSection16(
+                                           TextWidget.buildText(text: 
                                               'วันที่: ${review['timestamp']}'),
                                         ],
                                       ),

@@ -106,7 +106,7 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextWidget.buildSubSectionBold20('ชื่อโปรไฟล์'),
+              TextWidget.buildText(text: 'ชื่อโปรไฟล์',fontSize: 18),
               const SizedBox(height: 10),
               TextFormField(
                 controller: nameController,
@@ -125,7 +125,7 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextWidget.buildSubSectionBold20('ชื่อ-นามสกุล'),
+              TextWidget.buildText(text: 'ชื่อ-นามสกุล',fontSize: 18),
               const SizedBox(height: 10),
               TextFormField(
                 controller: fullNameController,
@@ -144,7 +144,7 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextWidget.buildSubSectionBold20('เบอร์โทร'),
+              TextWidget.buildText(text: 'เบอร์โทร',fontSize: 18),
               const SizedBox(height: 10),
               TextFormField(
                 controller: phoneController,

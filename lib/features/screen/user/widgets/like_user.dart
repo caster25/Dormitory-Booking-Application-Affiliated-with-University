@@ -1,6 +1,7 @@
 // ignore_for_file: collection_methods_unrelated_type
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
@@ -84,7 +85,7 @@ class _LikeScreenState extends State<LikeScreen> {
     return Scaffold(
       appBar: buildAppBar(title: 'หอพักที่ถูกใจ', context: context),
       body: likedDorms.isEmpty
-          ? Center(child: TextWidget.buildHeader24('ไม่มีหอพักที่ถูกใจ'))
+          ? Center(child: TextWidget.buildText( text: 'ไม่มีหอพักที่ถูกใจ'))
           : ListView.builder(
               itemCount: likedDorms.length,
               itemBuilder: (context, index) {
@@ -123,17 +124,17 @@ class _LikeScreenState extends State<LikeScreen> {
                           ),
                         ),
                         ListTile(
-                          title: TextWidget.buildSection18(
-                            '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                          title: TextWidget.buildText( text: 
+                            '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ', fontSize: 20
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment
                                 .start,
                             children: [
-                              TextWidget.buildSection16(
-                                'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม',
+                              TextWidget.buildText( text: 
+                                'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม', color: ColorsApp.red
                               ),
-                              TextWidget.buildSubSectionRed16(
+                              TextWidget.buildText( text: 
                                 dorm['rating'] != null && dorm['rating'] > 0
                                     ? 'คะแนน: ${dorm['rating'] % 1 == 0 ? dorm['rating'].toInt() : dorm['rating'].toStringAsFixed(1)}/5'
                                     : 'ยังไม่มีการรีวิว',

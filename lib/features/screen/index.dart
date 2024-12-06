@@ -1,3 +1,4 @@
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/buttons/button_widget.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/login.dart';
@@ -33,8 +34,11 @@ class IndexScreen extends StatelessWidget {
                 backgroundImage: AssetImage('assets/images/dorm/1 (1).jpg'),
               ),
               const SizedBox(height: 20),
-              TextWidget.buildSubSectionBold36(
-                "AccommoEase",
+              TextWidget.buildText(
+                text: "AccommoEase",
+                fontSize: 30.0,
+                isBold: true, // ระบุว่าต้องการตัวหนา
+                color: ColorsApp.primary01,
               ),
               const SizedBox(height: 40),
               ButtonWidget(
@@ -43,7 +47,9 @@ class IndexScreen extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return const LoginScreen();
                   }));
-                }, backgroundColor: Colors.purple, fontcolor: Colors.white,
+                },
+                backgroundColor: Colors.purple,
+                fontcolor: Colors.white,
               ),
               const SizedBox(height: 20),
               ButtonWidget(
@@ -52,7 +58,9 @@ class IndexScreen extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return const RoleScreen();
                   }));
-                }, backgroundColor: Colors.purple, fontcolor: Colors.white,
+                },
+                backgroundColor: Colors.purple,
+                fontcolor: Colors.white,
               ),
               const SizedBox(height: 30),
               SizedBox(

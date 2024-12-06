@@ -211,18 +211,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       Padding(
+                      Padding(
                         padding: EdgeInsets.all(20),
                         child: Center(
                           child: Column(
                             children: [
-                              TextWidget.buildHeader24('เข้าสู่ระบบ')
+                              TextWidget.buildText(
+                                  text: 'เข้าสู่ระบบ',
+                                  fontSize: 30,
+                                  isBold: true)
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 15),
-                      TextWidget.buildSection18('อีเมล'),
+                      TextWidget.buildText(text: 'อีเมล' , fontSize: 20, isBold: true),
                       TextFormField(
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
@@ -245,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: 15),
-                      TextWidget.buildSection18('รหัสผ่าน'),
+                      TextWidget.buildText(text: 'รหัสผ่าน' , fontSize: 20, isBold: true),
                       TextFormField(
                         controller: passwordController,
                         obscureText: _isObscure,
@@ -280,7 +283,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ButtonWidget(
                         label: 'เข้าสู่ระบบ',
                         onPressed: _loginFunction,
-                        backgroundColor: Colors.white, fontcolor: Colors.black,
+                        backgroundColor: Colors.white,
+                        fontcolor: Colors.black,
                       )
                     ],
                   ),

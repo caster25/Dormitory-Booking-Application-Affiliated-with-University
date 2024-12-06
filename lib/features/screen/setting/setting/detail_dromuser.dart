@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/data/src/service.dart';
@@ -165,26 +166,26 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: TextWidget.buildHeader24('รายละเอียดหอพัก: ${dormitoryData['name']}'),
+            title: TextWidget.buildText(text: 'รายละเอียดหอพัก: ${dormitoryData['name']}',fontSize: 24, isBold: true),
             content: SizedBox(
               width: double.maxFinite, // กำหนดความกว้างให้เต็มที่
               child: Column(
                 mainAxisSize: MainAxisSize.min, // ปรับให้มีขนาดตามเนื้อหา
                 children: <Widget>[
-                  TextWidget.buildSubSection16('ที่อยู่: ${dormitoryData['address']}'),
-                  TextWidget.buildSubSection16(
+                  TextWidget.buildText(text: 'ที่อยู่: ${dormitoryData['address']}'),
+                  TextWidget.buildText(text: 
                       'จำนวนห้องว่าง: ${dormitoryData['availableRooms']} ห้อง'),
-                  TextWidget.buildSubSection16('จำนวนห้องทั้งหมด: ${dormitoryData['totalRooms']} ห้อง'),
-                  TextWidget.buildSubSection16('ประเภทหอพัก: ${dormitoryData['dormType']}'),
-                  TextWidget.buildSubSection16('ราคาห้องพัก: ${dormitoryData['price']} บาท/เทอม'),
-                  TextWidget.buildSubSection16('เงินประกัน: ${dormitoryData['securityDeposit']} บาท'),
-                  TextWidget.buildSubSection16('ค่าบำรุงรักษา: ${dormitoryData['furnitureFee']} บาท'),
-                  TextWidget.buildSubSection16('ค่าไฟ: ${dormitoryData['electricityRate']} บาท/หน่วย'),
-                  TextWidget.buildSubSection16('ค่าน้ำ: ${dormitoryData['waterRate']} บาท/หน่วย'),
-                  TextWidget.buildSubSection16('ประเภทห้อง: ${dormitoryData['roomType']}'),
-                  TextWidget.buildSubSection16('จำนวนผู้อาศัย: ${dormitoryData['occupants']} คน'),
-                  TextWidget.buildSubSection16('กฎของหอพัก: ${dormitoryData['rule']}'),
-                  TextWidget.buildSubSection16('อุปกรณ์ในห้อง: ${dormitoryData['equipment']}'),
+                  TextWidget.buildText(text: 'จำนวนห้องทั้งหมด: ${dormitoryData['totalRooms']} ห้อง' ),
+                  TextWidget.buildText(text: 'ประเภทหอพัก: ${dormitoryData['dormType']}'),
+                  TextWidget.buildText(text: 'ราคาห้องพัก: ${dormitoryData['price']} บาท/เทอม'),
+                  TextWidget.buildText(text: 'เงินประกัน: ${dormitoryData['securityDeposit']} บาท'),
+                  TextWidget.buildText(text: 'ค่าบำรุงรักษา: ${dormitoryData['furnitureFee']} บาท'),
+                  TextWidget.buildText(text: 'ค่าไฟ: ${dormitoryData['electricityRate']} บาท/หน่วย'),
+                  TextWidget.buildText(text: 'ค่าน้ำ: ${dormitoryData['waterRate']} บาท/หน่วย'),
+                  TextWidget.buildText(text: 'ประเภทห้อง: ${dormitoryData['roomType']}'),
+                  TextWidget.buildText(text: 'จำนวนผู้อาศัย: ${dormitoryData['occupants']} คน'),
+                  TextWidget.buildText(text: 'กฎของหอพัก: ${dormitoryData['rule']}'),
+                  TextWidget.buildText(text: 'อุปกรณ์ในห้อง: ${dormitoryData['equipment']}'),
 
                   // ใช้ PageView เพื่อแสดงภาพทั้งหมด
                   // ignore: sized_box_for_whitespace
@@ -205,7 +206,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: TextWidget.buildSubSection16('ปิด'),
+                child: TextWidget.buildText(text: 'ปิด'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -216,7 +217,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: TextWidget.buildSubSection16('ไม่พบข้อมูลหอพัก')),
+        SnackBar(content: TextWidget.buildText(text: 'ไม่พบข้อมูลหอพัก')),
       );
     }
   }
@@ -285,7 +286,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                   // แจ้งเตือนผู้ใช้กรณีที่ยังไม่ได้กรอกข้อมูลหรือคะแนนไม่ถูกต้อง
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                        content: TextWidget.buildSubSection16('กรุณากรอกข้อความรีวิวและเลือกคะแนน')),
+                        content: TextWidget.buildText(text: 'กรุณากรอกข้อความรีวิวและเลือกคะแนน')),
                   );
                 }
               },
@@ -356,9 +357,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextWidget.buildHeader24(
-                    'หอพักปัจจุบัน',
-                    
+                  TextWidget.buildText(text: 
+                    'หอพักปัจจุบัน',fontSize: 24, isBold: true
                   ),
                   const SizedBox(height: 8),
                   currentDormitoryId != null &&
@@ -374,10 +374,10 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ListTile(
-                                      title: TextWidget.buildSubSection16(
-                                          'ชื่อหอพัก: ${_currentDormController.text} '),
+                                      title: TextWidget.buildText(text: 
+                                          'ชื่อหอพัก: ${_currentDormController.text} ' ,fontSize: 18, isBold: true),
                                       subtitle:
-                                          TextWidget.buildSubSection14('ข้อมูลหอพักปัจจุบัน'),
+                                          TextWidget.buildText(text: 'ข้อมูลหอพักปัจจุบัน'),
                                     ),
                                     const SizedBox(
                                         height:
@@ -394,7 +394,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                                 currentDormitoryId!, ownerId,
                                                 isGroupChat: false);
                                           },
-                                          child: TextWidget.buildSubSection14(
+                                          child: TextWidget.buildText(text: 
                                               'เข้าสู่การสนทนาเจ้าของหอพัก'),
                                         ),
                                         const SizedBox(
@@ -406,7 +406,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                                 currentDormitoryId!, "",
                                                 isGroupChat: true);
                                           },
-                                          child: TextWidget.buildSubSection14('เข้าสู่แชทกลุ่ม'),
+                                          child: TextWidget.buildText(text: 'เข้าสู่แชทกลุ่ม'),
                                         ),
                                       ],
                                     ),
@@ -420,7 +420,7 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                                           _showReviewDialog(
                                               currentDormitoryId!);
                                         },
-                                        child: TextWidget.buildSubSection14('รีวิวหอพัก'),
+                                        child: TextWidget.buildText(text: 'รีวิวหอพัก'),
                                       ),
                                     ),
                                   ],
@@ -441,8 +441,8 @@ class _DormitoryDetailsScreenState extends State<DormitoryDetailsScreen> {
                             ),
                           ),
                         )
-                      : TextWidget.buildSubSectionRed16(
-                          'ตอนนี้คุณไม่มีหอพัก',
+                      : TextWidget.buildText(text: 
+                          'ตอนนี้คุณไม่มีหอพัก',fontSize: 18, color: ColorsApp.red
                         ),
                 ],
               ),

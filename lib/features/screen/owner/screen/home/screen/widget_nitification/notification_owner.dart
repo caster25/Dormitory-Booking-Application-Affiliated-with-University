@@ -173,7 +173,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const Icon(Icons.home, color: ColorsApp.blue),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextWidget.buildSubSection16(
+                                child: TextWidget.buildText(text: 
                                   'Dormitory: ${notification['dormitoryName']}',
                                 ),
                               ),
@@ -185,7 +185,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                               const Icon(Icons.person, color: ColorsApp.green),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextWidget.buildSubSection16(
+                                child: TextWidget.buildText(text: 
                                   'User: ${notification['userName']}',
                                 ),
                               ),
@@ -198,7 +198,7 @@ class _NotificationOwnerScreenState extends State<NotificationOwnerScreen> {
                                   color: ColorsApp.orange),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextWidget.buildSubSection16(
+                                child: TextWidget.buildText(text: 
                                   'Time: ${_timeAgo(notification['timestamp'])}',
                                 ),
                               ),

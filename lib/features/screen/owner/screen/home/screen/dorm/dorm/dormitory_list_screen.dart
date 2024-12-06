@@ -35,7 +35,7 @@ class DormitoryListScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextWidget.buildHeader24('ยังไม่มีข้อมูลหอพัก'),
+                  TextWidget.buildText(text: 'ยังไม่มีข้อมูลหอพัก'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
@@ -47,7 +47,7 @@ class DormitoryListScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: TextWidget.buildHeader24('เพิ่มหอพัก +'),
+                    child: TextWidget.buildText(text: 'เพิ่มหอพัก +'),
                   ),
                 ],
               ),
@@ -63,8 +63,8 @@ class DormitoryListScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextWidget.buildSection18(
-                      'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',
+                    TextWidget.buildText(text: 
+                      'จำนวนหอพักที่คุณเป็นเจ้าของ: $dormitoryCount',fontSize: 18, isBold: true
                     ),
                     IconButton(
                       icon: const Icon(Icons.add),
@@ -127,17 +127,17 @@ class DormitoryListScreen extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 )
                               : const Icon(Icons.image, size: 50),
-                          title: TextWidget.buildSection18(
+                          title: TextWidget.buildText(text: 
                             '$dormName ($roomType, $dormType)',
 
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidget.buildSection14(
+                              TextWidget.buildText(text: 
                                   'ราคา: ${formatNumber.format(dormPrice)}  บาท/เทอม'),
-                              TextWidget.buildSection14('ห้องทั้งหมด: $totalRooms ห้อง'),
-                              TextWidget.buildSection14('ห้องว่าง: $availableRooms ห้อง'),
+                              TextWidget.buildText(text: 'ห้องทั้งหมด: $totalRooms ห้อง'),
+                              TextWidget.buildText(text: 'ห้องว่าง: $availableRooms ห้อง'),
                             ],
                           ),
                           trailing: IconButton(

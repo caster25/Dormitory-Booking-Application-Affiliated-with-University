@@ -274,10 +274,10 @@ class ListOfTenants extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidget.buildSubSection18(
-                                '${tenant['fullname']}',
+                              TextWidget.buildText(text: 
+                                '${tenant['fullname']}',fontSize: 18, isBold: true
                               ),
-                              TextWidget.buildSubSection14(
+                              TextWidget.buildText(text: 
                                 tenant['email'],
                               ),
                               const SizedBox(height: 5),

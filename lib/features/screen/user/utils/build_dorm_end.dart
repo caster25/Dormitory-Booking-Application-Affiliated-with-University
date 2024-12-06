@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:flutter/material.dart';
@@ -101,23 +102,23 @@ class CardDorm extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidget.buildSubSectionBold14(
-                                '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                              TextWidget.buildText( text: 
+                                '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})', fontSize: 16
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSection12(
+                              TextWidget.buildText( text: 
                                 'จำนวนห้องที่ว่าง ${dorm['availableRooms']} ห้อง',
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSection12(
+                              TextWidget.buildText( text: 
                                 'จำนวนห้องทั้งหมด ${dorm['totalRooms']} ห้อง',
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSection12(
-                                'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                              TextWidget.buildText( text: 
+                                'ราคา: ${formatNumber.format(dorm['price'])} บาท', color: ColorsApp.red
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSectionRed12(
+                              TextWidget.buildText( text: 
                                 dorm['rating'] != null && dorm['rating'] > 0
                                     ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5'
                                     : 'ยังไม่มีการรีวิว',

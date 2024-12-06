@@ -41,7 +41,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(title: 'เงื่อนไขและข้อตกลง', context: context),
+      appBar: buildAppBar(title: '', context: context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -52,59 +52,59 @@ class TermsAndConditionsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextWidget.buildHeader24(
-                      'เงื่อนไขและข้อตกลงการใช้บริการ',
-                    ),
+                    TextWidget.buildText(
+                      text:  'เงื่อนไขและข้อตกลงการใช้บริการ',  fontSize: 24, isBold: true),
+                    
                     SizedBox(height: 20),
                     Divider(thickness: 2),
-                    TextWidget.buildSection18(
-                      '1. ข้อมูลหอพักที่ถูกต้อง',
+                    TextWidget.buildText(
+                       text: '1. ข้อมูลหอพักที่ถูกต้อง',  fontSize: 20, isBold: true
                     ),
                     SizedBox(height: 10),
-                    TextWidget.buildSection18(
+                    TextWidget.buildText(text: 
                       '  1.1 ผู้ใช้จะต้องให้ข้อมูลเกี่ยวกับหอพักที่ถูกต้องและเป็นปัจจุบัน เช่น ชื่อหอพัก ที่อยู่หอพัก หมายเลขติดต่อ และเอกสารหลักฐานที่ยืนยันว่าผู้ใช้เป็นผู้ดูแลหอพักหรือได้รับอนุญาตในการจัดการหอพักนั้นๆ \n'
                       '  1.2 ผู้ใช้ต้องรับรองว่าข้อมูลทั้งหมดที่ให้เป็นความจริงและไม่ได้มีเจตนาหลอกลวงหรือปกปิดข้อมูลที่สำคัญ'
-                      ,
+                      , fontSize: 20,wrapText: true
                     ),
                     SizedBox(height: 20),
-                    TextWidget.buildSection18(
-                      '2. การตรวจสอบข้อมูล',
+                    TextWidget.buildText( text: 
+                      '2. การตรวจสอบข้อมูล',  fontSize: 20, isBold: true
                     ),
                     SizedBox(height: 10),
-                    TextWidget.buildSection18(
+                    TextWidget.buildText( text: 
                       '   2.1 บริษัทมีสิทธิ์ในการตรวจสอบความถูกต้องของข้อมูลที่ผู้ใช้ให้มา โดยอาจมีการตรวจสอบเอกสารหรือการติดต่อสอบถามเพิ่มเติมกับหน่วยงานที่เกี่ยวข้อง\n'
                       '   2.2 หากพบว่ามีการให้ข้อมูลที่ไม่ถูกต้องหรือเป็นเท็จ บริษัทมีสิทธิ์ในการระงับบัญชีหอพักของผู้ใช้และดำเนินการตามกฏหมายที่เกี่ยวข้อง'
-                      ,
+                      , fontSize: 20,wrapText: true
                     ),
                     SizedBox(height: 20),
-                    TextWidget.buildSection18(
-                      '3. ข้อกำหนดทางกฎหมาย',
+                    TextWidget.buildText( text: 
+                      '3. ข้อกำหนดทางกฎหมาย',  fontSize: 20, isBold: true
                     ),
                     SizedBox(height: 10),
-                    TextWidget.buildSubSection16(
+                    TextWidget.buildText( text: 
                       '   3.1 ผู้ใช้จะต้องปฏิบัติตามกฎหมายและข้อบังคับที่เกี่ยวข้องกับการจัดการหอพัก รวมถึงกฎหมายท้องถิ่นที่เกี่ยวกับการประกอบกิจการหอพัก \n'
                       '   3.2 หากพบว่าผู้ใช้ให้ข้อมูลเท็จหรือหลอกลวง บริษัทมีสิทธิ์ที่จะดำเนินการทางกฎหมายเพื่อฟ้องร้องผู้ใช้ในฐานความผิดการให้ข้อมูลอันเป็นเท็จต่อเจ้าพนักงานตามมาตรา 137 ประมวลกฎหมายอาญา ซึ่งมีโทษจำคุกไม่เกินหกเดือน หรือปรับไม่เกินหนึ่งหมื่นบาท หรือทั้งจำทั้งปรับ \n'
                       '   3.3 นอกจากนี้ บริษัทอาจดำเนินคดีเพื่อเรียกร้องค่าเสียหายที่เกิดขึ้นจากการกระทำดังกล่าว'
-                      ,
+                      , fontSize: 20,wrapText: true
                     ),
                     SizedBox(height: 20),
-                    TextWidget.buildSection18(
-                      '4. การยกเลิกหรือระงับบัญชี',
+                    TextWidget.buildText( text: 
+                      '4. การยกเลิกหรือระงับบัญชี',  fontSize: 20, isBold: true
                     ),
                     SizedBox(height: 10),
-                    TextWidget.buildSubSection16(
+                    TextWidget.buildText( text: 
                       '   4.1 บริษัทสงวนสิทธิ์ในการยกเลิกหรือระงับบัญชีหอพักของผู้ใช้ทันทีหากพบว่าผู้ใช้ละเมิดเงื่อนไขและข้อกำหนดเหล่านี้\n'
                       '   4.2 การยกเลิกหรือระงับบัญชีจะส่งผลให้ผู้ใช้ไม่สามารถเข้าถึงบริการที่เกี่ยวข้องทั้งหมด และข้อมูลที่เกี่ยวข้องกับบัญชีจะถูกระงับหรือถูกลบตามนโยบายของบริษัท'
 
-                      ,
+                      , fontSize: 20,wrapText: true
                     ),
                     SizedBox(height: 20),
-                    TextWidget.buildSection18(
-                      '5. การยอมรับเงื่อนไข',
+                    TextWidget.buildText( text: 
+                      '5. การยอมรับเงื่อนไข',  fontSize: 20, isBold: true
                     ),
                     SizedBox(height: 10),
-                    TextWidget.buildSubSection16(
-                      '   5.1 การสมัครเปิดบัญชีหอพักถือว่าผู้ใช้ได้อ่านและยอมรับเงื่อนไขและข้อกำหนดทั้งหมดที่ระบุไว้ในเอกสารนี้',
+                    TextWidget.buildText( text: 
+                      '   5.1 การสมัครเปิดบัญชีหอพักถือว่าผู้ใช้ได้อ่านและยอมรับเงื่อนไขและข้อกำหนดทั้งหมดที่ระบุไว้ในเอกสารนี้', fontSize: 20,wrapText: true
                     ),
                   ],
                 ),

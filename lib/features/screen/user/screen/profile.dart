@@ -87,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: TextWidget.buildSection16('ยืนยันการเปลี่ยนรูปโปรไฟล์'),
+          title: TextWidget.buildText( text: 'ยืนยันการเปลี่ยนรูปโปรไฟล์'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -100,12 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     )
                   : const SizedBox.shrink(),
               const SizedBox(height: 10),
-              TextWidget.buildSection16('คุณแน่ใจว่าจะเปลี่ยนรูปโปรไฟล์?'),
+              TextWidget.buildText( text: 'คุณแน่ใจว่าจะเปลี่ยนรูปโปรไฟล์?'),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: TextWidget.buildSection16('Cancel'),
+              child: TextWidget.buildText( text: 'Cancel'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog without saving
                 setState(() {
@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
             ),
             ElevatedButton(
-              child: TextWidget.buildSection16('Save'),
+              child: TextWidget.buildText( text: 'Save'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
                 _uploadProfileImage(); // Upload the image if confirmed
@@ -209,10 +209,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextWidget.buildSubSectionBold16(
-                              userProfile.username ?? 'Unknown User',
+                            TextWidget.buildText( text: 
+                              userProfile.username ?? 'Unknown User', fontSize: 18
                             ),
-                          TextWidget.buildSection18(userProfile.fullname ?? 'No name provided'),
+                          TextWidget.buildText( text: userProfile.fullname ?? 'No name provided'),
                           ],
                         ),
                       ],

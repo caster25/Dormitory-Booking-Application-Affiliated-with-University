@@ -47,22 +47,22 @@ class _EditUserState extends State<EditUser> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: TextWidget.buildHeader24('ยืนยันการเปลี่ยนแปลงข้อมูล'),
+          title: TextWidget.buildText( text: 'ยืนยันการเปลี่ยนแปลงข้อมูล' , fontSize: 18),
           content:
-              TextWidget.buildSubSection14('คุณแน่ใจว่าต้องการบันทึกการเปลี่ยนแปลงข้อมูลนี้?'),
+              TextWidget.buildText( text: 'คุณแน่ใจว่าต้องการบันทึกการเปลี่ยนแปลงข้อมูลนี้?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด dialog
                 _updateUserData();
               },
-              child: TextWidget.buildSection16('ใช่'),
+              child: TextWidget.buildText( text: 'ใช่'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด dialog
               },
-              child: TextWidget.buildSection16('ไม่'),
+              child: TextWidget.buildText( text: 'ไม่'),
             ),
           ],
         );
@@ -84,8 +84,8 @@ class _EditUserState extends State<EditUser> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title:  TextWidget.buildHeader24('สำเร็จ'),
-            content:  TextWidget.buildSection16('ข้อมูลได้รับการอัปเดตแล้ว'),
+            title:  TextWidget.buildText( text: 'สำเร็จ' , fontSize: 18),
+            content:  TextWidget.buildText( text: 'ข้อมูลได้รับการอัปเดตแล้ว'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -96,7 +96,7 @@ class _EditUserState extends State<EditUser> {
                     (route) => false,
                   );
                 },
-                child: TextWidget.buildSubSection16('ตกลง'),
+                child: TextWidget.buildText( text: 'ตกลง'),
               ),
             ],
           );
@@ -142,7 +142,7 @@ class _EditUserState extends State<EditUser> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextWidget.buildSubSectionBold20('ชื่อโปรไฟล์'),
+              TextWidget.buildText( text: 'ชื่อโปรไฟล์', fontSize: 18), 
               const SizedBox(height: 10),
               TextFormField(
                 controller: nameController,
@@ -162,7 +162,7 @@ class _EditUserState extends State<EditUser> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextWidget.buildSubSectionBold20('ชื่อ-นามสกุล'),
+              TextWidget.buildText( text: 'ชื่อ-นามสกุล' , fontSize: 18),
               const SizedBox(height: 10),
               TextFormField(
                 controller: fullNameController,
@@ -182,7 +182,7 @@ class _EditUserState extends State<EditUser> {
                 ),
               ),
               const SizedBox(height: 20),
-              TextWidget.buildSubSectionBold20('เบอร์โทร'),
+              TextWidget.buildText( text: 'เบอร์โทร' , fontSize: 18),
               const SizedBox(height: 10),
               TextFormField(
                 controller: phoneController,

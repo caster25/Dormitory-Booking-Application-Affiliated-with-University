@@ -146,7 +146,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                               const Icon(Icons.home, color: Colors.blueAccent),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextWidget.buildSection16(
+                                child: TextWidget.buildText( text: 
                                   'Dormitory: ${notification['dormitoryName']}',
                                 ),
                               ),
@@ -158,7 +158,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                               const Icon(Icons.person, color: Colors.green),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextWidget.buildSection16(
+                                child: TextWidget.buildText( text: 
                                   'User: ${notification['userName']}',
                                 ),
                               ),
@@ -171,7 +171,7 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
                                   color: Colors.orange),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextWidget.buildSection16(
+                                child: TextWidget.buildText( text: 
                                   'Time: ${_timeAgo(notification['timestamp'])}',
                                 ),
                               ),

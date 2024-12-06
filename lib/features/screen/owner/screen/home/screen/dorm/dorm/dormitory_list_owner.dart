@@ -93,14 +93,14 @@ class DormitoryListOwnerScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TextWidget.buildSection16(
-                              '${dormitory.name} (${dormitory.dormType})',
+                            TextWidget.buildText(text: 
+                              '${dormitory.name} (${dormitory.dormType})',fontSize: 18, isBold: true
                             ),
                             const SizedBox(height: 4),
-                            TextWidget.buildSubSection14(
+                            TextWidget.buildText(text: 
                               'ราคา: ฿${formatNumber.format(dormitory.price)} บาท/เทอม',
                             ),
-                            TextWidget.buildSubSection14(
+                            TextWidget.buildText(text: 
                               'ห้องว่าง: ${dormitory.availableRooms} ห้อง',
                             ),
                           ],

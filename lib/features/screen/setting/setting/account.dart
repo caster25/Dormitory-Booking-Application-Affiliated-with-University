@@ -61,7 +61,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                       _showPasswordChangeDialog(context);
                     },
                     icon: const Icon(Icons.lock, size: 18),
-                    label: TextWidget.buildSubSection14('เปลี่ยนรหัสผ่าน'),
+                    label: TextWidget.buildText(text: 'เปลี่ยนรหัสผ่าน'),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 50),
                     ),
@@ -79,11 +79,11 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TextWidget.buildSubSectionBold16(
+        TextWidget.buildText(text: 
           label,
           
         ),
-        TextWidget.buildSubSection16(
+        TextWidget.buildText(text: 
           value,
         ),
       ],
@@ -121,7 +121,7 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: TextWidget.buildSubSectionBold16('เปลี่ยนรหัสผ่าน'),
+          title: TextWidget.buildText(text: 'เปลี่ยนรหัสผ่าน'),
           content: TextField(
             controller: _newPasswordController,
             obscureText: true,

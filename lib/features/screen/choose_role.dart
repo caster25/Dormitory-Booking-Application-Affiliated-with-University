@@ -33,8 +33,8 @@ class RoleScreen extends StatelessWidget {
                       ));
                     },
                     icon: const Icon(Icons.person),
-                    label: TextWidget.buildSection16(
-                      'ผู้ใช้งานทั่วไป',
+                    label: TextWidget.buildText( text: 
+                      'ผู้ใช้งานทั่วไป', fontSize: 18
                     ),
                   ),
                 ),
@@ -51,8 +51,8 @@ class RoleScreen extends StatelessWidget {
                       ));
                     },
                     icon: const Icon(Icons.business),
-                    label: TextWidget.buildSection16(
-                      'ผู้ให้บริการหอพัก',
+                    label: TextWidget.buildText( text: 
+                      'ผู้ให้บริการหอพัก', fontSize: 18
                     ),
                   ),
                 ),

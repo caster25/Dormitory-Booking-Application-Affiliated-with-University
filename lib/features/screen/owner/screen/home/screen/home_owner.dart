@@ -84,10 +84,10 @@ class NavigationDrawer extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(height: 12),
-                  TextWidget.buildHeader24(
-                    userData['username'] ?? 'User Name',
+                  TextWidget.buildText(text: 
+                    userData['username'] ?? 'User Name',fontSize: 18, isBold: true
                   ),
-                  TextWidget.buildSubSectionBold16(
+                  TextWidget.buildText(text: 
                     user.email ?? 'user@example.com',
                   ),
                 ],
@@ -165,7 +165,7 @@ class NavigationDrawer extends StatelessWidget {
       required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
-      title: TextWidget.buildSubSectionBold16(text),
+      title: TextWidget.buildText(text: text),
       onTap: onTap,
     );
   }

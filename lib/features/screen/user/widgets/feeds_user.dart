@@ -1,4 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api, unused_element
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:dorm_app/features/screen/user/screen/detail.dart';
 import 'package:dorm_app/features/screen/user/utils/build_dorm_end.dart';
@@ -28,9 +29,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userDoc =
-          FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid);
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
       final userSnapshot = await userDoc.get();
       if (userSnapshot.exists) {
         setState(() {
@@ -144,16 +143,18 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      TextWidget.buildSubSectionBold16(
-                                        '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
-                                      ),
+                                      TextWidget.buildText(
+                                          text:
+                                              '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                                          fontSize: 18),
                                       const SizedBox(height: 4),
-                                      TextWidget.buildSubSection16(
-                                        'ราคา: ${formatNumber.format(dorm['price'])} บาท',
-                                      ),
+                                      TextWidget.buildText(
+                                          text:
+                                              'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                                          color: ColorsApp.red),
                                       const SizedBox(height: 2),
-                                      TextWidget.buildSubSectionRed16(
-                                        dorm['rating'] != null &&
+                                      TextWidget.buildText(
+                                        text: dorm['rating'] != null &&
                                                 dorm['rating'] > 0
                                             ? 'คะแนน ${dorm['rating'] % 1 == 0 ? dorm['rating'].toStringAsFixed(0) : dorm['rating'].toStringAsFixed(1)}/5' // แสดงคะแนนตามเงื่อนไข
                                             : 'ยังไม่มีการรีวิว',
@@ -169,7 +170,9 @@ class _FeedsScreenState extends State<FeedsScreen> {
                     );
                   } else {
                     return Center(
-                        child: TextWidget.buildSection16("No dormitories available."));
+                        child: TextWidget.buildText(
+                      text: "No dormitories available.",
+                    ));
                   }
                 },
               ),
@@ -181,8 +184,13 @@ class _FeedsScreenState extends State<FeedsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 10, // ระยะเบลอของเงา
+                        offset: Offset(0, 4), // การเลื่อนเงา (x, y)
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisAlignment:
@@ -194,8 +202,9 @@ class _FeedsScreenState extends State<FeedsScreen> {
                         size: 24, // ขนาดของไอคอน
                       ),
                       SizedBox(width: 8), // เพิ่มระยะห่างระหว่างไอคอนกับข้อความ
-                      TextWidget.buildSection18(
-                        'หอพักที่แนะนำ',)
+                      TextWidget.buildText(
+                        text: 'หอพักที่แนะนำ',
+                      )
                     ],
                   ),
                 ),

@@ -81,10 +81,10 @@ class NavigationDrawer extends StatelessWidget {
                         : null,
                   ),
                   const SizedBox(height: 12),
-                  TextWidget.buildHeader24(
-                    userData['username'] ?? 'User Name',
+                  TextWidget.buildText( text: 
+                    userData['username'] ?? 'User Name', fontSize: 18 ,isBold: true
                   ),
-                  TextWidget.buildSection16(
+                  TextWidget.buildText( text: 
                     user.email ?? 'user@example.com',
                   ),
                 ],
@@ -125,13 +125,13 @@ class NavigationDrawer extends StatelessWidget {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: TextWidget.buildSection16('ยืนยันการออกจากระบบ'),
-                    content: TextWidget.buildSection16('คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
+                    title: TextWidget.buildText( text: 'ยืนยันการออกจากระบบ'),
+                    content: TextWidget.buildText( text: 'คุณแน่ใจว่าต้องการออกจากระบบหรือไม่?'),
                     actions: <Widget>[
                       // ปุ่มยกเลิก
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        child: TextWidget.buildSection16('ยกเลิก'),
+                        child: TextWidget.buildText( text: 'ยกเลิก'),
                       ),
                       // ปุ่มยืนยันการล็อกเอาต์
                       TextButton(
@@ -153,7 +153,7 @@ class NavigationDrawer extends StatelessWidget {
                             );
                           }
                         },
-                        child: TextWidget.buildSection16('ยืนยัน'),
+                        child: TextWidget.buildText( text: 'ยืนยัน'),
                       ),
                     ],
                   );
@@ -170,7 +170,7 @@ class NavigationDrawer extends StatelessWidget {
       required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon),
-      title: TextWidget.buildSection16(text),
+      title: TextWidget.buildText( text: text),
       onTap: onTap,
     );
   }
@@ -278,21 +278,21 @@ class _HomepageState extends State<Homepage> {
       barrierDismissible: false, // ทำให้ไม่สามารถปิด dialog ได้ด้วยการแตะนอก dialog
       builder: (context) {
         return AlertDialog(
-          title: TextWidget.buildSection16('ยืนยันการออกจากแอป'),
-          content: TextWidget.buildSection16('คุณต้องการออกจากแอปหรือไม่?'),
+          title: TextWidget.buildText( text: 'ยืนยันการออกจากแอป'),
+          content: TextWidget.buildText( text: 'คุณต้องการออกจากแอปหรือไม่?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด Dialog
               },
-              child: TextWidget.buildSection16('ยกเลิก'),
+              child: TextWidget.buildText( text: 'ยกเลิก'),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // ปิด Dialog
                 SystemNavigator.pop(); // ปิดแอป
               },
-              child: TextWidget.buildSection16('ออกจากแอป'),
+              child: TextWidget.buildText( text: 'ออกจากแอป'),
             ),
           ],
         );

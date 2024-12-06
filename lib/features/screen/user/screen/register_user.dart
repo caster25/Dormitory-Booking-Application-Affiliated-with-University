@@ -64,12 +64,12 @@ class _RegisterFormState extends State<RegisterScreen> {
       } else {
         // ผู้ใช้ไม่ได้ยอมรับเงื่อนไข
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: TextWidget.buildSection18('คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
+          SnackBar(content: TextWidget.buildText( text: 'คุณต้องยอมรับเงื่อนไขก่อนทำการลงทะเบียน')),
         );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: TextWidget.buildSection18('กรุณาตรวจสอบข้อมูลอีกครั้ง')),
+        SnackBar(content: TextWidget.buildText( text: 'กรุณาตรวจสอบข้อมูลอีกครั้ง')),
       );
     }
   }
@@ -80,14 +80,14 @@ class _RegisterFormState extends State<RegisterScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: TextWidget.buildSection18('เกิดข้อผิดพลาด'),
-          content: TextWidget.buildSection18(message),
+          title: TextWidget.buildText( text: 'เกิดข้อผิดพลาด'),
+          content: TextWidget.buildText( text: message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: TextWidget.buildSection18('ตกลง'),
+              child: TextWidget.buildText( text: 'ตกลง'),
             ),
           ],
         );
@@ -122,12 +122,12 @@ class _RegisterFormState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Column(
                       children: [
-                        Text('สร้างบัญชีใหม่', style: TextStyle(fontSize: 40)),
+                        TextWidget.buildText( text: 'สร้างบัญชีใหม่',  fontSize: 38, isBold: true),
                       ],
                     ),
                   ),

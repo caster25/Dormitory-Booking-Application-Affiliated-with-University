@@ -370,16 +370,16 @@ class ListOfBookings extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidget.buildHeader24(
-                                booking['username'] ?? 'ไม่มีชื่อ',
+                              TextWidget.buildText(text: 
+                                booking['username'] ?? 'ไม่มีชื่อ',fontSize: 18, isBold: true
                                 
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSection14(
+                              TextWidget.buildText(text: 
                                 'อีเมล: ${booking['email'] ?? 'ไม่มีอีเมล'}',
                               ),
                               const SizedBox(height: 5),
-                              TextWidget.buildSubSection14(
+                              TextWidget.buildText(text: 
                                 'เบอร์โทรศัพท์: ${booking['numphone'] ?? 'ไม่มีเบอร์'}',
                               ),
                               const SizedBox(height: 10),
@@ -395,7 +395,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           ColorsApp.green, // สีปุ่มยืนยัน
                                     ),
-                                    child: TextWidget.buildSubSection14('ยืนยันการเข้าหอพัก'),
+                                    child: TextWidget.buildText(text: 'ยืนยันการเข้าหอพัก'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -406,7 +406,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           ColorsApp.red, // สีปุ่มปฏิเสธ
                                     ),
-                                    child: TextWidget.buildSubSection14('ปฏิเสธการจอง'),
+                                    child: TextWidget.buildText(text: 'ปฏิเสธการจอง'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
@@ -416,7 +416,7 @@ class ListOfBookings extends StatelessWidget {
                                       backgroundColor:
                                           ColorsApp.blue, // สีปุ่มสนทนา
                                     ),
-                                    child: TextWidget.buildSubSection14('เปิดการสนทนา'),
+                                    child: TextWidget.buildText(text: 'เปิดการสนทนา'),
                                   ),
                                 ],
                               ),

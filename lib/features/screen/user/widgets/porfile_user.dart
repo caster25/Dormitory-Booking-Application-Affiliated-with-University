@@ -112,13 +112,13 @@ class _UserScreenState extends State<UserScreen> {
                             : null,
                       ),
                       const SizedBox(height: 16),
-                      TextWidget.buildSection24(
-                        userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',
+                      TextWidget.buildText( text: 
+                        userData?['username'] ?? 'ไม่มีชื่อผู้ใช้',fontSize: 20
                       ),
                       const SizedBox(height: 16),
                       ProfileInfoRow(
                         icon: Icons.person,
-                        text: userData?['fullname'] ?? 'ไม่มีข้อมูล',
+                        text: userData?['fullname'] ?? 'ไม่มีข้อมูล', 
                       ),
                       ProfileInfoRow(
                         icon: Icons.phone,
@@ -159,7 +159,7 @@ class ProfileInfoRow extends StatelessWidget {
           Icon(icon, color: Colors.grey),
           const SizedBox(width: 16),
           Expanded(
-            child: TextWidget.buildSection16(
+            child: TextWidget.buildText( text: 
               text,
             ),
           ),

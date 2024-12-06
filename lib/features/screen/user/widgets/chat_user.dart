@@ -1,5 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api, prefer_final_fields, use_build_context_synchronously, unused_field
 
+import 'package:dorm_app/common/res/colors.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,7 +16,6 @@ class ChatScreen extends StatefulWidget {
   final String ownerId;
   final String dormitoryId; // เพิ่ม dormitoryId
   final String chatRoomId;
-  
 
   const ChatScreen({
     required this.userId,
@@ -139,7 +139,9 @@ class _ChatScreenState extends State<ChatScreen> {
         _messageController.clear();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: TextWidget.buildSection18('Failed to send message: $e')),
+          SnackBar(
+              content:
+                  TextWidget.buildText(text: 'Failed to send message: $e')),
         );
       }
     }
@@ -179,8 +181,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return Scaffold(
-      appBar:
-          buildAppBar(title: dormitoryName ?? '', context: context),
+      appBar: buildAppBar(title: dormitoryName ?? '', context: context),
       body: Builder(builder: (context) {
         return Column(
           children: [
@@ -248,7 +249,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   Text(
                                     message['text'],
                                     style: const TextStyle(
-                                        color: Colors.black87, fontSize: 16.0),
+                                        color: Colors.black45, fontSize: 16.0),
                                   ),
                                 const SizedBox(height: 5),
                                 FutureBuilder<String>(
@@ -262,9 +263,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                     );
                                   },
                                 ),
-                                TextWidget.buildSection10(
-                                  _formatTimestamp(message['createdAt']),
-                                ),
+                                TextWidget.buildText(
+                                    text:
+                                        _formatTimestamp(message['createdAt']),
+                                    color: ColorsApp.red),
                               ],
                             ),
                           ),
@@ -339,7 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
           return ListView(
             children: [
               ListTile(
-                title: TextWidget.buildSection18('Delete Message'),
+                title: TextWidget.buildText(text: 'Delete Message'),
                 onTap: () {
                   _deleteMessage(message.id); // ลบข้อความ
                   Navigator.pop(context); // ปิด Bottom Sheet
@@ -349,8 +351,7 @@ class _ChatScreenState extends State<ChatScreen> {
           );
         },
       );
-    } else {
-    }
+    } else {}
   }
 
   Future<void> _deleteMessage(String messageId) async {
@@ -375,21 +376,26 @@ class _ChatScreenState extends State<ChatScreen> {
               .doc(messageId)
               .delete();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: TextWidget.buildSection18('Message deleted')),
+            SnackBar(content: TextWidget.buildText(text: 'Message deleted')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: TextWidget.buildSection18('You can only delete your own messages')),
+            SnackBar(
+                content: TextWidget.buildText(
+                    text: 'You can only delete your own messages')),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: TextWidget.buildSection18('Message does not exist')),
+          SnackBar(
+              content: TextWidget.buildText(text: 'Message does not exist')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-       SnackBar(content: TextWidget.buildSection18('Failed to delete message: $e')),
+        SnackBar(
+            content:
+                TextWidget.buildText(text: 'Failed to delete message: $e')),
       );
     }
   }

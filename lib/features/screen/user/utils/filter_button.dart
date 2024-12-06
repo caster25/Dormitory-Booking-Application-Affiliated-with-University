@@ -18,7 +18,7 @@ class FilterButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon),
-      label: TextWidget.buildSection18(text),
+      label: TextWidget.buildText( text: text),
       style: ElevatedButton.styleFrom(
       ),
     );

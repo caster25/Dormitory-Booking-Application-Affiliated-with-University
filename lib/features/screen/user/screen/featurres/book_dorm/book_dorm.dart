@@ -205,8 +205,8 @@ class _BookDormState extends State<BookDorm> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: TextWidget.buildHeader24('ยืนยันการยกเลิก'),
-          content: TextWidget.buildSubSection16('แน่ใจหรือไม่ว่าต้องการยกเลิกการจอง'),
+          title: TextWidget.buildText(text: 'ยืนยันการยกเลิก'),
+          content: TextWidget.buildText(text: 'แน่ใจหรือไม่ว่าต้องการยกเลิกการจอง'),
           actions: <Widget>[
             TextButton(
               onPressed: () {

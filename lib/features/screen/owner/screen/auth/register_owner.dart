@@ -145,7 +145,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        TextWidget.buildHeader30('สร้างบัญชีใหม่'),
+                        TextWidget.buildText(text: 'สร้างบัญชีใหม่',fontSize: 38,isBold: true),
                       ],
                     ),
                   ),
@@ -154,7 +154,7 @@ class _RegisterFormState extends State<RegisterownerScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration:
-                      _buildInputDecoration('อีเมล'), // Only one decoration
+                      _buildInputDecoration('อีเมล'), 
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {

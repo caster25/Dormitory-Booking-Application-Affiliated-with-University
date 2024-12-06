@@ -100,7 +100,7 @@ class _DormScreenState extends State<DormScreen> {
           children: [
             DropdownButton<String>(
               value: selectedFilterType.isEmpty ? null : selectedFilterType,
-              hint: TextWidget.buildSection14('เลือกการกรอง'),
+              hint: TextWidget.buildText( text: 'เลือกการกรอง'),
               onTap: () {
                 setState(() {
                   isFiltering = true;
@@ -336,20 +336,20 @@ class _DormScreenState extends State<DormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ชื่อและรายละเอียดหอพัก
-                  TextWidget.buildSection18(
-                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})',
+                  TextWidget.buildText( text: 
+                    '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']})', fontSize: 18
                   ),
                   const SizedBox(height: 4),
-                  TextWidget.buildSubSectionBold16(
-                    'ราคา: ${formatNumber.format(dorm['price'])} บาท',
+                  TextWidget.buildText( text: 
+                    'ราคา: ${formatNumber.format(dorm['price'])} บาท', color: ColorsApp.red
                   ),
-                  TextWidget.buildSubSectionRed16(
+                  TextWidget.buildText( text: 
                     dorm['rating'] != null && dorm['rating'] > 0
                         ? 'คะแนน ${dorm['rating'].toStringAsFixed(1)}/5'
                         : 'ยังไม่มีการรีวิว',
                   ),
                   const SizedBox(height: 4),
-                  TextWidget.buildSection16(
+                  TextWidget.buildText( text: 
                     'ห้องว่าง ${dorm['availableRooms']} ห้อง',
                   ),
                   const SizedBox(height: 10),
@@ -366,7 +366,7 @@ class _DormScreenState extends State<DormScreen> {
                             ),
                           );
                         },
-                        child: TextWidget.buildSubSection16('ดูรายละเอียด'),
+                        child: TextWidget.buildText( text: 'ดูรายละเอียด'),
                       ),
                       IconButton(
                         icon: Icon(

@@ -22,31 +22,31 @@ class AdminIssueDetailScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextWidget.buildSection18(
+              TextWidget.buildText(text: 
                 'Issue: ${issueData['issue']}',
               ),
               const SizedBox(height: 10),
-              TextWidget.buildSubSection16(
+              TextWidget.buildText(text: 
                 'Description: ${issueData['description']}',
               ),
               const SizedBox(height: 10),
-              TextWidget.buildSubSection16(
+              TextWidget.buildText(text: 
                 'Submitted by: ${issueData['fullname']} (${issueData['username']})',
               ),
               const SizedBox(height: 10),
-              TextWidget.buildSubSection16(
+              TextWidget.buildText(text: 
                 'Submitted by: ${issueData['role']} ',
               ),
               const SizedBox(height: 10),
-              TextWidget.buildSubSection16(
+              TextWidget.buildText(text: 
                 'User ID: ${issueData['userId']}',
               ),
               const SizedBox(height: 10),
-              TextWidget.buildSubSection16(
+              TextWidget.buildText(text: 
                 'Submitted on: ${issueData['timestamp'].toDate()}',
               ),
               const SizedBox(height: 20),
-              TextWidget.buildSubSection18('Attached Images:'),
+              TextWidget.buildText(text: 'Attached Images:'),
               const SizedBox(height: 10),
               // Display images
               if (imageUrls.isNotEmpty)

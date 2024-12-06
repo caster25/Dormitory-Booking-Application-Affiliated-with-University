@@ -77,7 +77,7 @@ class OwnerDormListScreen extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Column(
                   children: [
-                    TextWidget.buildHeader24(
+                    TextWidget.buildText(text: 
                       '$dormName ($roomType, $dormType)',
                     ),
                     Column(
@@ -99,13 +99,13 @@ class OwnerDormListScreen extends StatelessWidget {
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  TextWidget.buildSubSection14(
+                                  TextWidget.buildText(text: 
                                       'ราคา: ฿${formatNumber.format(dormPrice)} บาท/เทอม'),
-                                  TextWidget.buildSubSection14(
+                                  TextWidget.buildText(text: 
                                       'ห้องว่าง: $availableRooms ห้อง'),
-                                  TextWidget.buildSubSection14(
+                                  TextWidget.buildText(text: 
                                       'ห้องทั้งหมด: $totalRooms ห้อง'),
-                                  TextWidget.buildSubSection14(
+                                  TextWidget.buildText(text: 
                                     'ผู้เช่า: ${tenants.isNotEmpty ? tenants.length.toString() : '0'} คน',
                                   ),
                                 ],
