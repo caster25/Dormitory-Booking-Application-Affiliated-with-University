@@ -5,7 +5,7 @@ class TextWidget {
   static Widget buildText({
     required String text,
     double? fontSize,
-    Color? color ,
+    Color color = Colors.black ,
     bool isBold = false,
     TextAlign textAlign = TextAlign.start,
     bool wrapText = true,
@@ -13,7 +13,7 @@ class TextWidget {
     return Text(
       text,
       style: TextStyle(
-        fontSize: fontSize= 14,
+        fontSize: fontSize ?? 14,
         fontFamily: AppFonts.notoSansThai,
         fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
         color: color,

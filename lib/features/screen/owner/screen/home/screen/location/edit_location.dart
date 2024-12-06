@@ -1,12 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 
 class EditLocationScreen extends StatefulWidget {
   final LatLng initialLocation;
 
-  // ignore: use_super_parameters
-  const EditLocationScreen({Key? key, required this.initialLocation}) : super(key: key);
+  const EditLocationScreen({super.key, required this.initialLocation});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -14,74 +14,52 @@ class EditLocationScreen extends StatefulWidget {
 }
 
 class _EditLocationScreenState extends State<EditLocationScreen> {
-  late LatLng _currentLocation;
+  LatLng _currentLocation = const LatLng(0, 0);
+  final Completer<GoogleMapController> _mapController = Completer();
 
   @override
   void initState() {
     super.initState();
     _currentLocation = widget.initialLocation;
-    _getCurrentLocation();
-  }
-
-  Future<void> _getCurrentLocation() async {
-    try {
-      // ตรวจสอบสถานะตำแหน่ง
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-        setState(() {
-          _currentLocation = LatLng(position.latitude, position.longitude);
-        });
-      } else {
-        // จัดการเมื่อไม่ได้รับอนุญาต
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Permission to access location was denied')),
-        );
-      }
-    } catch (e) {
-      // จัดการข้อผิดพลาด
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error getting location: $e')),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print("EditLocationScreen is being displayed");
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Dormitory Location'),
+        title: const Text('แก้ไขตำแหน่งหมุด'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
+            icon: const Icon(Icons.check),
             onPressed: () {
-              Navigator.pop(context, _currentLocation); // Return new location
+              Navigator.pop(context, _currentLocation);
             },
           ),
         ],
       ),
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: _currentLocation,
-          zoom: 15,
-        ),
-        onTap: (LatLng location) {
-          setState(() {
-            _currentLocation = location;
-          });
-        },
-        markers: {
-          Marker(
-            markerId: const MarkerId('dormLocation'),
-            position: _currentLocation,
+      body: Stack(
+        children: [
+          GoogleMap(
+            onMapCreated: (GoogleMapController controller) {
+              _mapController.complete(controller);
+            },
+            initialCameraPosition: CameraPosition(
+              target: _currentLocation,
+              zoom: 14.0,
+            ),
+            onCameraMove: (CameraPosition position) {
+              _currentLocation = position.target;
+            },
           ),
-        },
+          const Center(
+            child: Icon(
+              Icons.location_pin,
+              size: 50,
+              color: Colors.red,
+            ),
+          ),
+        ],
       ),
     );
   }

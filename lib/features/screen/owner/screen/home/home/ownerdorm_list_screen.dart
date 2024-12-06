@@ -78,7 +78,7 @@ class OwnerDormListScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     TextWidget.buildText(text: 
-                      '$dormName ($roomType, $dormType)',
+                      '$dormName ($roomType, $dormType)',isBold: true
                     ),
                     Column(
                       children: [

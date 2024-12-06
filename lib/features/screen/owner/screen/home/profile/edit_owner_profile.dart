@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/components/buttons/button_widget.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
-import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
 import 'package:flutter/material.dart';
 
 class EditOwnerProfile extends StatefulWidget {
@@ -10,7 +12,6 @@ class EditOwnerProfile extends StatefulWidget {
   const EditOwnerProfile({super.key, required this.userId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _EditOwnerProfileState createState() => _EditOwnerProfileState();
 }
 
@@ -18,6 +19,10 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
   late TextEditingController nameController;
   late TextEditingController fullNameController;
   late TextEditingController phoneController;
+  bool isLoading = true;
+  late String originalName;
+  late String originalFullName;
+  late String originalPhone;
 
   @override
   void initState() {
@@ -29,34 +34,118 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
   }
 
   Future<void> _loadUserData() async {
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(widget.userId).get();
-    var userData = userDoc.data() as Map<String, dynamic>;
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .get();
 
-    nameController.text = userData['username'] ?? '';
-    fullNameController.text = userData['fullname'] ?? '';
-    phoneController.text = userData['numphone'] ?? '';
+      if (userDoc.exists) {
+        var userData = userDoc.data() as Map<String, dynamic>;
+        originalName = userData['username'] ?? '';
+        originalFullName = userData['fullname'] ?? '';
+        originalPhone = userData['numphone'] ?? '';
+
+        nameController.text = originalName;
+        fullNameController.text = originalFullName;
+        phoneController.text = originalPhone;
+      } else {
+        _showErrorDialog('ไม่พบข้อมูลผู้ใช้');
+        Navigator.pop(context);
+      }
+    } catch (error) {
+      _showErrorDialog('เกิดข้อผิดพลาด: $error');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  bool _hasChanges() {
+    return nameController.text != originalName ||
+           fullNameController.text != originalFullName ||
+           phoneController.text != originalPhone;
   }
 
   void _confirmUpdate() {
+    if (!_hasChanges()) {
+      _showErrorDialog('ไม่มีการเปลี่ยนแปลงข้อมูล');
+      return;
+    }
+
+    if (_validateInputs()) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: TextWidget.buildText(
+              text: 'ยืนยันการเปลี่ยนแปลงข้อมูล',
+              fontSize: 18,
+            ),
+            content: TextWidget.buildText(
+                text: 'คุณแน่ใจว่าต้องการบันทึกการเปลี่ยนแปลงข้อมูลนี้?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _updateUserData();
+                },
+                child: TextWidget.buildText(text: 'ใช่'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: TextWidget.buildText(text: 'ไม่'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  bool _validateInputs() {
+    if (nameController.text.isEmpty ||
+        fullNameController.text.isEmpty ||
+        phoneController.text.isEmpty) {
+      _showErrorDialog('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return false;
+    }
+
+    if (phoneController.text.length < 10 || phoneController.text.length > 10) {
+      _showErrorDialog('กรุณากรอกเบอร์โทร 10 หลัก');
+      return false;
+    }
+
+    return true;
+  }
+
+  Future<void> _updateUserData() async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(widget.userId).update({
+        'username': nameController.text,
+        'fullname': fullNameController.text,
+        'numphone': phoneController.text,
+      });
+      _showSuccessDialog();
+    } catch (error) {
+      _showErrorDialog('เกิดข้อผิดพลาด: $error');
+    }
+  }
+
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('ยืนยันการเปลี่ยนแปลงข้อมูล'),
-          content: const Text('คุณแน่ใจว่าต้องการบันทึกการเปลี่ยนแปลงข้อมูลนี้?'),
+          title: TextWidget.buildText(text: 'ข้อผิดพลาด', fontSize: 18),
+          content: TextWidget.buildText(text: message),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
-                _updateUserData();
-              },
-              child: const Text('ใช่'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // ปิด dialog
-              },
-              child: const Text('ไม่'),
+              onPressed: () => Navigator.of(context).pop(),
+              child: TextWidget.buildText(text: 'ตกลง'),
             ),
           ],
         );
@@ -64,28 +153,25 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
     );
   }
 
-  Future<void> _updateUserData() async {
-    await FirebaseFirestore.instance.collection('users').doc(widget.userId).update({
-      'username': nameController.text,
-      'fullname': fullNameController.text,
-      'numphone': phoneController.text,
-    }).then((_) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('ข้อมูลได้รับการอัปเดตแล้ว')),
-      );
-      Navigator.pushAndRemoveUntil(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(builder: (context) => const Ownerhome()),
-        (route) => false,
-      );
-    }).catchError((error) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาด: $error')),
-      );
-    });
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: TextWidget.buildText(text: 'สำเร็จ', fontSize: 18),
+          content: TextWidget.buildText(text: 'ข้อมูลได้รับการอัปเดตแล้ว'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ปิด Dialog
+                Navigator.pop(context); // กลับไปหน้าก่อนหน้า
+              },
+              child: TextWidget.buildText(text: 'ตกลง'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -100,105 +186,79 @@ class _EditOwnerProfileState extends State<EditOwnerProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(title: 'แก้ไขข้อมูลส่วนตัว', context: context),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextWidget.buildText(text: 'ชื่อโปรไฟล์',fontSize: 18),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  hintText: "ชื่อโปรไฟล์",
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                  filled: true,
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextWidget.buildText(text: 'ชื่อ-นามสกุล',fontSize: 18),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: fullNameController,
-                decoration: InputDecoration(
-                  hintText: "กรอกชื่อ-นามสกุล",
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                  filled: true,
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextWidget.buildText(text: 'เบอร์โทร',fontSize: 18),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: phoneController,
-                decoration: InputDecoration(
-                  hintText: "กรอกเบอร์โทรใหม่",
-                  contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: Colors.blue),
-                  ),
-                  filled: true,
-                ),
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: _confirmUpdate,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                    ), // แทนที่การบันทึกด้วยการยืนยัน
-                    child: const Text('บันทึก', style: TextStyle(fontSize: 18)),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // ยกเลิกและกลับไปที่ Homepage
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Ownerhome()),
-                        (route) => false,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(20),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextWidget.buildText(text: 'ชื่อโปรไฟล์', fontSize: 18),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        hintText: "ชื่อโปรไฟล์",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(color: Colors.blue),
+                        ),
+                        filled: true,
                       ),
                     ),
-                    child: const Text('ยกเลิก', style: TextStyle(fontSize: 18)),
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    TextWidget.buildText(text: 'ชื่อ-นามสกุล', fontSize: 18),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: fullNameController,
+                      decoration: InputDecoration(
+                        hintText: "กรอกชื่อ-นามสกุล",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(color: Colors.blue),
+                        ),
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextWidget.buildText(text: 'เบอร์โทร', fontSize: 18),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: phoneController,
+                      decoration: InputDecoration(
+                        hintText: "กรอกเบอร์โทรใหม่",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: const BorderSide(color: Colors.blue),
+                        ),
+                        filled: true,
+                      ),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CustomButton(
+                          label: 'บันทึก',
+                          onPressed: _confirmUpdate,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

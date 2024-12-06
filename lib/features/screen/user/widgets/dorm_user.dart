@@ -207,7 +207,6 @@ class _DormScreenState extends State<DormScreen> {
 
     Query query = dormitoryCollection;
 
-    // กรองตามคำค้นหา
     if (searchQuery.isNotEmpty) {
       query = query
           .where('name', isGreaterThanOrEqualTo: searchQuery)

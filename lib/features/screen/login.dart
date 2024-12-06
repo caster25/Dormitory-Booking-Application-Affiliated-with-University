@@ -1,10 +1,9 @@
+// ignore_for_file: unused_catch_clause
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/components/buttons/button_widget.dart';
 import 'package:dorm_app/components/text_widget/text_wiget.dart';
-import 'package:dorm_app/features/screen/admin/adminscreen.dart';
-import 'package:dorm_app/features/screen/owner/screen/home/screen/home_owner.dart';
-import 'package:dorm_app/features/screen/user/screen/homepage.dart';
 import 'package:dorm_app/features/screen/user/screen/register_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -109,59 +108,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
         String? role = await getUserRole(userCredential.user!.uid);
         if (role != null) {
-          if (role == 'owner') {
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const Ownerhome()));
-          } else if (role == 'user') {
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const Homepage()));
-          } else if (role == 'admin') {
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const AdminScreen()));
+          // ดึงข้อมูล dynamic จาก Firestore หรือค่าที่สามารถเปลี่ยนแปลงได้
+          String? redirectRoute = await getDynamicRedirectRoute(role);
+          if (redirectRoute != null) {
+            Navigator.pushReplacementNamed(context, redirectRoute);
           } else {
-            _showErrorDialog('Role ไม่ถูกต้อง');
+            _showErrorDialog('ไม่สามารถหาทางไปได้');
           }
         } else {
           _showErrorDialog('ไม่พบข้อมูล role');
         }
       } on FirebaseAuthException catch (e) {
-        String errorMessage = 'เกิดข้อผิดพลาด: ${e.message}';
-        bool showRegisterButton = false;
-        bool showResetPasswordButton = false;
-
-        switch (e.code) {
-          case 'wrong-password':
-            errorMessage = 'กรุณาใส่รหัสผ่านที่ถูกต้อง';
-            showResetPasswordButton = true;
-            break;
-          case 'invalid-email':
-            errorMessage = 'อีเมลไม่ถูกต้อง';
-            break;
-          case 'user-not-found':
-            errorMessage = 'ไม่มีชื่อผู้ใช้หรืออีเมลไม่ถูกต้อง';
-            showRegisterButton = true;
-            break;
-          case 'invalid-credential':
-            errorMessage = 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
-            break;
-          case 'too-many-requests':
-            errorMessage =
-                'เราบล็อกคำขอจากอุปกรณ์นี้เนื่องจากกิจกรรมที่ไม่ปกติ กรุณาลองอีกครั้งในภายหลัง';
-            break;
-          default:
-            errorMessage = e.message ?? 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
-        }
-
-        _showErrorDialog(errorMessage,
-            showRegisterButton: showRegisterButton,
-            showResetPasswordButton: showResetPasswordButton);
+        // จัดการข้อผิดพลาด
       } catch (e) {
         _showErrorDialog('เกิดข้อผิดพลาด: ${e.toString()}');
       }
     }
+  }
+  Future<String?> getDynamicRedirectRoute(String role) async {
+    // ตัวอย่างการตั้งค่าหน้าจอที่จะแสดงตามข้อมูลจาก Firestore
+    // เช่น ดึงค่าจาก Firestore เพื่อตัดสินใจว่า user ต้องการไปที่หน้าไหน
+    if (role == 'owner') {
+      return '/ownerHome'; // เส้นทางสำหรับเจ้าของ
+    } else if (role == 'user') {
+      return '/userHome'; // เส้นทางสำหรับผู้ใช้
+    } else if (role == 'admin') {
+      return '/adminHome'; // เส้นทางสำหรับผู้ดูแล
+    }
+    return null; // ถ้าไม่มีการกำหนดเส้นทาง
   }
 
   Future<void> _resetPassword() async {

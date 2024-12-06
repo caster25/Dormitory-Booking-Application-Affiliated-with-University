@@ -41,7 +41,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(title: '', context: context),
+      appBar: buildAppBar(title: 'เงื่อนไขและข้อตกลง', context: context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

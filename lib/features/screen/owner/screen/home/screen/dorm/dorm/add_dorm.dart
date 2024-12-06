@@ -6,10 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
 import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/dorm/dormitory_edit_details_screen.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/imagepick/imagepick.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/location/add_location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 // ignore: unused_import
@@ -211,7 +214,19 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
-                      // เคลียร์ช่องข้อมูล
+                      _clearForm();
+                      _dormNameController.clear();
+                      _dormPriceController.clear();
+                      _availableRoomsController.clear();
+                      _totalRoomsController.clear();
+                      _electricityRateController.clear();
+                      _waterRateController.clear();
+                      _securityDepositController.clear();
+                      _occupantsController.clear();
+                      _equipmentController.clear();
+                      _ruleController.clear();
+                      _addressController.clear();
+
                       _formKey.currentState!.reset();
                       setState(() {
                         _dormImages = [];
@@ -234,6 +249,17 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     }
   }
 
+  void _clearForm() {
+    _formKey.currentState?.reset(); // รีเซ็ตฟอร์ม
+
+    setState(() {
+      _dormImages = [];
+      _uploadedImageUrls = [];
+      _selectedRoomType = null;
+      _selectedDormType = null;
+    });
+  }
+
   String _createChatRoomId(String userId, String ownerId) {
     var bytes = utf8.encode('$userId$ownerId-room');
     var digest = sha256.convert(bytes);
@@ -249,7 +275,10 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAddDormitoryAppBar(context: context, onSubmit: _submitForm,),
+      appBar: buildAddDormitoryAppBar(
+        context: context,
+        onSubmit: _submitForm,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -290,7 +319,7 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
                     'กรุณากรอกอุปกรณ์ที่มีในห้องพัก'),
                 _buildTextField('กฎของหอพัก', _ruleController,
                     'กรุณาลงรายละเอียดกฎของหอพัก'),
-                _buildImagePicker(),
+                _buildContent(),
                 if (_isUploading) const CircularProgressIndicator(),
               ],
             ),
@@ -393,53 +422,30 @@ class _DormitoryFormScreenState extends State<DormitoryFormScreen> {
     );
   }
 
-  Future<void> _navigateToEditLocation() async {
-    final newLocation = await Navigator.push<LatLng>(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            EditLocationScreen(initialLocation: _dormitoryLocation),
-      ),
-    );
-    if (newLocation != null) {
-      setState(() {
-        _dormitoryLocation = newLocation;
-      });
-    }
-  }
-
-  Widget _buildImagePicker() {
-    return Row(children: [
-      ElevatedButton(
-        onPressed: _pickImages,
-        child: const Text('เลือกรูปภาพ'),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          print("Navigating to Edit Location");
-          _navigateToEditLocation();
-        },
-        child: const Text('แก้ไขตำแหน่งหมุด'),
-      ),
-      const SizedBox(width: 16),
-      Expanded(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: _dormImages
-                .map((image) => Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Image.file(
-                        image,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      ),
-                    ))
-                .toList(),
-          ),
+  Widget _buildContent() {
+    return Column(
+      children: [
+        // ใช้ ImagePickerRow พร้อมกับการจัดการการอัปเดตของรูปภาพ
+        ImagePickerRow(
+          images: _dormImages,
+          onPickImages: _pickImages,
+          onUpdateImages: (List<File> value) {
+            setState(() {
+              _dormImages = value; // อัปเดตรูปภาพใหม่
+            });
+          },
         ),
-      ),
-    ]);
+
+        // ใช้ EditLocationButton พร้อมกับการจัดการการอัปเดตตำแหน่ง
+        AddLocation(
+          initialLocation: _dormitoryLocation,
+          onLocationChanged: (newLocation) {
+            setState(() {
+              _dormitoryLocation = newLocation; // อัปเดตตำแหน่งใหม่
+            });
+          },
+        ),
+      ],
+    );
   }
 }

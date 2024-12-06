@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 // ignore: must_be_immutable
 class CardDorm extends StatelessWidget {
   CardDorm ({super.key});
-  List<String> favorites = []; // สร้างรายการ favorites ใน state
+  List<String> favorites = [];
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,6 @@ class CardDorm extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // Accessing the dormitory data from Firestore
         final dormitories = snapshot.data!.docs;
 
         return GridView.builder(

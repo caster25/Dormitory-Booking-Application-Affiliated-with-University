@@ -14,51 +14,38 @@ class NotificationUserScreen extends StatefulWidget {
 }
 
 class _NotificationUserScreenState extends State<NotificationUserScreen> {
-  List<Map<String, dynamic>> _notifications = [];
   late User _currentUser;
 
   @override
   void initState() {
     super.initState();
     _currentUser = widget.user; // กำหนดค่าให้ _currentUser จาก widget.user
-    _fetchNotifications();
-    print(_currentUser);
   }
 
-  Future<void> _fetchNotifications() async {
-    try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('notifications')
-          .where('userId', isEqualTo: _currentUser.uid)
-          .where('type', whereIn: ['confirmBooking', 'rejectBooking']).get();
+  Stream<List<Map<String, dynamic>>> _fetchNotificationsStream() async* {
+    final notificationQuery = FirebaseFirestore.instance
+        .collection('notifications')
+        .where('userId', isEqualTo: _currentUser.uid)
+        .where('type', whereIn: ['confirmBooking', 'rejectBooking']);
 
+    await for (QuerySnapshot snapshot in notificationQuery.snapshots()) {
       List<Map<String, dynamic>> notifications = [];
-      print('Current User ID: ${_currentUser.uid}');
-      print('Querying notifications...');
-
-      if (snapshot.docs.isEmpty) {
-        print('No notifications found.');
-      }
 
       for (var doc in snapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
         if (!data.containsKey('dormitoryId') || !data.containsKey('userId')) {
-          print('Missing dormitoryId or userId in notification: ${doc.id}');
           continue;
         }
 
-        var dormitoryFuture = FirebaseFirestore.instance
+        var dormitorySnapshot = await FirebaseFirestore.instance
             .collection('dormitories')
             .doc(data['dormitoryId'])
             .get();
-        var userFuture = FirebaseFirestore.instance
+        var userSnapshot = await FirebaseFirestore.instance
             .collection('users')
             .doc(data['userId'])
             .get();
-
-        final dormitorySnapshot = await dormitoryFuture;
-        final userSnapshot = await userFuture;
 
         if (dormitorySnapshot.exists && userSnapshot.exists) {
           String dormitoryName =
@@ -75,19 +62,11 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
             'timestamp': notificationTime,
             'type': data['type'],
           });
-        } else {
-          print(
-              'Dormitory or User does not exist: dormitoryId=${data['dormitoryId']}, userId=${data['userId']}');
         }
       }
 
       notifications.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
-
-      setState(() {
-        _notifications = notifications;
-      });
-    } catch (e) {
-      print('Error fetching notifications: $e');
+      yield notifications;
     }
   }
 
@@ -95,13 +74,13 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
     final now = DateTime.now();
     final difference = now.difference(notificationTime);
     if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+      return '${difference.inDays} วันก่อน';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+      return '${difference.inHours} ชั่วโมงก่อน';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+      return '${difference.inMinutes} นาทีที่แล้ว';
     } else {
-      return 'Just now';
+      return 'เพิ่งเกิดขึ้น';
     }
   }
 
@@ -109,81 +88,97 @@ class _NotificationUserScreenState extends State<NotificationUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(title: 'การแจ้งเตือน', context: context),
-      body: _notifications.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _notifications.length,
-              itemBuilder: (context, index) {
-                final notification = _notifications[index];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0, vertical: 6.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    elevation: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            notification['type'] == 'confirmBooking'
-                                ? 'Booking Confirmed'
-                                : 'Booking Rejected',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: notification['type'] == 'confirmBooking'
-                                  ? Colors.green
-                                  : Colors.red,
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: _fetchNotificationsStream(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: TextWidget.buildText(text: 'ไม่มีการแจ้งเตือน'),
+            );
+          }
+
+          final notifications = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: notifications.length,
+            itemBuilder: (context, index) {
+              final notification = notifications[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0, vertical: 6.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  elevation: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          notification['type'] == 'confirmBooking'
+                              ? 'การจองสำเร็จ'
+                              : 'การจองถูกปฏิเสธ',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: notification['type'] == 'confirmBooking'
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Icon(Icons.home, color: Colors.blueAccent),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextWidget.buildText(
+                                text:
+                                    'หอพัก: ${notification['dormitoryName']}',
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Icon(Icons.home, color: Colors.blueAccent),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextWidget.buildText( text: 
-                                  'Dormitory: ${notification['dormitoryName']}',
-                                ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.person, color: Colors.green),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextWidget.buildText(
+                                text: 'ผู้ใช้: ${notification['userName']}',
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Icon(Icons.person, color: Colors.green),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextWidget.buildText( text: 
-                                  'User: ${notification['userName']}',
-                                ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.access_time,
+                                color: Colors.orange),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextWidget.buildText(
+                                text:
+                                    'เวลา: ${_timeAgo(notification['timestamp'])}',
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Icon(Icons.access_time,
-                                  color: Colors.orange),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextWidget.buildText( text: 
-                                  'Time: ${_timeAgo(notification['timestamp'])}',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

@@ -185,12 +185,6 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 10, // ระยะเบลอของเงา
-                        offset: Offset(0, 4), // การเลื่อนเงา (x, y)
-                      ),
-                    ],
                   ),
                   child: Row(
                     mainAxisAlignment:

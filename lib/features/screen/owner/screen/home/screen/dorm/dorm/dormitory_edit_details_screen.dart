@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dorm_app/components/app_bar/app_bar_widget.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/dorm/imagepick/edit_image.dart';
+import 'package:dorm_app/features/screen/owner/screen/home/screen/location/edit_location.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -68,7 +70,8 @@ class _EditDormitoryScreenState extends State<DormitoryEditDetailsScreen> {
     _occupantsController.text = widget.dormitory['occupants'] ?? '';
     _electricityRateController.text =
         widget.dormitory['electricityRate']?.toString() ?? '0';
-    _totalRoomsController.text = widget.dormitory['totalRooms']?.toString() ?? '0';
+    _totalRoomsController.text =
+        widget.dormitory['totalRooms']?.toString() ?? '0';
     _waterRateController.text =
         widget.dormitory['waterRate']?.toString() ?? '0';
     _furnitureFeeController.text =
@@ -370,222 +373,131 @@ class _EditDormitoryScreenState extends State<DormitoryEditDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: buildCustomAppBar(title: 'แก้ไขข้อมูลหอพัก', onSave: _saveDormitory, context: context),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'ชื่อหอพัก'),
-                ),
-                TextField(
-                  controller: _addressController,
-                  decoration: const InputDecoration(labelText: 'ที่อยู่หอพัก'),
-                ),
-                TextField(
-                  controller: _priceController,
-                  decoration: const InputDecoration(labelText: 'ราคา'),
-                  keyboardType: TextInputType.number,
-                ),
-
-                TextField(
-                  controller: _availableRoomsController,
-                  decoration: const InputDecoration(labelText: 'ห้องว่าง'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: _totalRoomsController,
-                  decoration: const InputDecoration(labelText: 'จำนวนห้องทั้งหมด'),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 10),
-                _buildRoomTypeDropdown(),
-                const SizedBox(height: 10),
-                _buildDormTypeDropdown(),
-                const SizedBox(height: 10),
-                TextField(
-                    controller: _occupantsController,
-                    decoration: const InputDecoration(labelText: 'จำนวนคนพัก')),
-                TextField(
-                  controller: _electricityRateController,
-                  decoration:
-                      const InputDecoration(labelText: 'ค่าไฟ (หน่วยละ)'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: _waterRateController,
-                  decoration:
-                      const InputDecoration(labelText: 'ค่าน้ำ (หน่วยละ)'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: _furnitureFeeController,
-                  decoration: const InputDecoration(
-                      labelText: 'ค่าเฟอร์นิเจอร์เพิ่มเติม'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: _securityDepositController,
-                  decoration:
-                      const InputDecoration(labelText: 'ค่าประกันความเสียหาย'),
-                  keyboardType: TextInputType.number,
-                ),
-                TextField(
-                  controller: _ruleController,
-                  decoration: const InputDecoration(labelText: 'กฎขอหอพัก'),
-                ),
-                TextField(
-                  controller: _contaxtController,
-                  decoration: const InputDecoration(labelText: 'ช่องทางติดต่อ'),
-                ),
-                TextField(
-                  controller: _equipmentController,
-                  decoration:
-                      const InputDecoration(labelText: 'อุปกรณ์ที่มีในห้องพัก'),
-                  maxLines: 5,
-                  keyboardType: TextInputType.multiline,
-                ),
-                // Button to edit the location marker
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    print("Navigating to Edit Location");
-                    _navigateToEditLocation();
-                  },
-                  child: const Text('แก้ไขตำแหน่งหมุด'),
-                ),
-                const SizedBox(height: 16),
-                Text('รูปภาพของหอพัก',
-                    style: Theme.of(context).textTheme.titleMedium),
-                SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _selectedImages.length + _imageUrls.length,
-                    itemBuilder: (context, index) {
-                      if (index < _selectedImages.length) {
-                        // แสดงภาพที่ผู้ใช้เลือก
-                        return Stack(
-                          children: [
-                            Image.file(
-                              _selectedImages[index],
-                              width: 150,
-                              height: 150,
-                              fit: BoxFit.cover,
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  setState(() {
-
-                                    _selectedImages.removeAt(index);
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        );
-                      } else {
-                        // แสดงภาพที่ดึงมาจาก Firebase
-                        return Stack(
-                          children: [
-                            Image.network(
-                              _imageUrls[index - _selectedImages.length],
-                              width: 150,
-                              height: 150,
-                              fit: BoxFit.cover,
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () => _deleteImage(
-                                    _imageUrls[index - _selectedImages.length]),
-                              ),
-                            ),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: _addImage,
-                  child: const Text('เพิ่มรูปภาพ'),
-                ),
-              ],
-            ),
+      appBar: buildCustomAppBar(
+          title: 'แก้ไขข้อมูลหอพัก', onSave: _saveDormitory, context: context),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFieldInput(
+                controller: _nameController,
+                labelText: 'ชื่อหอพัก',
+              ),
+              TextFieldInput(
+                controller: _addressController,
+                labelText: 'ที่อยู่หอพัก',
+              ),
+              TextFieldInput(
+                controller: _priceController,
+                labelText: 'ราคา',
+                keyboardType: TextInputType.number,
+              ),
+              TextFieldInput(
+                controller: _availableRoomsController,
+                labelText: 'ห้องว่าง',
+                keyboardType: TextInputType.number,
+              ),
+              TextFieldInput(
+                controller: _totalRoomsController,
+                labelText: 'จำนวนห้องทั้งหมด',
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 10),
+              _buildRoomTypeDropdown(),
+              const SizedBox(height: 10),
+              _buildDormTypeDropdown(),
+              const SizedBox(height: 10),
+              TextFieldInput(
+                controller: _occupantsController,
+                labelText: 'จำนวนคนพัก',
+              ),
+              TextFieldInput(
+                controller: _electricityRateController,
+                labelText: 'ค่าไฟ (หน่วยละ)',
+                keyboardType: TextInputType.number,
+              ),
+              TextFieldInput(
+                controller: _waterRateController,
+                labelText: 'ค่าน้ำ (หน่วยละ)',
+                keyboardType: TextInputType.number,
+              ),
+              TextFieldInput(
+                controller: _furnitureFeeController,
+                labelText: 'ค่าเฟอร์นิเจอร์เพิ่มเติม',
+                keyboardType: TextInputType.number,
+              ),
+              TextFieldInput(
+                controller: _securityDepositController,
+                labelText: 'ค่าประกันความเสียหาย',
+                keyboardType: TextInputType.number,
+              ),
+              TextFieldInput(
+                controller: _ruleController,
+                labelText: 'กฎขอหอพัก',
+              ),
+              TextFieldInput(
+                controller: _contaxtController,
+                labelText: 'ช่องทางติดต่อ',
+              ),
+              TextFieldInput(
+                controller: _equipmentController,
+                labelText: 'อุปกรณ์ที่มีในห้องพัก',
+                maxLines: 5,
+                keyboardType: TextInputType.multiline,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  print("Navigating to Edit Location");
+                  _navigateToEditLocation();
+                },
+                child: const Text('แก้ไขตำแหน่งหมุด'),
+              ),
+              const SizedBox(height: 16),
+              Text('รูปภาพของหอพัก',
+                  style: Theme.of(context).textTheme.titleMedium),
+              ImagePickerRowd(
+                selectedImages:
+                    _imageUrls, // ใช้ _imageUrls โดยตรงที่เป็น List<String> ที่เก็บ URL
+                onDeleteImage: (index) async {
+                  String imageUrl = _imageUrls[index];
+                  await _deleteImage(imageUrl);
+                },
+              ),  
+              ElevatedButton(
+                onPressed: _addImage,
+                child: const Text('เพิ่มรูปภาพ'),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
-class EditLocationScreen extends StatefulWidget {
-  final LatLng initialLocation;
+class TextFieldInput extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+  final TextInputType keyboardType;
+  final int? maxLines;
 
-  const EditLocationScreen({super.key, required this.initialLocation});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _EditLocationScreenState createState() => _EditLocationScreenState();
-}
-
-class _EditLocationScreenState extends State<EditLocationScreen> {
-  LatLng _currentLocation = const LatLng(0, 0);
-  final Completer<GoogleMapController> _mapController = Completer();
-
-  @override
-  void initState() {
-    super.initState();
-    _currentLocation = widget.initialLocation;
-  }
+  const TextFieldInput({
+    super.key,
+    required this.controller,
+    required this.labelText,
+    this.keyboardType = TextInputType.text,
+    this.maxLines,
+  });
 
   @override
   Widget build(BuildContext context) {
-    print("EditLocationScreen is being displayed");
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('แก้ไขตำแหน่งหมุด'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              Navigator.pop(context, _currentLocation);
-            },
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          GoogleMap(
-            onMapCreated: (GoogleMapController controller) {
-              _mapController.complete(controller);
-            },
-            initialCameraPosition: CameraPosition(
-              target: _currentLocation,
-              zoom: 14.0,
-            ),
-            onCameraMove: (CameraPosition position) {
-              _currentLocation = position.target;
-            },
-          ),
-          const Center(
-            child: Icon(
-              Icons.location_pin,
-              size: 50,
-              color: Colors.red,
-            ),
-          ),
-        ],
-      ),
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(labelText: labelText),
+      keyboardType: keyboardType,
+      maxLines: maxLines,
     );
   }
 }

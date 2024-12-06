@@ -37,7 +37,7 @@ class IndexScreen extends StatelessWidget {
               TextWidget.buildText(
                 text: "AccommoEase",
                 fontSize: 30.0,
-                isBold: true, // ระบุว่าต้องการตัวหนา
+                isBold: true,
                 color: ColorsApp.primary01,
               ),
               const SizedBox(height: 40),
@@ -90,8 +90,6 @@ class IndexScreen extends StatelessWidget {
                     } on FirebaseAuthException catch (e) {
                       // Handle authentication errors
                       String errorMessage = 'Login failed: ${e.message}';
-                      // Display error message (you can use a dialog or Snackbar)
-                      // ignore: use_build_context_synchronously
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(errorMessage)),
                       );
@@ -105,12 +103,10 @@ class IndexScreen extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // Predefined credentials for test user
                     String testEmail = 'ownertestapp@gmail.com';
                     String testPassword = 'test1234';
 
                     try {
-                      // Sign in the user with Firebase Authentication
                       UserCredential userCredential = await FirebaseAuth
                           .instance
                           .signInWithEmailAndPassword(
@@ -118,9 +114,7 @@ class IndexScreen extends StatelessWidget {
                         password: testPassword,
                       );
 
-                      // On successful login, navigate to Homepage
                       Navigator.pushReplacement(
-                        // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
                             builder: (context) => const Ownerhome()),
@@ -128,8 +122,6 @@ class IndexScreen extends StatelessWidget {
                     } on FirebaseAuthException catch (e) {
                       // Handle authentication errors
                       String errorMessage = 'Login failed: ${e.message}';
-                      // Display error message (you can use a dialog or Snackbar)
-                      // ignore: use_build_context_synchronously
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(errorMessage)),
                       );

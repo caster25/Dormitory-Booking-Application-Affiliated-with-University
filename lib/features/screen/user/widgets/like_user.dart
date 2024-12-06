@@ -39,17 +39,15 @@ class _LikeScreenState extends State<LikeScreen> {
       if (userDoc.exists && userDoc.data()!.containsKey('favorites')) {
         List<dynamic> favorites = userDoc['favorites'];
 
-        for (String dormId in favorites) {
-          DocumentSnapshot dorm = await FirebaseFirestore.instance
+        if (favorites.isNotEmpty) {
+          QuerySnapshot dormsQuery = await FirebaseFirestore.instance
               .collection('dormitories')
-              .doc(dormId)
+              .where(FieldPath.documentId, whereIn: favorites)
               .get();
 
-          if (dorm.exists) {
-            setState(() {
-              likedDorms.add(dorm);
-            });
-          }
+          setState(() {
+            likedDorms = dormsQuery.docs;
+          });
         }
       }
     }
@@ -57,6 +55,7 @@ class _LikeScreenState extends State<LikeScreen> {
 
   Future<void> _toggleFavorite(String dormId) async {
     final user = FirebaseAuth.instance.currentUser;
+
     if (user != null) {
       final userDoc =
           FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -64,18 +63,28 @@ class _LikeScreenState extends State<LikeScreen> {
       final userSnapshot = await userDoc.get();
       if (userSnapshot.exists) {
         List<dynamic> favoritesList = userSnapshot['favorites'] ?? [];
-        if (favoritesList.contains(dormId)) {
-          favoritesList.remove(dormId); // ลบหอพักออกจากรายการโปรด
-        } else {
-          favoritesList.add(dormId); // เพิ่มหอพักเข้ารายการโปรด
-        }
+        setState(() {
+          if (favoritesList.contains(dormId)) {
+            favoritesList.remove(dormId);
+            likedDorms.removeWhere((dorm) => dorm.id == dormId);
+          } else {
+            favoritesList.add(dormId);
+            // Fetch the dorm and add to likedDorms
+            FirebaseFirestore.instance
+                .collection('dormitories')
+                .doc(dormId)
+                .get()
+                .then((dorm) {
+              if (dorm.exists) {
+                setState(() {
+                  likedDorms.add(dorm);
+                });
+              }
+            });
+          }
+        });
 
         await userDoc.update({'favorites': favoritesList});
-        setState(() {
-          // Refresh liked dorms after toggling favorite
-          likedDorms = []; // Reset list
-          _fetchLikedDorms(); // Fetch updated liked dorms
-        });
       }
     }
   }
@@ -85,7 +94,7 @@ class _LikeScreenState extends State<LikeScreen> {
     return Scaffold(
       appBar: buildAppBar(title: 'หอพักที่ถูกใจ', context: context),
       body: likedDorms.isEmpty
-          ? Center(child: TextWidget.buildText( text: 'ไม่มีหอพักที่ถูกใจ'))
+          ? Center(child: TextWidget.buildText(text: 'ไม่มีหอพักที่ถูกใจ'))
           : ListView.builder(
               itemCount: likedDorms.length,
               itemBuilder: (context, index) {
@@ -110,32 +119,40 @@ class _LikeScreenState extends State<LikeScreen> {
                     },
                     child: Column(
                       children: [
-                        // PageView for images
                         SizedBox(
-                          height: 200, // Adjust height as needed
-                          child: PageView.builder(
-                            itemCount: dorm['imageUrl'].length,
-                            itemBuilder: (context, imageIndex) {
-                              return Image.network(
-                                dorm['imageUrl'][imageIndex],
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
+                          height: 200,
+                          child: dorm['imageUrl'] != null &&
+                                  dorm['imageUrl'].isNotEmpty
+                              ? PageView.builder(
+                                  itemCount: dorm['imageUrl'].length,
+                                  itemBuilder: (context, imageIndex) {
+                                    return Image.network(
+                                      dorm['imageUrl'][imageIndex],
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                )
+                              : Center(
+                                  child: TextWidget.buildText(
+                                      text: 'ไม่มีรูปภาพ')),
                         ),
+
                         ListTile(
-                          title: TextWidget.buildText( text: 
-                            '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ', fontSize: 20
-                          ),
+                          title: TextWidget.buildText(
+                              text:
+                                  '${dorm['name']} (${dorm['dormType']} ${dorm['roomType']}) ',
+                              fontSize: 20),
                           subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment
-                                .start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextWidget.buildText( text: 
-                                'ราคา: ${formatNumber.format(dorm['price'])} บาท/เทอม', color: ColorsApp.red
+                              TextWidget.buildText(
+                                text:
+                                    'ราคา: ${dorm['price'] != null ? formatNumber.format(dorm['price']) : 'ไม่ระบุ'} บาท/เทอม',
+                                color: ColorsApp.red,
                               ),
-                              TextWidget.buildText( text: 
-                                dorm['rating'] != null && dorm['rating'] > 0
+                              TextWidget.buildText(
+                                text: dorm['rating'] != null &&
+                                        dorm['rating'] > 0
                                     ? 'คะแนน: ${dorm['rating'] % 1 == 0 ? dorm['rating'].toInt() : dorm['rating'].toStringAsFixed(1)}/5'
                                     : 'ยังไม่มีการรีวิว',
                               ),
